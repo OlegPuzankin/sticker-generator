@@ -1,27 +1,30 @@
 import React from 'react';
-import './App.css';
-
-import {Route, Switch} from "react-router-dom";
-import {About} from "./staticPages/About";
 import {Navbar} from "./components/Navbar";
+import {Alert} from "./UI/Alert";
 import {Home} from "./components/Home";
+import {About} from "./staticPages/About";
+import {CreateSticker} from "./components/CreateStickerForm/CreateSticker";
+import {Login} from "./components/Auth/Login";
+import {Route, Switch} from "react-router-dom";
+import {useSelector} from "react-redux";
+import {Header} from "./components/Navbar/Header";
 
-function App() {
-  return (
-    <div className="App">
-      <Navbar/>
-        <div className="container-fluid pl-0 pr-0 pt-4">
-            {/*<Alert alert={{text: 'test alert'}}/>*/}
-            <Switch>
-                <Route exact path={'/'} component={Home}/>
-                <Route path={'/about'} component={About}/>
-                <Route path={'/features'} component={About}/>
+export const App = (props) => {
 
-            </Switch>
+    const alert = useSelector(state => state.alert);
 
-        </div>
-    </div>
-  );
-}
 
-export default App;
+ return (
+     <>
+         {/*<Navbar/>*/}
+         <Header/>
+         <Alert alert={alert}/>
+         <Switch>
+             <Route exact path={'/'} component={Home}/>
+             <Route path={'/about'} component={About}/>
+             <Route path={'/create'} component={CreateSticker}/>
+             <Route path={'/login'} component={Login}/>
+         </Switch>
+     </>
+ );
+};
