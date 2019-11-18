@@ -23,7 +23,7 @@ const INITIAL_STATE = {
     shelfLifetime: 12,
     regionControl: '',
     grapes: [],
-    harvestYear: null
+    harvestYear: ''
 
 
 };
@@ -47,23 +47,34 @@ export const CreateSticker = (props) => {
             {/*///////////////////TITLE PRODUCER///////////////////////////////*/}
             <div className='row justify-content-start'>
                 <div className='col'>
-                    <ComboBox name='producer'
-                              items={producerList}
-                              label={'Producer'}
-                              changeHandler={changeHandler}
-                              handleBlur={handleBlur}/>
+                    {/*<ComboBoxGroup name='country'*/}
+                    {/*               items={countriesList}*/}
+                    {/*               label={'Select country'}*/}
+                    {/*               changeHandler={changeHandler}*/}
+                    {/*               handleBlur={handleBlur}/>*/}
 
                 </div>
 
                 <div className='col'>
-                    <Input name={'originalTitle'}
-                           changeHandler={changeHandler}
-                           handleBlur={handleBlur}
-                           value={values.originalTitle}
-                           errors={errors}
-                           label={'Original title'}
-                           placeholder={'Enter wine\'s name'}
-                           htmlFor={'inputWineName'}/>
+
+                    <InputGroupTest name={'harvestYear'}
+                                    value={values.harvestYear}
+                                    type={'month'}
+                                    placeholder={'Some enter'}
+                                    changeHandler={changeHandler}
+                                    handleBlur={handleBlur}
+                                    errors={errors}
+                                    label={'Volume,ml'}/>
+
+
+                    {/*<Input name={'originalTitle'}*/}
+                    {/*       changeHandler={changeHandler}*/}
+                    {/*       handleBlur={handleBlur}*/}
+                    {/*       value={values.originalTitle}*/}
+                    {/*       errors={errors}*/}
+                    {/*       label={'Original title'}*/}
+                    {/*       placeholder={'Enter wine\'s name'}*/}
+                    {/*       htmlFor={'inputWineName'}/>*/}
 
                 </div>
 
@@ -115,7 +126,6 @@ export const CreateSticker = (props) => {
                                     errors={errors}/>
 
 
-                    <InputGroupTest/>
 
 
                     <ComboBoxGroup name='country'

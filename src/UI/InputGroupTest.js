@@ -4,19 +4,27 @@ export const InputGroupTest = (props) => {
 debugger
 
 
-    const {label, name, placeholder, value, handleBlur, changeHandler, errors} = props;
+    const {label, type, name, placeholder, value, handleBlur, changeHandler, errors} = props;
     //const htmlFor=`${name} ${label}`;
 
 
     return (
-        <div className="input-group mb-3">
-            <div className="input-group-prepend">
-                <span className="input-group-text" id="basic-addon1">@</span>
+        <>
+            <div className="input-group mb-1">
+                <div className="input-group-prepend width100">
+                    <span className="input-group-text width100">{label}</span>
+                </div>
+                <input type={type}
+                       name={name}
+                       onBlur={handleBlur}
+                       value={value}
+                       onChange={changeHandler}
+                       className="form-control"
+                       placeholder={placeholder}/>
+
             </div>
-            <input type="month" className="form-control" placeholder="Username" aria-label="Username"
-                   aria-describedby="basic-addon1"/>
-        </div>
+            {errors[name] && <p className='text-danger text-left'>{errors[name]}</p>}
+        </>
 
-
-);
+    );
 };
