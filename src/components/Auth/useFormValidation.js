@@ -29,7 +29,7 @@ function useFormValidation(initialState, validate, authenticate) {
     };
 
     const changeHandlerMultipleSelectHandler = (name, result) => {
-        debugger
+        //debugger
         setValues({
             ...values,
             [name]: result

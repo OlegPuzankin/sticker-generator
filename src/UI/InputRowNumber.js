@@ -10,7 +10,7 @@ export const InputRowNumber = (props) => {
 
         <div className="row mb-2 ml-0 mr-0">
             <label htmlFor={htmlFor} className="pt-2 w-50">{label}</label>
-            <div className="col">
+            <div className="col p-0">
                 <input type={'number'}
                        step={0.5}
                        name={name}

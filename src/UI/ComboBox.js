@@ -2,25 +2,31 @@ import React from 'react';
 
 export const ComboBox = (props) => {
 
-    const {label, name, value, handleBlur, changeHandler} = props;
+    let {label, name, items, handleBlur, changeHandler} = props;
+
+    if(!items)
+        items=[];
 
 
     return (
-        <div className="row mb-2 ml-0 mr-0">
-            <label className="pt-2 w-50">{label}</label>
-            <div className='col'>
-                <select name={name}
-                        //value={value}
-                        onChange={changeHandler}
-                        onBlur={handleBlur}
-                        className="form-control">
-                    <option>1</option>
-                    <option>2</option>
-                    <option>3</option>
-                    <option>4</option>
-                    <option>5</option>
-                </select>
-            </div>
+        <div className="form-group">
+            <label>{label}</label>
+
+            <select className="form-control"
+                    name={name}
+                    onChange={changeHandler}
+                    onBlur={handleBlur}>
+
+                <option>Select {name}</option>
+                {
+                    items.map((item, index)=>{
+                        return <option key={index}>{item}</option>
+                    })
+                }
+
+            </select>
+
         </div>
     );
 };
+

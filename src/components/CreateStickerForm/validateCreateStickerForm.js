@@ -1,10 +1,17 @@
 export default function validateCreateStickerForm(values) {
-    //debugger
+    debugger
     let errors = {};
 
-    if(!values.wineName){
-        errors.wineName='empty wine\'s name field'
+    if(!values.originalTitle){
+        errors.originalTitle='empty wine\'s name field'
     }
+
+    if(!values.harvestYear){
+        errors.harvestYear='empty harvest year'
+    }
+
+
+
 
     if(!values.alcohol){
         errors.alcohol='empty test field'

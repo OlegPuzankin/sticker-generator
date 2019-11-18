@@ -21,7 +21,7 @@ export const ListBox = (props) => {
     const {name, changeHandler, label} = props;
 
     function handleMultipleSelect(e) {
-        debugger
+        //debugger
         const result = getSelectValues(multipleSelect.current);
         changeHandler(name, result)
 
@@ -32,7 +32,7 @@ export const ListBox = (props) => {
             <select multiple
                     ref={multipleSelect}
                     onChange={handleMultipleSelect}
-                    className="user-form-control height600">
+                    className="user-form-control height300">
                 <option>Shiraz</option>
                 <option>Merlo</option>
                 <option>Caberne</option>
