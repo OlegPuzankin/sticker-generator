@@ -20,16 +20,19 @@ const INITIAL_STATE = {
     volume: 750,
     alcohol: 12,
     sugar: 4,
+    servingTemperature: 12,
     shelfLifetime: 12,
+    lotNumber: '',
     regionControl: '',
     grapes: [],
-    harvestYear: ''
+    harvestYear: '',
+    bottlingYear: ''
 
 
 };
 
-const countriesList = ['France', 'Italy', 'Spain'];
-const producerList = ['Grange', 'Felix']
+const foo = ['France', 'Italy', 'Spain'];
+const fooYear = ['2012', '2013', '2014', '2015', '2016']
 
 export const CreateSticker = (props) => {
 
@@ -44,116 +47,172 @@ export const CreateSticker = (props) => {
     return (
         <form className='container mt-2' onSubmit={submitHandler}>
 
-            {/*///////////////////TITLE PRODUCER///////////////////////////////*/}
+            {/*///////////////////TITLE ///////////////////////////////*/}
             <div className='row justify-content-start'>
-                <div className='col'>
-                    {/*<ComboBoxGroup name='country'*/}
-                    {/*               items={countriesList}*/}
-                    {/*               label={'Select country'}*/}
-                    {/*               changeHandler={changeHandler}*/}
-                    {/*               handleBlur={handleBlur}/>*/}
 
-                </div>
+                <div className='col mb-2 mt-3'>
 
-                <div className='col'>
-
-                    <InputGroupTest name={'harvestYear'}
-                                    value={values.harvestYear}
-                                    type={'month'}
-                                    placeholder={'Some enter'}
+                    <InputGroupTest name={'originalTitle'}
+                                    value={values.originalTitle}
+                                    label={'Title'}
+                                    type={'text'}
+                                    placeholder={'Enter title'}
                                     changeHandler={changeHandler}
                                     handleBlur={handleBlur}
-                                    errors={errors}
-                                    label={'Volume,ml'}/>
-
-
-                    {/*<Input name={'originalTitle'}*/}
-                    {/*       changeHandler={changeHandler}*/}
-                    {/*       handleBlur={handleBlur}*/}
-                    {/*       value={values.originalTitle}*/}
-                    {/*       errors={errors}*/}
-                    {/*       label={'Original title'}*/}
-                    {/*       placeholder={'Enter wine\'s name'}*/}
-                    {/*       htmlFor={'inputWineName'}/>*/}
-
+                                    error={errors['originalTitle']}/>
                 </div>
 
 
             </div>
             {/*///////////////////2_ROW///////////////////////////////*/}
             <div className='row align-items-start'>
+                {/*///////////////////1 Column///////////////////////////////*/}
                 <div className='col'>
                     <div className='mb-2 text-center'>Basic parameters</div>
 
-                    <InputGroupNumber name={'volume'}
-                                      changeHandler={changeHandler}
-                                      handleBlur={handleBlur}
-                                      value={values.volume}
-                                      errors={errors}
-                                      label={'Volume,ml'}/>
+                    <InputGroupTest name={'volume'}
+                                    type={'number'}
+                                    changeHandler={changeHandler}
+                                    handleBlur={handleBlur}
+                                    value={values.volume}
+                                    error={errors['volume']}
+                                    label={'Volume,ml'}/>
 
 
-                    <InputGroupNumber name={'alcohol'}
-                                      changeHandler={changeHandler}
-                                      handleBlur={handleBlur}
-                                      value={values.alcohol}
-                                      errors={errors}
-                                      label={'Alcohol %'}/>
+                    <InputGroupTest name={'alcohol'}
+                                    type={'number'}
+                                    changeHandler={changeHandler}
+                                    handleBlur={handleBlur}
+                                    value={values.alcohol}
+                                    error={errors['alcohol']}
+                                    label={'Alcohol %'}/>
 
-                    <InputGroupNumber name={'sugar'}
-                                      changeHandler={changeHandler}
-                                      handleBlur={handleBlur}
-                                      value={values.sugar}
-                                      errors={errors}
-                                      label={'Sugar ml '}/>
+                    <InputGroupTest name={'sugar'}
+                                    type={'number'}
+                                    changeHandler={changeHandler}
+                                    handleBlur={handleBlur}
+                                    value={values.sugar}
+                                    error={errors['sugar']}
+                                    label={'Sugar ml '}/>
 
-                    <InputGroupNumber name={'shelfLifetime'}
-                                      changeHandler={changeHandler}
-                                      handleBlur={handleBlur}
-                                      value={values.shelfLifetime}
-                                      errors={errors}
-                                      label={'ShelfLifetime'}/>
+                    <InputGroupTest name={'shelfLifetime'}
+                                    type={'number'}
+                                    changeHandler={changeHandler}
+                                    handleBlur={handleBlur}
+                                    value={values.shelfLifetime}
+                                    error={errors['shelfLifetime']}
+                                    label={'Shelf lifetime'}/>
 
-                    <ComboBox name='regionControl'
-                              label={'Region control'}
-                        //value={values.regionControl}
-                              changeHandler={changeHandler}
-                              handleBlur={handleBlur}/>
-
-                    <InputGroupDate changeHandler={changeHandler}
-                                    label={'Harvest'}
-                                    name={'harvestYear'}
-                                    errors={errors}/>
-
-
+                    <InputGroupTest name={'servingTemperature'}
+                                    type={'number'}
+                                    changeHandler={changeHandler}
+                                    handleBlur={handleBlur}
+                                    value={values.servingTemperature}
+                                    error={errors['servingTemperature']}
+                                    label={'Serving temp C'}/>
 
 
+                    <ComboBoxGroup name='harvestYear'
+                                   placeholder={'Select harvest year'}
+                                   error={errors['harvestYear']}
+                                   items={fooYear}
+                                   label={'Harvest year'}
+                                   changeHandler={changeHandler}
+                                   handleBlur={handleBlur}/>
+
+
+                    <InputGroupTest name={'bottlingYear'}
+                                    type={'month'}
+                                    value={values.bottlingYear}
+                                    error={errors['bottlingYear']}
+                                    label={'Bottling year'}
+                                    changeHandler={changeHandler}
+                                    handleBlur={handleBlur}/>
+
+                    <InputGroupTest name={'lotNumber'}
+                                    type={'text'}
+                                    value={values.lotNumber}
+                                    error={errors['lotNumber']}
+                                    label={'Lot number'}
+                                    changeHandler={changeHandler}
+                                    handleBlur={handleBlur}/>
+
+
+                </div>
+                {/*///////////////////2 Column///////////////////////////////*/}
+                <div className='col'>
+                    <div className='mb-2 text-center'>Region parameters</div>
+
+                    <ComboBoxGroup name='producer'
+                                   placeholder={'Select producer'}
+                                   error={errors['producer']}
+                                   items={foo}
+                                   label={'Select producer'}
+                                   changeHandler={changeHandler}
+                                   handleBlur={handleBlur}/>
+
+                    <ComboBoxGroup name='regionControl'
+                                   placeholder={'Select control type'}
+                                   error={errors['regionControl']}
+                                   items={foo}
+                                   label={'Select'}
+                                   changeHandler={changeHandler}
+                                   handleBlur={handleBlur}/>
                     <ComboBoxGroup name='country'
-                                   items={countriesList}
+                                   placeholder={'Select country'}
+                                   error={errors['country']}
+                                   items={foo}
                                    label={'Select country'}
                                    changeHandler={changeHandler}
                                    handleBlur={handleBlur}/>
 
+                    <ComboBoxGroup name='region'
+                                   placeholder={'Select region'}
+                                   error={errors['region']}
+                                   items={foo}
+                                   label={'Select region'}
+                                   changeHandler={changeHandler}
+                                   handleBlur={handleBlur}/>
+
+                    <ComboBoxGroup name='appellation'
+                                   placeholder={'Select appellation'}
+                                   error={errors['appellation']}
+                                   items={foo}
+                                   label={'Select appellation'}
+                                   changeHandler={changeHandler}
+                                   handleBlur={handleBlur}/>
+
                 </div>
-
+                {/*///////////////////3 Column///////////////////////////////*/}
                 <div className='col'>
-                    <ComboBox name='country'
-                              items={countriesList}
-                              label={'Select country'}
-                              changeHandler={changeHandler}
-                              handleBlur={handleBlur}/>
+                    <div className='mb-2 text-center'>Grapes</div>
 
-                </div>
+                    <InputGroupTest name={'search'}
+                                    value={values.search}
+                                    label={'Search'}
+                                    type={'text'}
+                                    placeholder={'Search grape'}
+                                    changeHandler={changeHandler}
+                                    handleBlur={handleBlur}
+                                    error={errors['originalTitle']}/>
 
-                <div className='col'>
+                    <ComboBoxGroup name='selectGrape'
+                                   placeholder={'Select grape'}
+                                   error={errors['selectGrape']}
+                                   items={foo}
+                                   label={'Select grape'}
+                                   changeHandler={changeHandler}
+                                   handleBlur={handleBlur}/>
+                    {}
 
-                    <ListBox
-                        label={'Select Grapes'}
-                        changeHandler={changeHandlerMultipleSelectHandler}
-                        name={'grapes'}/>
+                    {/*<ListBox*/}
+                    {/*    label={'Select Grapes'}*/}
+                    {/*    changeHandler={changeHandlerMultipleSelectHandler}*/}
+                    {/*    name={'grapes'}/>*/}
 
                 </div>
             </div>
+            {/*<button onSubmit={submitHandler} className='btn btn-primary'>Submit</button>*/}
         </form>
     );
 };

@@ -1,18 +1,18 @@
 import React from 'react';
 
 export const InputGroupTest = (props) => {
-debugger
 
 
-    const {label, type, name, placeholder, value, handleBlur, changeHandler, errors} = props;
+
+    const {label, type, name, placeholder, value, handleBlur, changeHandler, error} = props;
     //const htmlFor=`${name} ${label}`;
 
 
     return (
         <>
             <div className="input-group mb-1">
-                <div className="input-group-prepend width100">
-                    <span className="input-group-text width100">{label}</span>
+                <div className="input-group-prepend label-width">
+                    <span className="input-group-text label-width">{label}</span>
                 </div>
                 <input type={type}
                        name={name}
@@ -23,7 +23,7 @@ debugger
                        placeholder={placeholder}/>
 
             </div>
-            {errors[name] && <p className='text-danger text-left'>{errors[name]}</p>}
+            {error && <p className='text-danger text-left'>{error}</p>}
         </>
 
     );

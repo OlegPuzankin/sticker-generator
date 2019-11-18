@@ -9,8 +9,8 @@ export const InputGroupNumber = (props) => {
 
     return (
         <div className="input-group mb-3">
-            <div className="input-group-prepend width100">
-                <span className="input-group-text width100">{label}</span>
+            <div className="input-group-prepend label-width">
+                <span className="input-group-text label-width">{label}</span>
             </div>
             <input type="number"
                    name={name}

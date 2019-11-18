@@ -8,6 +8,7 @@ function useFormValidation(initialState, validate, authenticate) {
 
 
     React.useEffect(() => {
+        debugger
         //console.log('use effect')
         if (isSubmitting) {
             const noErrors = (Object.keys(errors).length === 0);
@@ -45,7 +46,7 @@ function useFormValidation(initialState, validate, authenticate) {
     const submitHandler = (e) => {
         e.preventDefault();
         e.persist();
-
+    debugger
         const validateErrors = validate(values);
         setErrors(validateErrors);
         setIsSubmitting(true);
