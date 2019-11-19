@@ -27,7 +27,7 @@ export const ListBox = (props) => {
 
     }
     return (
-        <div className="form-group ">
+        <div className="form-group text-center">
             <label>{label}</label>
             <select multiple
                     ref={multipleSelect}

@@ -185,30 +185,13 @@ export const CreateSticker = (props) => {
                 </div>
                 {/*///////////////////3 Column///////////////////////////////*/}
                 <div className='col'>
-                    <div className='mb-2 text-center'>Grapes</div>
 
-                    <InputGroupTest name={'search'}
-                                    value={values.search}
-                                    label={'Search'}
-                                    type={'text'}
-                                    placeholder={'Search grape'}
-                                    changeHandler={changeHandler}
-                                    handleBlur={handleBlur}
-                                    error={errors['originalTitle']}/>
 
-                    <ComboBoxGroup name='selectGrape'
-                                   placeholder={'Select grape'}
-                                   error={errors['selectGrape']}
-                                   items={foo}
-                                   label={'Select grape'}
-                                   changeHandler={changeHandler}
-                                   handleBlur={handleBlur}/>
-                    {}
 
-                    {/*<ListBox*/}
-                    {/*    label={'Select Grapes'}*/}
-                    {/*    changeHandler={changeHandlerMultipleSelectHandler}*/}
-                    {/*    name={'grapes'}/>*/}
+                    <ListBox
+                        label={'Select Grapes'}
+                        changeHandler={changeHandlerMultipleSelectHandler}
+                        name={'grapes'}/>
 
                 </div>
             </div>
