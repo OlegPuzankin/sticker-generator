@@ -3,7 +3,7 @@ import React from 'react';
 export const ComboBoxGroup = (props) => {
 
 
-    let {label, name, placeholder, items, handleBlur, changeHandler, error} = props;
+    let {label, name, value, placeholder, items, handleBlur, changeHandler, error} = props;
 
     if (!items)
         items = [];
@@ -18,6 +18,7 @@ export const ComboBoxGroup = (props) => {
                     <label className="input-group-text label-width">{label}</label>
                 </div>
                 <select name={name}
+                        value={value}
                         onChange={changeHandler}
                         onBlur={handleBlur}
                         className="custom-select">

@@ -11,10 +11,12 @@ import {ComboBoxGroup} from "../../UI/ComboBoxGroup";
 import {InputGroupNumber} from "../../UI/InputGroupNumber";
 import {InputGroupDate} from "../../UI/InputGroupDate";
 import {InputGroupTest} from "../../UI/InputGroupTest";
+import {useDispatch} from "react-redux";
+import {setSticker} from "../../redux/actions/createStickerActions";
 
 
 const INITIAL_STATE = {
-    producer: '',
+    producer: 'Italy',
     originalTitle: '',
     country: '',
     volume: 750,
@@ -25,7 +27,7 @@ const INITIAL_STATE = {
     lotNumber: '',
     regionControl: '',
     grapes: [],
-    harvestYear: '',
+    harvestYear: '2014',
     bottlingYear: ''
 
 
@@ -38,7 +40,15 @@ export const CreateSticker = (props) => {
 
 
     const {changeHandler, changeHandlerMultipleSelectHandler, submitHandler, handleBlur, values, errors, isSubmitting} =
-        useFormValidation(INITIAL_STATE, validateCreateStickerForm);
+        useFormValidation(INITIAL_STATE, validateCreateStickerForm, saveSticker);
+    const dispatch = useDispatch();
+
+
+    function saveSticker(){
+        debugger
+       // const sticker = values;
+        dispatch(setSticker(values))
+    }
 
     //console.log('countries', values.countries)
     //console.log('region', values.regionControl)
@@ -116,6 +126,7 @@ export const CreateSticker = (props) => {
                                    placeholder={'Select harvest year'}
                                    error={errors['harvestYear']}
                                    items={fooYear}
+                                   value={values.harvestYear}
                                    label={'Harvest year'}
                                    changeHandler={changeHandler}
                                    handleBlur={handleBlur}/>
@@ -146,6 +157,7 @@ export const CreateSticker = (props) => {
                     <ComboBoxGroup name='producer'
                                    placeholder={'Select producer'}
                                    error={errors['producer']}
+                                   value={values.producer}
                                    items={foo}
                                    label={'Select producer'}
                                    changeHandler={changeHandler}
@@ -195,7 +207,7 @@ export const CreateSticker = (props) => {
 
                 </div>
             </div>
-            {/*<button onSubmit={submitHandler} className='btn btn-primary'>Submit</button>*/}
+            <button onSubmit={submitHandler} className='btn btn-primary'>Submit</button>
         </form>
     );
 };

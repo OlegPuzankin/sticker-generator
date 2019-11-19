@@ -1,5 +1,6 @@
 import {createStore, combineReducers} from "redux";
 import {alertReducer} from "./reducers/alertReducer";
+import {createStickerReducer} from "./reducers/createStickerReducer";
 
 
 // const composeEnhancers =
@@ -8,7 +9,8 @@ import {alertReducer} from "./reducers/alertReducer";
 //         window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) : compose;
 
 const combinedReduces = combineReducers({
-    alert: alertReducer
+    alert: alertReducer,
+    sticker: createStickerReducer
 
 });
 
