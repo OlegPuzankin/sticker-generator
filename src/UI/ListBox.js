@@ -18,7 +18,7 @@ function getSelectValues(select) {
 export const ListBox = (props) => {
     const multipleSelect = React.useRef(null);
 
-    const {name, changeHandler, label} = props;
+    const {name, changeHandler, label, items} = props;
 
     function handleMultipleSelect(e) {
         //debugger
@@ -33,18 +33,12 @@ export const ListBox = (props) => {
                     ref={multipleSelect}
                     onChange={handleMultipleSelect}
                     className="user-form-control height300">
-                <option>Shiraz</option>
-                <option>Merlo</option>
-                <option>Caberne</option>
-                <option>Zinfandel</option>
-                <option>Shiraz</option>
-                <option>Merlo</option>
-                <option>Caberne</option>
-                <option>Zinfandel</option>
-                <option>Shiraz</option>
-                <option>Merlo</option>
-                <option>Caberne</option>
-                <option>Zinfandel</option>
+                {
+                    items.map((item, index)=>{
+                        return <option key={`${item} - ${index}`} value={item}>{item}</option>
+                    })
+                }
+
             </select>
         </div>
     );

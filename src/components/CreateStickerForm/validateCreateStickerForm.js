@@ -1,5 +1,5 @@
 export default function validateCreateStickerForm(values) {
-    debugger
+    //debugger
     let errors = {};
 
     if(!values.originalTitle){
@@ -24,6 +24,8 @@ export default function validateCreateStickerForm(values) {
     if(!values.alcohol){
         errors.alcohol='empty test field'
     }
+
+
 
     return errors;
 

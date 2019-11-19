@@ -11,14 +11,13 @@ import {Header} from "./components/Navbar/Header";
 
 export const App = (props) => {
 
-    const alert = useSelector(state => state.alert);
+
 
 
  return (
      <>
          {/*<Navbar/>*/}
          <Header/>
-         <Alert alert={alert}/>
          <Switch>
              <Route exact path={'/'} component={Home}/>
              <Route path={'/about'} component={About}/>

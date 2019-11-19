@@ -1,5 +1,8 @@
-export const SHOW_ALERT = 'SHOW_ALERT';
-export const HIDE_ALERT = 'HIDE_ALERT';
+export const SHOW_ALERT_ERROR = 'SHOW_ALERT_ERROR';
+export const HIDE_ALERT_ERROR = 'HIDE_ALERT_ERROR';
+
+export const SHOW_ALERT_SUCCESS = 'SHOW_ALERT_SUCCESS';
+export const HIDE_ALERT_SUCCESS = 'HIDE_ALERT_SUCCESS';
 
 
 export const SET_STICKER = 'SET_STICKER';

@@ -12,7 +12,7 @@ function useAuth() {
             //console.log(fb.auth)
             //debugger
             if(user){
-                console.log('user', user)
+                //console.log('user', user)
                 setAuthUser(user);
             }
 
@@ -24,7 +24,7 @@ function useAuth() {
         //console.log(unsubscribe);
 
         return ()=>{
-            console.log('use effect auth return')
+            //console.log('use effect auth return')
             unsubscribe();
         }
 

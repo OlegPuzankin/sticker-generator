@@ -8,7 +8,7 @@ export const ComboBoxGroup = (props) => {
     if (!items)
         items = [];
 
-    console.log('ComboBoxGroup',props);
+    //console.log('ComboBoxGroup',props);
 
 
     return (

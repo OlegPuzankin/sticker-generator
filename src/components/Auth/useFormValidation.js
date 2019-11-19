@@ -8,11 +8,12 @@ function useFormValidation(initialState, validate, authenticate) {
 
 
     React.useEffect(() => {
-        debugger
+        //debugger
         //console.log('use effect')
         if (isSubmitting) {
             const noErrors = (Object.keys(errors).length === 0);
             if (noErrors) {
+                //debugger
                 authenticate();
                 setIsSubmitting(false);
             } else
@@ -22,7 +23,7 @@ function useFormValidation(initialState, validate, authenticate) {
 
 
     const changeHandler = (e) => {
-        debugger
+        //debugger
         setValues({
             ...values,
             [e.target.name]: e.target.value
@@ -46,7 +47,6 @@ function useFormValidation(initialState, validate, authenticate) {
     const submitHandler = (e) => {
         e.preventDefault();
         e.persist();
-    debugger
         const validateErrors = validate(values);
         setErrors(validateErrors);
         setIsSubmitting(true);

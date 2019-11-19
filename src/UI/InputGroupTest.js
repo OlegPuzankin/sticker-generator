@@ -4,15 +4,17 @@ export const InputGroupTest = (props) => {
 
 
 
-    const {label, type, name, placeholder, value, handleBlur, changeHandler, error} = props;
+    const {label, type, name, placeholder, value, handleBlur, changeHandler, error, labelWidth=150} = props;
     //const htmlFor=`${name} ${label}`;
+
+    const style={width:`${labelWidth}px`};
 
 
     return (
         <>
             <div className="input-group mb-1">
-                <div className="input-group-prepend label-width">
-                    <span className="input-group-text label-width">{label}</span>
+                <div className="input-group-prepend" style={style}>
+                    <span className="input-group-text" style={style}>{label}</span>
                 </div>
                 <input type={type}
                        name={name}
