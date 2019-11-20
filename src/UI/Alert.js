@@ -4,9 +4,9 @@ import {hideError} from "../redux/actions/alertActions";
 
 
 
-export const Alert = ({alert}) => {
-    console.log('alert props', alert)
-    const dispatch =useDispatch();
+export const Alert = ({alert, hide}) => {
+   // console.log('alert props', alert)
+    //const dispatch =useDispatch();
 
     if(!alert.isShowAlert)
         return  null;
@@ -17,7 +17,7 @@ export const Alert = ({alert}) => {
         <div className={`alert alert-${alert.type || 'secondary'} text-center alert-dismissible`} role="alert">
             {alert.alertText}
             <button type="button" className="close" aria-label="Close" >
-                <span aria-hidden="true" onClick={()=>dispatch(hideError())}>&times;</span>
+                <span aria-hidden="true" onClick={hide}>&times;</span>
             </button>
         </div>
     )

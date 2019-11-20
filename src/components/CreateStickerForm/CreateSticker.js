@@ -7,11 +7,10 @@ import {InputGroupTest} from "../../UI/InputGroupTest";
 import {useDispatch, useSelector} from "react-redux";
 import {setSticker} from "../../redux/actions/createStickerActions";
 import {Alert} from "../../UI/Alert";
-import {hideError, hideSuccess, showError, showSuccess} from "../../redux/actions/alertActions";
+import {hideError, hideSuccess, showError} from "../../redux/actions/alertActions";
 import {AlertHOC} from "../../hoc/AlertHOC";
-
-
-
+import {alertReducer} from "../../redux/reducers/alertReducer";
+import alertInitialState from '../../redux/reducers/alertReducer'
 
 
 const INITIAL_STATE = {
@@ -28,47 +27,55 @@ const INITIAL_STATE = {
     lotNumber: '',
     regionControl: '',
     grapes: [],
+    currentGrape: '',
     harvestYear: '2014',
     bottlingYear: ''
 };
 
-const grapes = ['Shiraz', 'Merlo', 'Caberne', 'Shardonney', 'Zinfandel'];
 
+
+//let grapesInitial = ['Shiraz', 'Shardonney', 'Merlo', 'Caberne', 'Zinfandel', '1', '111', '112'];
 const foo = ['France', 'Italy', 'Spain'];
 const fooYear = ['2012', '2013', '2014', '2015', '2016'];
 
+
 export const CreateSticker = (props) => {
 
+    //let arr = ['Shiraz', 'Shardonney', 'Merlo', 'Caberne', 'Zinfandel', '1', '111', '112'];
 
+    // console.log('createSticker props', props)
 
-    const alert = useSelector(state => state.alert);
+    //const alert = useSelector(state => state.alert);
+
+    const [alertState, dispatch] = React.useReducer(alertReducer, alertInitialState);
 
 
     const {changeHandler, changeHandlerMultipleSelectHandler, submitHandler, handleBlur, values, errors, isSubmitting} =
         useFormValidation(INITIAL_STATE, validateCreateStickerForm, saveSticker);
-    const dispatch = useDispatch();
+    const dispatchRedux = useDispatch();
     const [queryString, setQueryString] = React.useState('');
-    const [filteredLinks, setFilteredLinks] = React.useState([]);
-
-    const AlertError = AlertHOC(Alert, 'isShowErrorAlert', dispatch, hideError);
-    const AlertSuccess = AlertHOC(Alert, 'isShowSuccessAlert', dispatch, hideSuccess);
+    const [filteredGrapes, setFilteredGrapes] = React.useState([]);
+    const [selectedGrapes, setSelectedGrapes] = React.useState([]);
+    const [grapes, setGrapes] = React.useState(['Shiraz', 'Shardonney', 'Merlo', 'Caberne', 'Zinfandel']);
 
 
     function saveSticker() {
 
         //debugger
         // const sticker = values;
-        dispatch(setSticker(values));
+        dispatchRedux(setSticker(values));
 
-        dispatch(showSuccess('sticker was saved', 'primary'));
-        console.log('show alert succes')
-        //setTimeout(()=>dispatch(hide()), 2000);
+        props.history.push('/home')
+
+        // dispatch(showSuccess('sticker was saved', 'primary'));
+        // console.log('show alert succes')
+        // setTimeout(()=>dispatch(hideSuccess()), 2000);
     }
 
     function handleSearchInput(e) {
         //debugger
         setQueryString(e.target.value);
-        console.log('queryString', queryString)
+        //console.log('queryString', queryString)
     }
 
 /////////////////////////////Search effect///////////////////////////////////
@@ -76,48 +83,69 @@ export const CreateSticker = (props) => {
 
 
         const query = queryString.toLowerCase();
-        const matchedLinks = grapes.filter(link => {
+
+        //const arr = [...filteredLinks]
+        const matchedGrapes = grapes.filter(link => {
             //debugger
             return (
                 link.toLowerCase().includes(query)
             )
         });
-        setFilteredLinks(matchedLinks);
+        setFilteredGrapes(matchedGrapes);
 
 
-    }, [queryString]);
+    }, [queryString, grapes]);
+
+    /////////////////////////////Alert effect///////////////////////////////////
 
     React.useEffect(() => {
 
         if (!(Object.keys(errors).length === 0)) {
-            console.log('use effect show')
+            //console.log('use effect show')
             dispatch(showError('Please check all fields', 'danger'))
-        }
-        else{
-            console.log('use effect hide')
+        } else {
+            //console.log('use effect hide')
             dispatch(hideError())
         }
 
     }, [errors]);
 
+    React.useEffect(() => {
+        //debugger
+        if (values.currentGrape === '')
+            return
 
+        else {
+            const result = selectedGrapes;
+            result.push(values.currentGrape);
+            setSelectedGrapes(result);
+            setQueryString('');
+
+            const f = grapes.filter((grape) => grape !== values.currentGrape);
+            setGrapes(f)
+
+            console.log("use effect filteredLinks", grapes);
+            setFilteredGrapes(grapes)
+        }
+
+
+        //setFilteredLinks(filteredGrapes)
+
+    }, [values.currentGrape]);
 
 
     //console.log('countries', values.countries)
     //console.log('region', values.regionControl)
-    //console.log('values', values)
+    console.log('values', values);
+    console.log('grapes', grapes);
+    console.log('selected', selectedGrapes);
+    console.log('selected', filteredGrapes);
 
 
     return (
         <>
 
             <form className='container mt-2' onSubmit={submitHandler}>
-
-                <div className='mt-3'>
-                    <Alert alert={alert}/>
-
-                </div>
-
 
 
                 {/*///////////////////TITLE ///////////////////////////////*/}
@@ -274,15 +302,31 @@ export const CreateSticker = (props) => {
                                         handleBlur={handleBlur}/>
 
                         <ListBox
-                            items={filteredLinks}
+                            items={filteredGrapes}
                             label={'Select Grapes'}
-                            changeHandler={changeHandlerMultipleSelectHandler}
-                            name={'grapes'}/>
+                            changeHandler={changeHandler}
+                            name={'currentGrape'}/>
+
+                        <div>
+                            <ul>
+                                {
+                                    selectedGrapes.map((grape, i) => {
+                                        return <li key={i}>{grape}</li>
+                                    })
+                                }
+                            </ul>
+                            {/*<button onClick={()=>setGrapes(grapesInitial)} className='btn btn-primary'>Submit</button>*/}
+                        </div>
+
 
                     </div>
                 </div>
                 <button onSubmit={submitHandler} className='btn btn-primary'>Submit</button>
+                {/*<div className='mt-3'>*/}
+                {/*    <Alert alert={alertState} hide={() => dispatch(hideError())}/>*/}
+                {/*</div>*/}
             </form>
+
         </>
     );
 };

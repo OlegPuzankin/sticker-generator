@@ -7,6 +7,7 @@ export const Home = (props) => {
     debugger
     return (
         <div>
+            Sticker preview
             {/*{sticker}*/}
         </div>
     );

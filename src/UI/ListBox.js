@@ -30,8 +30,9 @@ export const ListBox = (props) => {
         <div className="form-group text-center">
             <label>{label}</label>
             <select multiple
+                    name={name}
                     ref={multipleSelect}
-                    onChange={handleMultipleSelect}
+                    onChange={changeHandler}
                     className="user-form-control height300">
                 {
                     items.map((item, index)=>{
