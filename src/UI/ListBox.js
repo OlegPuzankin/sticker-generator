@@ -20,12 +20,12 @@ export const ListBox = (props) => {
 
     const {name, changeHandler, label, items} = props;
 
-    function handleMultipleSelect(e) {
-        //debugger
-        const result = getSelectValues(multipleSelect.current);
-        changeHandler(name, result)
-
-    }
+    // function handleMultipleSelect(e) {
+    //     //debugger
+    //     const result = getSelectValues(multipleSelect.current);
+    //     changeHandler(name, result)
+    //
+    // }
     return (
         <div className="form-group text-center">
             <label>{label}</label>

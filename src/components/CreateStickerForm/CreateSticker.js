@@ -15,7 +15,7 @@ import alertInitialState from '../../redux/reducers/alertReducer'
 
 const INITIAL_STATE = {
     producer: 'Italy',
-    originalTitle: '',
+    originalTitle: 'Some title',
     country: '',
     region: '',
     appellation: '',
@@ -24,7 +24,7 @@ const INITIAL_STATE = {
     sugar: 4,
     servingTemperature: 12,
     shelfLifetime: 12,
-    lotNumber: '',
+    lotNumber: 'ab3434',
     regionControl: '',
     grapes: [],
     currentGrape: '',
@@ -33,8 +33,7 @@ const INITIAL_STATE = {
 };
 
 
-
-//let grapesInitial = ['Shiraz', 'Shardonney', 'Merlo', 'Caberne', 'Zinfandel', '1', '111', '112'];
+let grapesInitial = ['Shiraz', 'Shardonney', 'Merlo', 'Caberne', 'Zinfandel', 'Sauvignon blanc', 'Vin Santo', 'Lambrusco', 'Pinot noir', 'Syrah'];
 const foo = ['France', 'Italy', 'Spain'];
 const fooYear = ['2012', '2013', '2014', '2015', '2016'];
 
@@ -56,16 +55,16 @@ export const CreateSticker = (props) => {
     const [queryString, setQueryString] = React.useState('');
     const [filteredGrapes, setFilteredGrapes] = React.useState([]);
     const [selectedGrapes, setSelectedGrapes] = React.useState([]);
-    const [grapes, setGrapes] = React.useState(['Shiraz', 'Shardonney', 'Merlo', 'Caberne', 'Zinfandel']);
+    const [grapes, setGrapes] = React.useState(grapesInitial);
 
 
     function saveSticker() {
 
         //debugger
         // const sticker = values;
-        dispatchRedux(setSticker(values));
+        dispatchRedux(setSticker({...values, selectedGrapes}));
 
-        props.history.push('/home')
+        props.history.push('/')
 
         // dispatch(showSuccess('sticker was saved', 'primary'));
         // console.log('show alert succes')
@@ -78,22 +77,25 @@ export const CreateSticker = (props) => {
         //console.log('queryString', queryString)
     }
 
+
+    function resetGrapes(e) {
+        debugger
+        e.preventDefault()
+        setGrapes(grapesInitial);
+        setSelectedGrapes([]);
+    }
+
 /////////////////////////////Search effect///////////////////////////////////
     React.useEffect(() => {
-
-
         const query = queryString.toLowerCase();
-
-        //const arr = [...filteredLinks]
         const matchedGrapes = grapes.filter(link => {
-            //debugger
             return (
                 link.toLowerCase().includes(query)
             )
         });
+        //debugger
         setFilteredGrapes(matchedGrapes);
-
-
+        //console.log('queryString', queryString)
     }, [queryString, grapes]);
 
     /////////////////////////////Alert effect///////////////////////////////////
@@ -120,33 +122,30 @@ export const CreateSticker = (props) => {
             result.push(values.currentGrape);
             setSelectedGrapes(result);
             setQueryString('');
-
-            const f = grapes.filter((grape) => grape !== values.currentGrape);
-            setGrapes(f)
-
-            console.log("use effect filteredLinks", grapes);
+            setGrapes(grapes.filter((grape) => grape !== values.currentGrape))
+            // console.log("use effect filteredLinks", grapes);
             setFilteredGrapes(grapes)
         }
-
-
-        //setFilteredLinks(filteredGrapes)
 
     }, [values.currentGrape]);
 
 
     //console.log('countries', values.countries)
     //console.log('region', values.regionControl)
-    console.log('values', values);
-    console.log('grapes', grapes);
-    console.log('selected', selectedGrapes);
-    console.log('selected', filteredGrapes);
+    // console.log('values', values);
+    // console.log('grapes', grapes);
+    // console.log('selected', selectedGrapes);
+    // console.log('selected', filteredGrapes);
 
 
     return (
         <>
+            {alertState.isShowAlert &&
+            <div className='m-2'>
+                <Alert alert={alertState} hide={() => dispatch(hideError())}/>
+            </div>}
 
             <form className='container mt-2' onSubmit={submitHandler}>
-
 
                 {/*///////////////////TITLE ///////////////////////////////*/}
                 <div className='row justify-content-start'>
@@ -301,30 +300,37 @@ export const CreateSticker = (props) => {
                                         changeHandler={handleSearchInput}
                                         handleBlur={handleBlur}/>
 
-                        <ListBox
-                            items={filteredGrapes}
-                            label={'Select Grapes'}
-                            changeHandler={changeHandler}
-                            name={'currentGrape'}/>
 
                         <div>
-                            <ul>
+                            <ListBox
+                                items={filteredGrapes}
+                                label={'Select grapes from the list below'}
+                                changeHandler={changeHandler}
+                                name={'currentGrape'}/>
+                        </div>
+
+                        {
+                            selectedGrapes.length > 0 &&
+                        <>
+                            <div className='mb-2 text-center'>Selected grapes</div>
+                            <div>
                                 {
                                     selectedGrapes.map((grape, i) => {
-                                        return <li key={i}>{grape}</li>
+                                        return <span key={i} className='badge badge-success m-1'>{grape}</span>
                                     })
                                 }
-                            </ul>
-                            {/*<button onClick={()=>setGrapes(grapesInitial)} className='btn btn-primary'>Submit</button>*/}
-                        </div>
+                            </div>
+                            <div className='text-center'>
+                                <button onClick={resetGrapes} className='btn btn-primary mt-1'>Reset</button>
+                            </div>
+                        </>
+                        }
 
 
                     </div>
                 </div>
                 <button onSubmit={submitHandler} className='btn btn-primary'>Submit</button>
-                {/*<div className='mt-3'>*/}
-                {/*    <Alert alert={alertState} hide={() => dispatch(hideError())}/>*/}
-                {/*</div>*/}
+
             </form>
 
         </>

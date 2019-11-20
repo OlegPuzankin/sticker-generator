@@ -3,12 +3,22 @@ import {useSelector} from "react-redux";
 
 export const Home = (props) => {
 
-    const sticker = useSelector(state => state.sticker);
+    const sticker = useSelector(state => state.sticker.sticker);
+    console.log(sticker.originalTitle)
+
+    if(Object.keys(sticker).length === 0)
+        return  null
+
     debugger
     return (
-        <div>
-            Sticker preview
-            {/*{sticker}*/}
+        <div className='container'>
+            <div className='card text-center'>
+
+                <div> {sticker.producer}</div>
+                <div> {sticker.originalTitle}</div>
+                <div> {sticker.country}</div>
+                <div> {sticker.region}</div>
+            </div>
         </div>
     );
 };
