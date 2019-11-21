@@ -5,12 +5,13 @@ import {ListBox} from "../../UI/ListBox";
 import {ComboBoxGroup} from "../../UI/ComboBoxGroup";
 import {InputGroupTest} from "../../UI/InputGroupTest";
 import {useDispatch, useSelector} from "react-redux";
-import {setSticker} from "../../redux/actions/createStickerActions";
+import {setCountriesData, setSticker} from "../../redux/actions/createStickerActions";
 import {Alert} from "../../UI/Alert";
-import {hideError, hideSuccess, showError} from "../../redux/actions/alertActions";
-import {AlertHOC} from "../../hoc/AlertHOC";
+import {hideError, showError} from "../../redux/actions/alertActions";
 import {alertReducer} from "../../redux/reducers/alertReducer";
 import alertInitialState from '../../redux/reducers/alertReducer'
+import {FirebaseContext} from "../../firebase";
+import {getInitialData} from "../../firebase-redux/firebase-redux";
 
 
 const INITIAL_STATE = {
@@ -25,7 +26,7 @@ const INITIAL_STATE = {
     servingTemperature: 12,
     shelfLifetime: 12,
     lotNumber: 'ab3434',
-    regionControl: '',
+    regionControl: ['None', 'PDO', 'PJI'],
     grapes: [],
     currentGrape: '',
     harvestYear: '2014',
@@ -40,22 +41,25 @@ const fooYear = ['2012', '2013', '2014', '2015', '2016'];
 
 export const CreateSticker = (props) => {
 
-    //let arr = ['Shiraz', 'Shardonney', 'Merlo', 'Caberne', 'Zinfandel', '1', '111', '112'];
-
-    // console.log('createSticker props', props)
-
-    //const alert = useSelector(state => state.alert);
+    const {firebase} = React.useContext(FirebaseContext);
 
     const [alertState, dispatch] = React.useReducer(alertReducer, alertInitialState);
 
 
-    const {changeHandler, changeHandlerMultipleSelectHandler, submitHandler, handleBlur, values, errors, isSubmitting} =
+    const {changeHandler, submitHandler, handleBlur, values, errors, isSubmitting} =
         useFormValidation(INITIAL_STATE, validateCreateStickerForm, saveSticker);
+
+
     const dispatchRedux = useDispatch();
+    const sticker = useSelector(state => state.sticker);
+
     const [queryString, setQueryString] = React.useState('');
     const [filteredGrapes, setFilteredGrapes] = React.useState([]);
     const [selectedGrapes, setSelectedGrapes] = React.useState([]);
     const [grapes, setGrapes] = React.useState(grapesInitial);
+
+    const [countries, setCountries] = React.useState([]);
+    const [regions, setRegions] = React.useState([]);
 
 
     function saveSticker() {
@@ -80,10 +84,63 @@ export const CreateSticker = (props) => {
 
     function resetGrapes(e) {
         debugger
-        e.preventDefault()
+        e.preventDefault();
         setGrapes(grapesInitial);
         setSelectedGrapes([]);
     }
+
+    function handleSnapshot(snapshot) {
+        debugger
+        const countries = snapshot.docs.map(doc => {
+            return {id: doc.id, ...doc.data()}
+        });
+        setCountries(countries)
+    }
+
+    ///////////////////////////////////////LOAD DATA FROM FIREBASE EFFECT//////////////////////////////////////////
+
+    React.useEffect(() => {
+        async function fetchData() {
+            console.log('init data use effect start');
+            await getInitialData();
+            debugger
+
+
+            console.log('init data use effect end');
+        }
+
+        fetchData().then(()=>{
+
+        })
+
+
+    }, []);
+
+    // React.useEffect(()=>{
+    //     debugger
+    //
+    //     const countries = sticker.countries.map(c => {
+    //         return c.name
+    //     });
+    //     setCountries(countries)
+    // },[sticker]);
+
+///////////////////////////SELECT COUNTRY EFFECT////////////////////////////////////////
+    React.useEffect(() => {
+        //debugger
+        if (sticker.countries) {
+            const selectedCountry = sticker.countries.filter(c => c.name === values.country);
+            //debugger
+
+            if (selectedCountry.length > 0) {
+                const regions = selectedCountry[0].regions;
+                setRegions(regions)
+
+            } else
+                setRegions([])
+        }
+
+    }, [values.country]);
 
 /////////////////////////////Search effect///////////////////////////////////
     React.useEffect(() => {
@@ -112,30 +169,32 @@ export const CreateSticker = (props) => {
 
     }, [errors]);
 
+    //////////////////////////select grape effect///////////////////////////
+
     React.useEffect(() => {
         //debugger
-        if (values.currentGrape === '')
-            return
-
-        else {
+        if (values.currentGrape !== '') {
             const result = selectedGrapes;
             result.push(values.currentGrape);
             setSelectedGrapes(result);
             setQueryString('');
-            setGrapes(grapes.filter((grape) => grape !== values.currentGrape))
+            setGrapes(grapes.filter((grape) => grape !== values.currentGrape));
             // console.log("use effect filteredLinks", grapes);
             setFilteredGrapes(grapes)
         }
+
 
     }, [values.currentGrape]);
 
 
     //console.log('countries', values.countries)
     //console.log('region', values.regionControl)
-    // console.log('values', values);
+    console.log('values', values);
     // console.log('grapes', grapes);
     // console.log('selected', selectedGrapes);
     // console.log('selected', filteredGrapes);
+    //console.log('firebase', firebase);
+    console.log('countries', countries);
 
 
     return (
@@ -256,14 +315,14 @@ export const CreateSticker = (props) => {
                         <ComboBoxGroup name='regionControl'
                                        placeholder={'Select control type'}
                                        error={errors['regionControl']}
-                                       items={foo}
-                                       label={'Select'}
+                                       items={INITIAL_STATE.regionControl}
+                                       label={'Origin control'}
                                        changeHandler={changeHandler}
                                        handleBlur={handleBlur}/>
                         <ComboBoxGroup name='country'
                                        placeholder={'Select country'}
                                        error={errors['country']}
-                                       items={foo}
+                                       items={countries}
                                        label={'Select country'}
                                        changeHandler={changeHandler}
                                        handleBlur={handleBlur}/>
@@ -272,7 +331,7 @@ export const CreateSticker = (props) => {
                                        placeholder={'Select region'}
                                        value={values.region}
                                        error={errors['region']}
-                                       items={foo}
+                                       items={regions}
                                        label={'Select region'}
                                        changeHandler={changeHandler}
                                        handleBlur={handleBlur}/>
@@ -311,25 +370,27 @@ export const CreateSticker = (props) => {
 
                         {
                             selectedGrapes.length > 0 &&
-                        <>
-                            <div className='mb-2 text-center'>Selected grapes</div>
-                            <div>
-                                {
-                                    selectedGrapes.map((grape, i) => {
-                                        return <span key={i} className='badge badge-success m-1'>{grape}</span>
-                                    })
-                                }
-                            </div>
-                            <div className='text-center'>
-                                <button onClick={resetGrapes} className='btn btn-primary mt-1'>Reset</button>
-                            </div>
-                        </>
+                            <>
+                                <div className='card'>
+                                    <div className='mb-2 text-center'>Selected grapes</div>
+                                    <div>
+                                        {
+                                            selectedGrapes.map((grape, i) => {
+                                                return <span key={i} className='badge badge-success m-1'>{grape}</span>
+                                            })
+                                        }
+                                    </div>
+                                </div>
+                                < div className='text-center'>
+                                    <button onClick={resetGrapes} className='btn btn-primary mt-1'>Reset</button>
+                                </div>
+                            </>
                         }
 
 
                     </div>
                 </div>
-                <button onSubmit={submitHandler} className='btn btn-primary'>Submit</button>
+                <button onSubmit={submitHandler} className='btn btn-primary go-button'>Go</button>
 
             </form>
 

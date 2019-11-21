@@ -2,7 +2,7 @@
 
 body {
   margin: 0;
-  //background-color: lightgray;
+  background-color: lightgray;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
@@ -59,4 +59,12 @@ code {
 
 select {
   overflow-y: auto;
+}
+
+.go-button{
+  position: absolute;
+  left: 60px;
+  top: 80px
+
+
 }

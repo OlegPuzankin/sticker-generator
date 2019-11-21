@@ -14,10 +14,23 @@ export const Home = (props) => {
         <div className='container'>
             <div className='card text-center'>
 
-                <div> {sticker.producer}</div>
+                <div> <strong> {sticker.producer} </strong></div>
                 <div> {sticker.originalTitle}</div>
                 <div> {sticker.country}</div>
                 <div> {sticker.region}</div>
+                <div> {sticker.appellation}</div>
+                <div> {sticker.volume}</div>
+                <div> {sticker.alcohol}</div>
+
+                <div> {sticker.sugar}</div>
+                <div> {sticker.servingTemperature}</div>
+                <div> {sticker.shelfLifetime}</div>
+
+                <div> {sticker.lotNumber}</div>
+                <div> {sticker.harvestYear}</div>
+                <div> {sticker.bottlingYear}</div>
+                <div> {sticker.selectedGrapes}</div>
+
             </div>
         </div>
     );
