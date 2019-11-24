@@ -8,7 +8,7 @@ export const Input = (props) => {
     const htmlFor=`${name} ${label}`;
 
     //console.log('errors[name]', errors[name]);
-    //debugger
+    debugger
 
  return (
      <div className="form-group">

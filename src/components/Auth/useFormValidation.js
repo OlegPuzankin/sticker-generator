@@ -1,7 +1,7 @@
 import React from "react";
 
 
-function useFormValidation(initialState, validate, authenticate) {
+function useFormValidation(initialState, validate, submit) {
     const [values, setValues] = React.useState(initialState);
     const [errors, setErrors] = React.useState({});
     const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -14,7 +14,7 @@ function useFormValidation(initialState, validate, authenticate) {
             const noErrors = (Object.keys(errors).length === 0);
             if (noErrors) {
                 //debugger
-                authenticate();
+                submit();
                 setIsSubmitting(false);
             } else
                 setIsSubmitting(false);
@@ -52,7 +52,7 @@ function useFormValidation(initialState, validate, authenticate) {
         setIsSubmitting(true);
     };
 
-    return {changeHandler, changeHandlerMultipleSelectHandler, submitHandler, handleBlur, values, errors, isSubmitting}
+    return {changeHandler, changeHandlerMultipleSelectHandler, submitHandler, handleBlur, setValues, values, errors, isSubmitting}
 
 }
 

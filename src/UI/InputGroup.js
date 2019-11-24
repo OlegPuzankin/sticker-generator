@@ -1,13 +1,15 @@
 import React from 'react';
 
-export const InputGroupTest = (props) => {
+export const InputGroup = (props) => {
 
+    function foo() {
 
+    }
 
-    const {label, type, name, placeholder, value, handleBlur, changeHandler, error, labelWidth=150} = props;
+    const {label, type, name, placeholder, value, handleBlur = foo, changeHandler = foo, error = null, labelWidth = 150} = props;
     //const htmlFor=`${name} ${label}`;
 
-    const style={width:`${labelWidth}px`};
+    const style = {width: `${labelWidth}px`};
 
 
     return (

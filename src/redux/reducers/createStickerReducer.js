@@ -1,9 +1,10 @@
-import {SET_COUNTIES, SET_GRAPES, SET_STICKER} from "../types";
+import {SET_CREATE_STICKER_PAGE_LOADING, SET_STICKER} from "../types";
+
 
 const initialState = {
     sticker: {},
-    countries: [],
-    grapes: []
+    isLoading: false
+
 
 };
 
@@ -15,13 +16,8 @@ export const createStickerReducer = (state=initialState, action) => {
         case SET_STICKER:
             return {...state, sticker: payload};
 
-        case SET_COUNTIES:
-            return {...state, countries: payload};
-
-        case SET_GRAPES:
-            return {...state, grapes: payload};
-
-
+        case SET_CREATE_STICKER_PAGE_LOADING:
+            return {...state, isLoading: payload};
 
 
         default:

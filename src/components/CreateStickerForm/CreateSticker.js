@@ -3,15 +3,18 @@ import useFormValidation from "../Auth/useFormValidation";
 import validateCreateStickerForm from "./validateCreateStickerForm";
 import {ListBox} from "../../UI/ListBox";
 import {ComboBoxGroup} from "../../UI/ComboBoxGroup";
-import {InputGroupTest} from "../../UI/InputGroupTest";
+import {InputGroup} from "../../UI/InputGroup";
 import {useDispatch, useSelector} from "react-redux";
-import {setCountriesData, setSticker} from "../../redux/actions/createStickerActions";
+import {setSticker} from "../../redux/actions/createStickerActions";
 import {Alert} from "../../UI/Alert";
 import {hideError, showError} from "../../redux/actions/alertActions";
 import {alertReducer} from "../../redux/reducers/alertReducer";
 import alertInitialState from '../../redux/reducers/alertReducer'
 import {FirebaseContext} from "../../firebase";
 import {getInitialData} from "../../firebase-redux/firebase-redux";
+import {ButtonWithBadge} from "../../UI/ButtonWithBadge";
+import {useHistory} from 'react-router-dom'
+import {Loader} from "../../UI/Loader";
 
 
 const INITIAL_STATE = {
@@ -25,7 +28,7 @@ const INITIAL_STATE = {
     sugar: 4,
     servingTemperature: 12,
     shelfLifetime: 12,
-    lotNumber: 'ab3434',
+    lotNumber: 'вказано на пляшці',
     regionControl: ['None', 'PDO', 'PJI'],
     grapes: [],
     currentGrape: '',
@@ -34,7 +37,6 @@ const INITIAL_STATE = {
 };
 
 
-let grapesInitial = ['Shiraz', 'Shardonney', 'Merlo', 'Caberne', 'Zinfandel', 'Sauvignon blanc', 'Vin Santo', 'Lambrusco', 'Pinot noir', 'Syrah'];
 const foo = ['France', 'Italy', 'Spain'];
 const fooYear = ['2012', '2013', '2014', '2015', '2016'];
 
@@ -42,6 +44,7 @@ const fooYear = ['2012', '2013', '2014', '2015', '2016'];
 export const CreateSticker = (props) => {
 
     const {firebase} = React.useContext(FirebaseContext);
+    //let history = useHistory()
 
     const [alertState, dispatch] = React.useReducer(alertReducer, alertInitialState);
 
@@ -51,15 +54,16 @@ export const CreateSticker = (props) => {
 
 
     const dispatchRedux = useDispatch();
+    const firebaseRedux = useSelector(state => state.firebaseRedux);
     const sticker = useSelector(state => state.sticker);
 
     const [queryString, setQueryString] = React.useState('');
     const [filteredGrapes, setFilteredGrapes] = React.useState([]);
     const [selectedGrapes, setSelectedGrapes] = React.useState([]);
-    const [grapes, setGrapes] = React.useState(grapesInitial);
-
+    const [grapes, setGrapes] = React.useState([]);
     const [countries, setCountries] = React.useState([]);
     const [regions, setRegions] = React.useState([]);
+    const [appellations, setAppellations] = React.useState([]);
 
 
     function saveSticker() {
@@ -85,62 +89,99 @@ export const CreateSticker = (props) => {
     function resetGrapes(e) {
         debugger
         e.preventDefault();
-        setGrapes(grapesInitial);
-        setSelectedGrapes([]);
-    }
 
-    function handleSnapshot(snapshot) {
-        debugger
-        const countries = snapshot.docs.map(doc => {
-            return {id: doc.id, ...doc.data()}
+        const grapes = firebaseRedux.grapes.map(g => {
+            return g.name
         });
-        setCountries(countries)
+
+        setGrapes(grapes);
+        setSelectedGrapes([]);
     }
 
     ///////////////////////////////////////LOAD DATA FROM FIREBASE EFFECT//////////////////////////////////////////
 
     React.useEffect(() => {
-        async function fetchData() {
-            console.log('init data use effect start');
-            await getInitialData();
-            debugger
 
-
-            console.log('init data use effect end');
+        function fetchData() {
+            getInitialData();
         }
 
-        fetchData().then(()=>{
-
-        })
-
-
+        console.log('init data use effect start');
+        fetchData();
+        console.log('init data use effect end');
     }, []);
 
-    // React.useEffect(()=>{
-    //     debugger
-    //
-    //     const countries = sticker.countries.map(c => {
-    //         return c.name
-    //     });
-    //     setCountries(countries)
-    // },[sticker]);
+    ///////////////////////////////////UPDATE DATA FROM REDUX EFFECT/////////////////////////
+
+    React.useEffect(() => {
+        const countries = firebaseRedux.countries.map(c => {
+            return c.name
+        });
+        setCountries(countries);
+
+        const grapes = firebaseRedux.grapes.map(g => {
+            return g.name
+        });
+
+        setGrapes(grapes);
+
+
+    }, [firebaseRedux]);
 
 ///////////////////////////SELECT COUNTRY EFFECT////////////////////////////////////////
     React.useEffect(() => {
         //debugger
-        if (sticker.countries) {
-            const selectedCountry = sticker.countries.filter(c => c.name === values.country);
+        if (firebaseRedux.countries) {
+            debugger
+            const selectedCountry = firebaseRedux.countries.filter(c => c.name === values.country);
+
             //debugger
 
             if (selectedCountry.length > 0) {
-                const regions = selectedCountry[0].regions;
+                const regionsData = selectedCountry[0].regions;
+
+                const regions = regionsData.map(c => {
+                    return c.name
+                });
+                //debugger
                 setRegions(regions)
+                setAppellations([])
 
             } else
                 setRegions([])
         }
 
     }, [values.country]);
+
+
+    /////////////////////////SELECT REGION EFFECT////////////////////////////////////////
+    React.useEffect(() => {
+        //debugger
+        if (firebaseRedux.countries) {
+            const selectedCountry= firebaseRedux.countries.filter(c => c.name === values.country);
+
+            if(selectedCountry.length>0){
+                debugger
+                const selectedRegion= selectedCountry[0].regions.filter(r => r.name === values.region);
+                debugger
+
+                if (selectedRegion.length > 0) {
+                    const appellations = selectedRegion[0].appels;
+                    debugger
+
+                    // const regions = regionsData.map(c => {
+                    //     return c.name
+                    // });
+                    debugger
+                    setAppellations(appellations)
+
+                } else
+                    setAppellations([])
+            }
+
+        }
+
+    }, [values.region]);
 
 /////////////////////////////Search effect///////////////////////////////////
     React.useEffect(() => {
@@ -189,12 +230,15 @@ export const CreateSticker = (props) => {
 
     //console.log('countries', values.countries)
     //console.log('region', values.regionControl)
-    console.log('values', values);
+    //console.log('values', values);
     // console.log('grapes', grapes);
     // console.log('selected', selectedGrapes);
     // console.log('selected', filteredGrapes);
     //console.log('firebase', firebase);
-    console.log('countries', countries);
+
+    if(sticker.isLoading){
+        return <Loader/>
+    }
 
 
     return (
@@ -209,17 +253,25 @@ export const CreateSticker = (props) => {
                 {/*///////////////////TITLE ///////////////////////////////*/}
                 <div className='row justify-content-start'>
 
-                    <div className='col mb-2 mt-3'>
+                    <div className='col-8 mb-2'>
 
-                        <InputGroupTest name={'originalTitle'}
-                                        value={values.originalTitle}
-                                        label={'Title'}
-                                        type={'text'}
-                                        placeholder={'Enter title'}
-                                        changeHandler={changeHandler}
-                                        handleBlur={handleBlur}
-                                        error={errors['originalTitle']}/>
+                        <InputGroup name={'originalTitle'}
+                                    value={values.originalTitle}
+                                    label={'Title'}
+                                    type={'text'}
+                                    placeholder={'Enter title'}
+                                    changeHandler={changeHandler}
+                                    handleBlur={handleBlur}
+                                    error={errors['originalTitle']}/>
                     </div>
+
+                    <div className='col '>
+                        {/*////////////////////////NEXT BTN///////////////////////////*/}
+                        <button onSubmit={submitHandler} className='btn btn-primary mr-1'>Next</button>
+                        <ButtonWithBadge/>
+                    </div>
+
+
 
 
                 </div>
@@ -229,46 +281,46 @@ export const CreateSticker = (props) => {
                     <div className='col'>
                         <div className='mb-2 text-center'>Basic parameters</div>
 
-                        <InputGroupTest name={'volume'}
-                                        type={'number'}
-                                        changeHandler={changeHandler}
-                                        handleBlur={handleBlur}
-                                        value={values.volume}
-                                        error={errors['volume']}
-                                        label={'Volume,ml'}/>
+                        <InputGroup name={'volume'}
+                                    type={'number'}
+                                    changeHandler={changeHandler}
+                                    handleBlur={handleBlur}
+                                    value={values.volume}
+                                    error={errors['volume']}
+                                    label={'Volume,ml'}/>
 
 
-                        <InputGroupTest name={'alcohol'}
-                                        type={'number'}
-                                        changeHandler={changeHandler}
-                                        handleBlur={handleBlur}
-                                        value={values.alcohol}
-                                        error={errors['alcohol']}
-                                        label={'Alcohol %'}/>
+                        <InputGroup name={'alcohol'}
+                                    type={'number'}
+                                    changeHandler={changeHandler}
+                                    handleBlur={handleBlur}
+                                    value={values.alcohol}
+                                    error={errors['alcohol']}
+                                    label={'Alcohol %'}/>
 
-                        <InputGroupTest name={'sugar'}
-                                        type={'number'}
-                                        changeHandler={changeHandler}
-                                        handleBlur={handleBlur}
-                                        value={values.sugar}
-                                        error={errors['sugar']}
-                                        label={'Sugar ml '}/>
+                        <InputGroup name={'sugar'}
+                                    type={'number'}
+                                    changeHandler={changeHandler}
+                                    handleBlur={handleBlur}
+                                    value={values.sugar}
+                                    error={errors['sugar']}
+                                    label={'Sugar ml '}/>
 
-                        <InputGroupTest name={'shelfLifetime'}
-                                        type={'number'}
-                                        changeHandler={changeHandler}
-                                        handleBlur={handleBlur}
-                                        value={values.shelfLifetime}
-                                        error={errors['shelfLifetime']}
-                                        label={'Shelf lifetime'}/>
+                        <InputGroup name={'shelfLifetime'}
+                                    type={'number'}
+                                    changeHandler={changeHandler}
+                                    handleBlur={handleBlur}
+                                    value={values.shelfLifetime}
+                                    error={errors['shelfLifetime']}
+                                    label={'Shelf lifetime'}/>
 
-                        <InputGroupTest name={'servingTemperature'}
-                                        type={'number'}
-                                        changeHandler={changeHandler}
-                                        handleBlur={handleBlur}
-                                        value={values.servingTemperature}
-                                        error={errors['servingTemperature']}
-                                        label={'Serving temp C'}/>
+                        <InputGroup name={'servingTemperature'}
+                                    type={'number'}
+                                    changeHandler={changeHandler}
+                                    handleBlur={handleBlur}
+                                    value={values.servingTemperature}
+                                    error={errors['servingTemperature']}
+                                    label={'Serving temp C'}/>
 
 
                         <ComboBoxGroup name='harvestYear'
@@ -281,21 +333,21 @@ export const CreateSticker = (props) => {
                                        handleBlur={handleBlur}/>
 
 
-                        <InputGroupTest name={'bottlingYear'}
-                                        type={'date'}
-                                        value={values.bottlingYear}
-                                        error={errors['bottlingYear']}
-                                        label={'Bottling year'}
-                                        changeHandler={changeHandler}
-                                        handleBlur={handleBlur}/>
+                        <InputGroup name={'bottlingYear'}
+                                    type={'date'}
+                                    value={values.bottlingYear}
+                                    error={errors['bottlingYear']}
+                                    label={'Bottling year'}
+                                    changeHandler={changeHandler}
+                                    handleBlur={handleBlur}/>
 
-                        <InputGroupTest name={'lotNumber'}
-                                        type={'text'}
-                                        value={values.lotNumber}
-                                        error={errors['lotNumber']}
-                                        label={'Lot number'}
-                                        changeHandler={changeHandler}
-                                        handleBlur={handleBlur}/>
+                        <InputGroup name={'lotNumber'}
+                                    type={'text'}
+                                    value={values.lotNumber}
+                                    error={errors['lotNumber']}
+                                    label={'Lot number'}
+                                    changeHandler={changeHandler}
+                                    handleBlur={handleBlur}/>
 
 
                     </div>
@@ -340,7 +392,7 @@ export const CreateSticker = (props) => {
                                        placeholder={'Select appellation'}
                                        value={values.appellation}
                                        error={errors['appellation']}
-                                       items={foo}
+                                       items={appellations}
                                        label={'Select appellation'}
                                        changeHandler={changeHandler}
                                        handleBlur={handleBlur}/>
@@ -350,14 +402,14 @@ export const CreateSticker = (props) => {
                     <div className='col'>
                         <div className='mb-2 text-center'>Grapes</div>
 
-                        <InputGroupTest name={'search'}
-                                        type={'text'}
-                                        value={queryString}
+                        <InputGroup name={'search'}
+                                    type={'text'}
+                                    value={queryString}
                             // error={errors['bottlingYear']}
-                                        label={'Search'}
-                                        labelWidth={80}
-                                        changeHandler={handleSearchInput}
-                                        handleBlur={handleBlur}/>
+                                    label={'Search'}
+                                    labelWidth={80}
+                                    changeHandler={handleSearchInput}
+                                    handleBlur={handleBlur}/>
 
 
                         <div>
@@ -372,25 +424,33 @@ export const CreateSticker = (props) => {
                             selectedGrapes.length > 0 &&
                             <>
                                 <div className='card'>
-                                    <div className='mb-2 text-center'>Selected grapes</div>
+
+                                    <div className='row m-1'>
+                                        <div className='col p-0 font-weight-bold'>Selected grapes:</div>
+                                        <div className='col p-0 text-right'>
+
+                                            <button onClick={resetGrapes} className='btn btn-primary btn-sm'>Reset
+                                            </button>
+                                        </div>
+                                    </div>
+
+
                                     <div>
                                         {
                                             selectedGrapes.map((grape, i) => {
-                                                return <span key={i} className='badge badge-success m-1'>{grape}</span>
+                                                return <span key={i} className='badge badge-info m-1'>{grape}</span>
                                             })
                                         }
                                     </div>
                                 </div>
-                                < div className='text-center'>
-                                    <button onClick={resetGrapes} className='btn btn-primary mt-1'>Reset</button>
-                                </div>
+
                             </>
                         }
 
 
                     </div>
                 </div>
-                <button onSubmit={submitHandler} className='btn btn-primary go-button'>Go</button>
+
 
             </form>
 

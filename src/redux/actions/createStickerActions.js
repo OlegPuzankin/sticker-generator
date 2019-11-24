@@ -1,4 +1,4 @@
-import {SET_COUNTIES, SET_GRAPES, SET_STICKER} from "../types";
+import {SET_CREATE_STICKER_PAGE_LOADING, SET_STICKER} from "../types";
 
 export const setSticker = (sticker)=>({
     type: SET_STICKER,
@@ -6,14 +6,8 @@ export const setSticker = (sticker)=>({
 
 });
 
-export const setCountriesData = (countries)=>({
-    type: SET_COUNTIES,
-    payload: countries
-
+export const setCreateStickerPageIsLoading = (isLoading)=>({
+    type: SET_CREATE_STICKER_PAGE_LOADING,
+    payload: isLoading
 });
 
-export const setGrapes= (grapes)=>({
-    type: SET_GRAPES,
-    payload: grapes
-
-});

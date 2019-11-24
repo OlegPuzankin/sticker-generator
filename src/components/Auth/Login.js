@@ -3,6 +3,7 @@ import {Input} from "../../UI/Input";
 import useFormValidation from "./useFormValidation";
 import validateLogin from "./validateLogin";
 import {FirebaseContext} from "../../firebase";
+import {Link} from "react-router-dom";
 
 
 const INITIAL_STATE = {
@@ -47,7 +48,7 @@ export const Login = (props) => {
     return (
         <form className='mt-5' onSubmit={submitHandler}>
             <div className='row justify-content-center'>
-                <div className='col-5 bg-primary rounded p-4'>
+                <div className='col-5 bg-info rounded p-3'>
 
                     {!login && (
                         <Input type={'text'}
@@ -82,7 +83,7 @@ export const Login = (props) => {
                            placeholder={'Password'}
                            htmlFor={'input Password'}/>
 
-                    {loginError && <p className='text-danger'>{loginError}</p>}
+                    {loginError && <p className='text-warning font-weight-bold'>{loginError}</p>}
 
                     <div  className='row justify-content-between pl-3 pr-3'>
                         <button type="submit"
@@ -94,6 +95,10 @@ export const Login = (props) => {
                                 onClick={() => setLogin(prevLogin => !prevLogin)}>
                             {login ? "need to create an account?" : "already have an account?"}
                         </button>
+                    </div>
+
+                    <div className='mt-2 ml-2'>
+                        <Link to={"/forgot"} className='text-warning font-weight-bold'>Forgot password?</Link>
                     </div>
 
 

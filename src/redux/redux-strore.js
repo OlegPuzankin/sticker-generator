@@ -1,6 +1,7 @@
 import {createStore, combineReducers} from "redux";
 import {alertReducer} from "./reducers/alertReducer";
 import {createStickerReducer} from "./reducers/createStickerReducer";
+import {firebaseReduxReducer} from "./reducers/firebaseReduxReducer";
 
 
 // const composeEnhancers =
@@ -10,7 +11,8 @@ import {createStickerReducer} from "./reducers/createStickerReducer";
 
 const combinedReduces = combineReducers({
     // alert: alertReducer,
-    sticker: createStickerReducer
+    sticker: createStickerReducer,
+    firebaseRedux: firebaseReduxReducer,
 
 });
 

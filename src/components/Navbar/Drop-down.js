@@ -1,0 +1,19 @@
+import React from 'react';
+import {Link, NavLink} from "react-router-dom";
+
+export const Dropdown = (props) => {
+ return (
+     <div className="dropdown">
+         <a className="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+             Edit database
+         </a>
+
+         <div className="dropdown-menu" aria-labelledby="dropdownMenuLink">
+             <Link className="dropdown-item" to={'/editDB'}>Action</Link>
+             <Link className="dropdown-item" to={'/editDB'}>Action</Link>
+             <Link className="dropdown-item" to={'/editDB'}>Action</Link>
+         </div>
+     </div>
+ );
+};
