@@ -14,13 +14,13 @@ export const EditDB = (props) => {
                     {/*<div className='col'>*/}
                     {/*    <EditGrapesV2/>*/}
                     {/*</div>*/}
-                    {/*<div className='col'>*/}
-                    {/*    <EditCountries/>*/}
-
-                    {/*</div>*/}
                     <div className='col'>
-                        <EditRegions/>
+                        <EditCountries/>
+
                     </div>
+                    {/*<div className='col'>*/}
+                    {/*    <EditRegions/>*/}
+                    {/*</div>*/}
 
                 </div>
             </div>

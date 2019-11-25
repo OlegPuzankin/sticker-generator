@@ -37,7 +37,7 @@ export const EditRegions = () => {
         //////////////////////////////////FUNCTIONS////////////////////////////
 
         function getRegionRefByName(name) {
-        debugger
+
             return regionsRef
                 .where('name', '==', name)
                 .get()
@@ -49,7 +49,6 @@ export const EditRegions = () => {
         }
 
 
-
         //////////////////////////////////ADD REGION/////////////////////////////////
         async function handleAddRegion() {
             //const regionRef = await getRegionByName(values.editCountry)
@@ -57,12 +56,16 @@ export const EditRegions = () => {
             regionsRef.add({name: values.region, country: values.selectedCountry})
 
                 .then(() => {
-                debugger
-                    setValues({...INITIAL_STATE, selectedCountry: values.selectedCountry, refreshTrigger: !values.refreshTrigger})
+
+                    setValues({
+                        ...INITIAL_STATE,
+                        selectedCountry: values.selectedCountry,
+                        refreshTrigger: !values.refreshTrigger
+                    })
 
                 })
                 .catch(error => {
-                debugger
+
                     console.log(error.message)
                 })
 
@@ -73,11 +76,15 @@ export const EditRegions = () => {
         async function handleUpdateRegion() {
 
             const regionRef = await getRegionRefByName(values.selectedRegion);
-        debugger
+
 
             regionRef.update({name: values.region})
                 .then(() => {
-                    setValues({...INITIAL_STATE, selectedCountry: values.selectedCountry,  refreshTrigger:!values.refreshTrigger});
+                    setValues({
+                        ...INITIAL_STATE,
+                        selectedCountry: values.selectedCountry,
+                        refreshTrigger: !values.refreshTrigger
+                    });
                 })
                 .catch(error => {
                     console.log(error.message)
@@ -87,13 +94,17 @@ export const EditRegions = () => {
 
 //////////////////////////////////DELETE REGION/////////////////////////////////
         async function handleDeleteRegion() {
-        debugger
+
             const regionRef = await getRegionRefByName(values.selectedRegion);
 
             regionRef.delete()
                 .then(() => {
-                    debugger
-                    setValues({...INITIAL_STATE, selectedCountry: values.selectedCountry,  refreshTrigger:!values.refreshTrigger})
+
+                    setValues({
+                        ...INITIAL_STATE,
+                        selectedCountry: values.selectedCountry,
+                        refreshTrigger: !values.refreshTrigger
+                    })
 
                 })
                 .catch(error => {
@@ -106,7 +117,7 @@ export const EditRegions = () => {
             countriesRef
                 .orderBy('name')
                 .onSnapshot(snapshot => {
-                    //debugger
+                    //
                     const countries = snapshot.docs.map(doc => {
                         return doc.data()
                     });
@@ -116,7 +127,7 @@ export const EditRegions = () => {
             regionsRef
                 .orderBy('name')
                 .onSnapshot(snapshot => {
-                    debugger
+
                     const regions = snapshot.docs.map(doc => {
                         return doc.data()
                     });
@@ -137,10 +148,9 @@ export const EditRegions = () => {
 
 /////////////////////////////////////////REFRESH REGIONS LIST AFTER UPDATE AND DELETE///////////////////////////////
         React.useEffect(() => {
-            debugger
 
-            if(values.selectedCountry){
-                const result=regions.filter(r => r.country === values.selectedCountry);
+            if (values.selectedCountry) {
+                const result = regions.filter(r => r.country === values.selectedCountry);
                 setFilteredRegions(result)
             }
 
@@ -148,10 +158,10 @@ export const EditRegions = () => {
 
         ///////////////////////////SELECT COUNTRY EFFECT////////////////////////////////////////
         React.useEffect(() => {
-            debugger
+
             if (countries) {
                 const selectedCountry = countries.filter(c => c.name === values.selectedCountry);
-                //debugger
+                //
                 if (selectedCountry.length > 0) {
 
                     const result = regions.filter(r => r.country === selectedCountry[0].name);

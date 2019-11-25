@@ -9,7 +9,6 @@ import {InputGroup} from "../../UI/InputGroup";
 const INITIAL_STATE = {
 
     country: '',
-    editCountry: '',
     selectedCountry: ''
 
 };
@@ -30,7 +29,7 @@ export const EditCountries = () => {
             useFormValidation(INITIAL_STATE, validateEditDB);
 
         function getCountryByName(name) {
-            //debugger
+            //
             return countriesRef
                 .where('name', '==', name)
                 .get()
@@ -51,8 +50,8 @@ export const EditCountries = () => {
         //////////////////////////////////UPDATE COUNTRY/////////////////////////////////
         async function handleUpdateCountry() {
 
-            const countryRef = await getCountryByName(values.editCountry);
-        debugger
+            const countryRef = await getCountryByName(values.selectedCountry);
+
             countryRef.update({name: values.country})
                 .then(() => {
                     setValues(INITIAL_STATE)
@@ -66,7 +65,7 @@ export const EditCountries = () => {
 //////////////////////////////////DELETE COUNTRY/////////////////////////////////
         async function handleDeleteCountry() {
 
-            const countryRef = await getCountryByName(values.editCountry);
+            const countryRef = await getCountryByName(values.selectedCountry);
             countryRef.delete()
                 .then(() => {
                     setValues(INITIAL_STATE)
@@ -91,13 +90,9 @@ export const EditCountries = () => {
 ///////////////////////////////HANDLE SELECT COUNTRY FROM LIST EFFECT//////////////////
 
         React.useEffect(() => {
-
-            //setValues({...values, grape: values.selectedGrape});
-        debugger
-
             const result = countries.filter(c => c.name === values.selectedCountry);
             if (result.length > 0)
-                setValues({...values, editCountry: result[0].name, country: values.selectedCountry})
+                setValues({...values, country: values.selectedCountry})
 
         }, [values.selectedCountry]);
 
