@@ -12,25 +12,29 @@ const INITIAL_STATE = {
     //country: '',
     //countryId: '',
     selectedCountry: '',
-
-    region: '',
-    refreshTrigger: true,
     selectedRegion: '',
+
+    appellation: '',
+    selectedAppellation: '',
+    refreshTrigger: true,
 
 
 };
 
 
-export const EditRegions = () => {
+export const EditAppellations = () => {
 
         const {firebase} = React.useContext(FirebaseContext);
         const countriesRef = firebase.db.collection('countries');
         const regionsRef = firebase.db.collection('regions');
+        const appellationsRef = firebase.db.collection('appellations');
 
         const [values, setValues] = React.useState(INITIAL_STATE);
         const [countries, setCountries] = React.useState([]);
         const [regions, setRegions] = React.useState([]);
+        const [appellations, setAppellations] = React.useState([]);
         const [filteredRegions, setFilteredRegions] = React.useState([]);
+        const [filteredAppellations, setFilteredAppellations] = React.useState([]);
 
 
         // const {changeHandler, handleBlur, values, setValues, errors, isSubmitting} =
@@ -38,9 +42,9 @@ export const EditRegions = () => {
 
         //////////////////////////////////FUNCTIONS////////////////////////////
 
-        function getRegionRefByName(name) {
+        function getAppellationRefByName(name) {
 
-            return regionsRef
+            return appellationsRef
                 .where('name', '==', name)
                 .get()
                 .then(querySnapshot => {
@@ -65,61 +69,66 @@ export const EditRegions = () => {
             return filteredRegions.map(r => r.name);
         }
 
+        function getAppellationsName() {
+            return filteredAppellations.map(r => r.name);
+        }
 
-        //////////////////////////////////ADD REGION/////////////////////////////////
-        async function handleAddRegion() {
+
+        //////////////////////////////////ADD APPELLATION/////////////////////////////////
+        async function handleAddAppellation() {
             //const regionRef = await getRegionByName(values.editCountry)
 
-            regionsRef.add({name: values.region, country: values.selectedCountry})
+            appellationsRef.add({name: values.appellation, region: values.selectedRegion})
 
                 .then(() => {
 
                     setValues({
-                        ...INITIAL_STATE,
-                        selectedCountry: values.selectedCountry,
+                        ...values,
+                        appellation: '',
                         refreshTrigger: !values.refreshTrigger
                     })
 
                 })
                 .catch(error => {
-
                     console.log(error.message)
                 })
         }
 
-        //////////////////////////////////UPDATE REGION/////////////////////////////////
-        async function handleUpdateRegion() {
+        //////////////////////////////////UPDATE APPELLATION/////////////////////////////////
+        async function handleUpdateAppellation() {
+            debugger
 
-            const regionRef = await getRegionRefByName(values.selectedRegion);
-            regionRef.update({name: values.region})
+            const appellationRef = await getAppellationRefByName(values.selectedAppellation);
+            appellationRef.update({name: values.appellation})
                 .then(() => {
+                    debugger
                     setValues({
-                        ...INITIAL_STATE,
-                        selectedCountry: values.selectedCountry,
+                        ...values,
+                        appellation: '',
                         refreshTrigger: !values.refreshTrigger
                     });
 
                 })
                 .catch(error => {
+                    debugger
                     console.log(error.message)
                 })
 
         }
 
-//////////////////////////////////DELETE REGION/////////////////////////////////
-        async function handleDeleteRegion() {
+//////////////////////////////////HANDLE DELETE APPELLATION/////////////////////////////////
+        async function handleDeleteAppellation() {
 
-            const regionRef = await getRegionRefByName(values.selectedRegion);
+            const appellationRef = await getAppellationRefByName(values.selectedAppellation);
 
-            regionRef.delete()
+            appellationRef.delete()
                 .then(() => {
 
                     setValues({
-                        ...INITIAL_STATE,
-                        selectedCountry: values.selectedCountry,
+                        ...values,
+                        appellation: '',
                         refreshTrigger: !values.refreshTrigger
                     })
-                    //forceUpdate()
 
                 })
                 .catch(error => {
@@ -149,23 +158,54 @@ export const EditRegions = () => {
 
                 })
 
+            appellationsRef
+                .orderBy('name')
+                .onSnapshot(snapshot => {
 
+                    const appellations = snapshot.docs.map(doc => {
+                        return doc.data()
+                    });
+                    setAppellations(appellations);
+                })
         }, []);
 
 ///////////////////////////////HANDLE SELECT REGION FROM LIST EFFECT//////////////////
 
         React.useEffect(() => {
+            if (regions) {
+                const selectedRegion = regions.filter(r => r.name === values.selectedRegion);
+                debugger
+                if (selectedRegion.length > 0) {
 
-            setValues({...values, region: values.selectedRegion});
+                    const result = appellations.filter(a => a.region === selectedRegion[0].name);
+
+                    setFilteredAppellations(result);
+                    //setValues({...INITIAL_STATE, selectedRegion: selectedRegion[0].name})
+
+                } else {
+                    setValues(INITIAL_STATE)
+                    setFilteredAppellations([])
+                }
+            }
 
         }, [values.selectedRegion]);
 
-        /////////////////////////////////REFRESH REGIONS LIST AFTER UPDATE AND DELETE////////////////////
+        ///////////////////////////////HANDLE SELECT APPELLATION FROM LIST EFFECT//////////////////
+
         React.useEffect(() => {
 
-            if (values.selectedCountry) {
-                const result = regions.filter(r => r.country === values.selectedCountry);
-                setFilteredRegions(result)
+            setValues({...values, appellation: values.selectedAppellation});
+
+        }, [values.selectedAppellation]);
+
+
+        /////////////////////////////////REFRESH APPELLATIONS LIST AFTER UPDATE AND DELETE////////////////////
+        React.useEffect(() => {
+            debugger
+
+            if (values.selectedRegion) {
+                const result = appellations.filter(a => a.region === values.selectedRegion);
+                setFilteredAppellations(result)
             }
 
         }, [values.refreshTrigger]);
@@ -206,8 +246,7 @@ export const EditRegions = () => {
             <div className='container'>
                 <div className='row justify-content-center mt-5'>
                     <div className='col-6'>
-                        <div className='text-center h3 mb-3'>Edit regions</div>
-
+                        <div className='text-center h3 mb-3'>Edit appellations</div>
 
                         <ComboBoxGroup name='selectedCountry'
                                        placeholder={'Select country'}
@@ -215,46 +254,49 @@ export const EditRegions = () => {
                                        label={'Select country'}
                                        changeHandler={changeHandler}/>
 
+                        <ComboBoxGroup name='selectedRegion'
+                                       placeholder={'Select region'}
+                                       items={getRegionsName()}
+                                       label={'Select region'}
+                                       changeHandler={changeHandler}/>
+
                         <ListBox
-                            items={getRegionsName()}
-                            label={'Regions'}
+                            items={getAppellationsName()}
+                            label={'Appellations'}
                             changeHandler={changeHandler}
-                            name={'selectedRegion'}/>
+                            name={'selectedAppellation'}/>
 
                         <div className='row'>
 
                             <div className='col-12 mb-2'>
-                                <InputGroup name={'region'}
+                                <InputGroup name={'appellation'}
                                             type={'text'}
                                             labelWidth={100}
                                             changeHandler={changeHandler}
-                                            value={values.region}
-                                            label={'Region'}/>
+                                            value={values.appellation}
+                                            label={'Appellation'}/>
                             </div>
 
 
                             <div className='col'>
-                                <button className='btn btn-primary btn-block btn-sm' onClick={handleAddRegion}>Add region
+                                <button className='btn btn-primary btn-block btn-sm' onClick={handleAddAppellation}>Add
+                                    appellation
                                 </button>
                             </div>
 
                             <div className='col'>
-                                <button className='btn btn-info btn-block btn-sm' onClick={handleUpdateRegion}>Update
+                                <button className='btn btn-info btn-block btn-sm' onClick={handleUpdateAppellation}>Update
                                 </button>
                             </div>
 
                             <div className='col'>
-                                <button className='btn btn-danger btn-block btn-sm' onClick={handleDeleteRegion}>Delete
+                                <button className='btn btn-danger btn-block btn-sm' onClick={handleDeleteAppellation}>Delete
                                 </button>
                             </div>
 
                         </div>
                     </div>
-
-
-
                 </div>
-
             </div>
 
         );

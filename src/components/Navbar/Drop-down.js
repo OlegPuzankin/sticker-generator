@@ -10,9 +10,10 @@ export const Dropdown = (props) => {
          </a>
 
          <div className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-             <Link className="dropdown-item" to={'/editDB'}>Action</Link>
-             <Link className="dropdown-item" to={'/editDB'}>Action</Link>
-             <Link className="dropdown-item" to={'/editDB'}>Action</Link>
+             <Link className="dropdown-item" to={'/edit-countries'}>Edit countries</Link>
+             <Link className="dropdown-item" to={'/edit-regions'}>Edit regions</Link>
+             <Link className="dropdown-item" to={'/edit-appellations'}>Edit appellations</Link>
+             <Link className="dropdown-item" to={'/edit-grapes'}>Edit grapes</Link>
          </div>
      </div>
  );

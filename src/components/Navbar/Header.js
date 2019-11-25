@@ -36,9 +36,7 @@ const Header = (props) => {
                         <li className="nav-item">
                             <NavLink className="nav-link" to={'/create'}>Create new sticker</NavLink>
                         </li>
-                        <li className="nav-item">
-                            <NavLink className="nav-link" to={'/editDB'}>Edit database</NavLink>
-                        </li>
+
                         <Dropdown/>
                     </>}
 

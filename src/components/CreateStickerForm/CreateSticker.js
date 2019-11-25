@@ -69,7 +69,7 @@ export const CreateSticker = (props) => {
 
     function saveSticker() {
 
-        //debugger
+        //
         // const sticker = values;
         dispatchRedux(setSticker({...values, selectedGrapes}));
 
@@ -81,14 +81,14 @@ export const CreateSticker = (props) => {
     }
 
     function handleSearchInput(e) {
-        //debugger
+        //
         setQueryString(e.target.value);
         //console.log('queryString', queryString)
     }
 
 
     function resetGrapes(e) {
-    debugger
+
         e.preventDefault();
 
         const grapes = firebaseRedux.grapes.map(g => {
@@ -131,34 +131,25 @@ export const CreateSticker = (props) => {
 
 ///////////////////////////SELECT COUNTRY EFFECT////////////////////////////////////////
     React.useEffect(() => {
-        //debugger
+        //
         if (firebaseRedux.countries) {
-        debugger
+
             const selectedCountry = firebaseRedux.countries.filter(c => c.name === values.country);
 
-            //debugger
 
-            const regions = firebaseRedux.regions.filter(r => r.country === selectedCountry[0].name)
-        debugger
+            if (selectedCountry.length > 0){
+                let regions = firebaseRedux.regions.filter(r => r.country === selectedCountry[0].name)
 
-            if (regions.length > 0) {
-                const result = regions.map(r => (r.name))
-                setRegions(result)
-                setAppellations([])
-            } else
-                setRegions([])
-            // if (selectedCountry.length > 0) {
-            //     const regionsData = selectedCountry[0].regions;
-            //
-            //     const regions = regionsData.map(c => {
-            //         return c.name
-            //     });
-            //     //debugger
-            //     setRegions(regions)
-            //     setAppellations([])
-            //
-            // } else
-            //     setRegions([])
+
+                if (regions.length > 0) {
+                    const result = regions.map(r => (r.name))
+                    setRegions(result)
+                    setAppellations([])
+                } else
+                    setRegions([])
+            }
+
+
         }
 
     }, [values.country]);
@@ -166,44 +157,23 @@ export const CreateSticker = (props) => {
 
     /////////////////////////SELECT REGION EFFECT////////////////////////////////////////
     React.useEffect(() => {
-        //debugger
+        //
         if (firebaseRedux.regions) {
-        debugger
+
             const selectedRegion = firebaseRedux.regions.filter(r => r.name === values.region);
-            const appellations = firebaseRedux.appellations.filter(a => a.region === selectedRegion[0].name)
-        debugger
 
-            if (appellations.length > 0) {
-                const result = appellations.map(a => (a.name))
-                setAppellations(result)
-            } else
-                setAppellations([])
+            if(selectedRegion.length>0){
+                const appellations = firebaseRedux.appellations.filter(a => a.region === selectedRegion[0].name)
 
+
+                if (appellations.length > 0) {
+                    const result = appellations.map(a => (a.name))
+                    setAppellations(result)
+                } else
+                    setAppellations([])
+            }
         }
 
-        // if (firebaseRedux.countries) {
-        //     const selectedCountry= firebaseRedux.countries.filter(c => c.name === values.country);
-        //
-        //     if(selectedCountry.length>0){
-        //         debugger
-        //         const selectedRegion= selectedCountry[0].regions.filter(r => r.name === values.region);
-        //         debugger
-        //
-        //         if (selectedRegion.length > 0) {
-        //             const appellations = selectedRegion[0].appels;
-        //             debugger
-        //
-        //             // const regions = regionsData.map(c => {
-        //             //     return c.name
-        //             // });
-        //             debugger
-        //             setAppellations(appellations)
-        //
-        //         } else
-        //             setAppellations([])
-        //     }
-        //
-        // }
 
     }, [values.region]);
 
@@ -215,7 +185,7 @@ export const CreateSticker = (props) => {
                 link.toLowerCase().includes(query)
             )
         });
-        //debugger
+        //
         setFilteredGrapes(matchedGrapes);
         //console.log('queryString', queryString)
     }, [queryString, grapes]);
@@ -237,7 +207,7 @@ export const CreateSticker = (props) => {
     //////////////////////////select grape effect///////////////////////////
 
     React.useEffect(() => {
-        //debugger
+        //
         if (values.currentGrape !== '') {
             const result = selectedGrapes;
             result.push(values.currentGrape);

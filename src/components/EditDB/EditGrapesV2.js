@@ -4,12 +4,13 @@ import {FirebaseContext} from "../../firebase";
 import useFormValidation from "../Auth/useFormValidation";
 import validateEditDB from "./validateEditDB";
 import {InputGroup} from "../../UI/InputGroup";
+import useInputsHandler from "./useInputsHandler";
 
 
 const INITIAL_STATE = {
 
     grape: '',
-    grapeId: '',
+    //grapeId: '',
     selectedGrape: ''
 
 };
@@ -26,21 +27,20 @@ export const EditGrapesV2 = () => {
         // const [grapeId, setGrapeId] = React.useState(null);
 
 
-        const {changeHandler, handleBlur, values, setValues, errors, isSubmitting} =
-            useFormValidation(INITIAL_STATE, validateEditDB);
+        const {changeHandler, values, setValues} = useInputsHandler(INITIAL_STATE);
 
 
         //////////////////////////////////ADD GRAPE/////////////////////////////////
         async function handleAddGrape() {
             const response = await grapesRef.add({name: values.grape});
-            grapesRef.doc(response.id).update({id: response.id});
+            //grapesRef.doc(response.id).update({id: response.id});
             setValues(INITIAL_STATE)
         }
 
         //////////////////////////////////UPDATE GRAPE/////////////////////////////////
         function handleUpdateGrape() {
             grapesRef
-                .where('id', '==', values.grapeId)
+                .where('name', '==', values.selectedGrape)
                 .get()
                 .then(querySnapshot => {
                     if (querySnapshot.docs.length > 0) {
@@ -60,7 +60,7 @@ export const EditGrapesV2 = () => {
 //////////////////////////////////DELETE GRAPE/////////////////////////////////
         function handleDeleteGrape() {
             grapesRef
-                .where('id', '==', values.grapeId)
+                .where('name', '==', values.selectedGrape)
                 .get()
                 .then(querySnapshot => {
                     if (querySnapshot.docs.length > 0) {
@@ -96,7 +96,7 @@ export const EditGrapesV2 = () => {
 
             const result = grapes.filter(g => g.name === values.selectedGrape);
             if (result.length > 0)
-                setValues({...values, grapeId: result[0].id, grape: values.selectedGrape})
+                setValues({...values, grape: values.selectedGrape})
 
         }, [values.selectedGrape]);
 
@@ -112,44 +112,47 @@ export const EditGrapesV2 = () => {
 
         return (
 
+            <div className='container'>
+                <div className='row justify-content-center mt-5'>
+                    <div className='col-6'>
 
-                <div >
+                        <div className='text-center h3 mb-1'>Edit grapes</div>
 
-                    <ListBox
-                        items={getGrapesName()}
-                        label={'Grapes'}
-                        changeHandler={changeHandler}
-                        name={'selectedGrape'}/>
+                        <ListBox
+                            items={getGrapesName()}
+                            changeHandler={changeHandler}
+                            name={'selectedGrape'}/>
 
-                    <div className='row'>
+                        <div className='row'>
 
-                        <div className='col-12'>
-                            <InputGroup name={'grape'}
-                                        type={'text'}
-                                        labelWidth={100}
-                                        changeHandler={changeHandler}
-                                //handleBlur={handleBlur}
-                                        value={values.grape}
-                                        error={errors['grape']}
-                                        label={'Grape'}/>
+                            <div className='col-12 mb-2'>
+                                <InputGroup name={'grape'}
+                                            type={'text'}
+                                            labelWidth={100}
+                                            changeHandler={changeHandler}
+                                            value={values.grape}
+                                            label={'Grape'}/>
+                            </div>
+
+
+                            <div className='col'>
+                                <button className='btn btn-primary btn-block btn-sm' onClick={handleAddGrape}>Add grape
+                                </button>
+                            </div>
+
+                            <div className='col'>
+                                <button className='btn btn-info btn-block btn-sm' onClick={handleUpdateGrape}>Update
+                                </button>
+                            </div>
+
+                            <div className='col'>
+                                <button className='btn btn-danger btn-block btn-sm' onClick={handleDeleteGrape}>Delete
+                                </button>
+                            </div>
                         </div>
-
-
-                        <div className='col'>
-                            <button className='btn btn-primary btn-block btn-sm' onClick={handleAddGrape}>Add grape</button>
-                        </div>
-
-                        <div className='col'>
-                            <button className='btn btn-primary btn-block btn-sm' onClick={handleUpdateGrape}>Update</button>
-                        </div>
-
-                        <div className='col'>
-                            <button className='btn btn-primary btn-block btn-sm' onClick={handleDeleteGrape}>Delete</button>
-                        </div>
-
                     </div>
-
                 </div>
+            </div>
         );
     }
 ;

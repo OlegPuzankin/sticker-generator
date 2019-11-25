@@ -10,6 +10,10 @@ import {useSelector} from "react-redux";
 import Header from "./components/Navbar/Header";
 import {EditDB} from "./components/EditDB/EditDB";
 import {ForgotPassword} from "./components/Auth/ForgotPassword";
+import {EditRegions} from "./components/EditDB/EditRegions";
+import {EditCountries} from "./components/EditDB/EditCountries";
+import {EditAppellations} from "./components/EditDB/EditAppellations";
+import {EditGrapesV2} from "./components/EditDB/EditGrapesV2";
 
 export const App = (props) => {
 
@@ -24,7 +28,10 @@ export const App = (props) => {
              <Route exact path={'/'} component={Home}/>
              <Route path={'/about'} component={About}/>
              <Route path={'/create'} component={CreateSticker}/>
-             <Route path={'/editDB'} component={EditDB}/>
+             <Route path={'/edit-countries'} component={EditCountries}/>
+             <Route path={'/edit-regions'} component={EditRegions}/>
+             <Route path={'/edit-appellations'} component={EditAppellations}/>
+             <Route path={'/edit-grapes'} component={EditGrapesV2}/>
              <Route path={'/login'} component={Login}/>
              <Route path={'/forgot'} component={ForgotPassword}/>
          </Switch>

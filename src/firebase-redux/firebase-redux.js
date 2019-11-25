@@ -6,6 +6,7 @@ import {setCreateStickerPageIsLoading} from "../redux/actions/createStickerActio
 const {dispatch} = store;
 
 export function getInitialData() {
+    debugger
 
     dispatch(setCreateStickerPageIsLoading(true));
 
