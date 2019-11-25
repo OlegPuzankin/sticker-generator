@@ -1,8 +1,10 @@
-import {SET_COUNTIES, SET_GRAPES} from "../types";
+import {SET_APPELLATIONS, SET_COUNTIES, SET_GRAPES, SET_REGIONS} from "../types";
 
 const initialState = {
     countries: [],
-    grapes: []
+    grapes: [],
+    regions: [],
+    appellations: []
 
 };
 
@@ -17,6 +19,13 @@ export const firebaseReduxReducer = (state=initialState, action) => {
 
         case SET_GRAPES:
             return {...state, grapes: payload};
+
+
+        case SET_REGIONS:
+            return {...state, regions: payload};
+
+        case SET_APPELLATIONS:
+            return {...state, appellations: payload};
 
         default:
             return state

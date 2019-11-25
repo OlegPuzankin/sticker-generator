@@ -9,7 +9,7 @@ import {InputGroup} from "../../UI/InputGroup";
 const INITIAL_STATE = {
 
     country: '',
-    countryId: '',
+    editCountry: '',
     selectedCountry: ''
 
 };
@@ -29,25 +29,31 @@ export const EditCountries = () => {
         const {changeHandler, handleBlur, values, setValues, errors, isSubmitting} =
             useFormValidation(INITIAL_STATE, validateEditDB);
 
+        function getCountryByName(name) {
+            //debugger
+            return countriesRef
+                .where('name', '==', name)
+                .get()
+                .then(querySnapshot => {
+                    if (querySnapshot.docs.length > 0) {
+                        return querySnapshot.docs[0].ref
+                    }
+                })
+        }
 
         //////////////////////////////////ADD COUNTRY/////////////////////////////////
         async function handleAddCountries() {
             const response = await countriesRef.add({name: values.country});
-            countriesRef.doc(response.id).update({id: response.id});
+            //countriesRef.doc(response.id).update({id: response.id});
             setValues(INITIAL_STATE)
         }
 
         //////////////////////////////////UPDATE COUNTRY/////////////////////////////////
-        function handleUpdateCountry() {
-            countriesRef
-                .where('id', '==', values.countryId)
-                .get()
-                .then(querySnapshot => {
-                    if (querySnapshot.docs.length > 0) {
-                        return querySnapshot.docs[0].ref.update({name: values.country})
-                    }
+        async function handleUpdateCountry() {
 
-                })
+            const countryRef = await getCountryByName(values.editCountry);
+        debugger
+            countryRef.update({name: values.country})
                 .then(() => {
                     setValues(INITIAL_STATE)
                 })
@@ -57,17 +63,11 @@ export const EditCountries = () => {
 
         }
 
-//////////////////////////////////DELETE GRAPE/////////////////////////////////
-        function handleDeleteCountry() {
-            countriesRef
-                .where('id', '==', values.countryId)
-                .get()
-                .then(querySnapshot => {
-                    if (querySnapshot.docs.length > 0) {
+//////////////////////////////////DELETE COUNTRY/////////////////////////////////
+        async function handleDeleteCountry() {
 
-                        return querySnapshot.docs[0].ref.delete()
-                    }
-                })
+            const countryRef = await getCountryByName(values.editCountry);
+            countryRef.delete()
                 .then(() => {
                     setValues(INITIAL_STATE)
                 })
@@ -93,13 +93,15 @@ export const EditCountries = () => {
         React.useEffect(() => {
 
             //setValues({...values, grape: values.selectedGrape});
+        debugger
 
             const result = countries.filter(c => c.name === values.selectedCountry);
             if (result.length > 0)
-                setValues({...values, countryId: result[0].id, country: values.selectedCountry})
+                setValues({...values, editCountry: result[0].name, country: values.selectedCountry})
 
         }, [values.selectedCountry]);
 
+///////////////////////////////////////FUNCTIONS//////////////////////////////////////////////
         function getCountriesName() {
             return countries.map(g => g.name);
         }

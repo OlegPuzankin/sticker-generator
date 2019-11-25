@@ -1,4 +1,4 @@
-import {setCountriesData, setGrapes} from "../redux/actions/firebaseReduxActions";
+import {setAppellationsData, setCountriesData, setGrapes, setRegionsData} from "../redux/actions/firebaseReduxActions";
 import firebase from '../firebase'
 import {store} from '../redux/redux-strore'
 import {setCreateStickerPageIsLoading} from "../redux/actions/createStickerActions";
@@ -42,8 +42,43 @@ export function getInitialData() {
             console.log(error.message)
         })
 
-    Promise.all([promiseGrapes, promiseCountries]).then(()=>{
+    const promiseRegions = firebase.db.collection('regions')
+        .orderBy('name', 'asc')
+        .get()
+        .then(snapshot => {
+            //debugger
+            const regions = snapshot.docs.map(doc => {
+                return doc.data()
+            });
+            //debugger
+            dispatch(setRegionsData(regions));
+            console.log('GET INITIAL DATA REGIONS')
+
+        })
+        .catch(error => {
+            console.log(error.message)
+        });
+
+    const promiseAppellations = firebase.db.collection('appellations')
+        .orderBy('name', 'asc')
+        .get()
+        .then(snapshot => {
+            //debugger
+            const appellations = snapshot.docs.map(doc => {
+                return doc.data()
+            });
+            //debugger
+            dispatch(setAppellationsData(appellations));
+            console.log('GET INITIAL DATA APPELLATIONS')
+
+        })
+        .catch(error => {
+            console.log(error.message)
+        })
+
+    Promise.all([promiseGrapes, promiseCountries, promiseRegions, promiseAppellations]).then(()=>{
         dispatch(setCreateStickerPageIsLoading(false));
+        console.log('GET INITIAL DATA FINISH')
         }
     )
 }
