@@ -14,6 +14,8 @@ export const Dropdown = (props) => {
              <Link className="dropdown-item" to={'/edit-regions'}>Edit regions</Link>
              <Link className="dropdown-item" to={'/edit-appellations'}>Edit appellations</Link>
              <Link className="dropdown-item" to={'/edit-grapes'}>Edit grapes</Link>
+             <Link className="dropdown-item" to={'/edit-producers'}>Edit producers</Link>
+
          </div>
      </div>
  );

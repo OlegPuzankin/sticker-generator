@@ -14,6 +14,7 @@ import {EditRegions} from "./components/EditDB/EditRegions";
 import {EditCountries} from "./components/EditDB/EditCountries";
 import {EditAppellations} from "./components/EditDB/EditAppellations";
 import {EditGrapesV2} from "./components/EditDB/EditGrapesV2";
+import {EditProducers} from "./components/EditDB/EditProducers";
 
 export const App = (props) => {
 
@@ -32,6 +33,7 @@ export const App = (props) => {
              <Route path={'/edit-regions'} component={EditRegions}/>
              <Route path={'/edit-appellations'} component={EditAppellations}/>
              <Route path={'/edit-grapes'} component={EditGrapesV2}/>
+             <Route path={'/edit-producers'} component={EditProducers}/>
              <Route path={'/login'} component={Login}/>
              <Route path={'/forgot'} component={ForgotPassword}/>
          </Switch>
