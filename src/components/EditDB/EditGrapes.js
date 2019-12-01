@@ -1,66 +1,65 @@
 import React from 'react';
 import {ListBox} from "../../UI/ListBox";
-import {FirebaseContext} from "../../firebase";
+import {InputGroup} from "../../UI/InputGroup";
+import {addItemInCollection, getItemCollectionByName, loadAndSyncCollection} from "../../firebase/firebaseFunctions";
 
 
-// const INITIAL_STATE = {
-//
-//     // grapes: [],
-//     grape: '',
-//     selectedGrape: ''
-//
-// };
+const INITIAL_STATE = {
+
+    grape: '',
+    grapes: [],
+    selectedGrape: '',
+    filteredGrapes: [],
+
+    queryString: ''
+
+};
+
+function reducer(state, action) {
+    switch (action.type) {
+
+        case 'SET_GRAPES':
+            return {...state, grapes: action.payload};
+        case 'SET_SELECTED_GRAPE':
+            return {...state, selectedGrape: action.payload, grape: action.payload};
+        case 'SET_GRAPE_VALUE':
+            return {...state, grape: action.payload};
+        case 'SET_SEARCH_QUERY':
+            return {...state, queryString: action.payload};
+        case 'SET_FILTERED_GRAPES':
+            return {...state, filteredGrapes: action.payload};
+        case 'RESET':
+            return {...state, grape: ''};
+
+
+        default:
+            return state
+    }
+}
 
 
 export const EditGrapes = () => {
-
-        const {firebase} = React.useContext(FirebaseContext);
-        const grapesRef = firebase.db.collection('grapes');
-
-        const [grapes, setGrapes] = React.useState([]);
-        const [grape, setGrape] = React.useState({});
-        const [selectedGrape, setSelectedGrape] = React.useState('');
-        const [grapeId, setGrapeId] = React.useState(null);
-
-
-        // const {changeHandler, handleBlur, values, setValues, errors, isSubmitting} =
-        //     useFormValidation(INITIAL_STATE);
+        const [state, dispatch] = React.useReducer(reducer, INITIAL_STATE);
 
 
         //////////////////////////////////ADD GRAPE/////////////////////////////////
         async function handleAddGrape() {
-            // let id;
-            // await firebase.db.collection('grapes').get().then(snapshot => {
-            //     id = snapshot.docs.length + 1
-            //     debugger
-            // })
-            debugger
-            const response = await firebase.db.collection('grapes').add({name: grape});
-            debugger
-            grapesRef.doc(response.id).update({id: response.id});
-            setGrape('');
-            setGrapeId(null)
-
+            try {
+                await addItemInCollection('grapes', {name: state.grape});
+                //await producersRef.add({name: state.producer});
+                dispatch({type: 'RESET'})
+            } catch (e) {
+                console.log(e.message)
+            }
         }
 
         //////////////////////////////////UPDATE GRAPE/////////////////////////////////
-        function handleUpdateGrape() {
+        async function handleUpdateGrape() {
+            const grapeRef = await getItemCollectionByName('grapes', state.selectedGrape);
 
-            debugger
-
-            grapesRef
-                .where('id', '==', grapeId)
-                .get()
-                .then(querySnapshot => {
-                    if (querySnapshot.docs.length > 0) {
-                        debugger
-                        return querySnapshot.docs[0].ref.update({name: grape})
-                    }
-
-                })
+            grapeRef.update({name: state.grape})
                 .then(() => {
-                    setGrape('');
-                    setGrapeId(null)
+                    dispatch({type: 'RESET'})
                 })
                 .catch(error => {
                     console.log(error.message)
@@ -69,107 +68,114 @@ export const EditGrapes = () => {
         }
 
 //////////////////////////////////DELETE GRAPE/////////////////////////////////
-        function handleDeleteGrape() {
-            grapesRef
-                .where('id', '==', grapeId)
-                .get()
-                .then(querySnapshot => {
-                    if (querySnapshot.docs.length > 0) {
-                        debugger
-                        return querySnapshot.docs[0].ref.delete()
-                    }
-
-                })
+        async function handleDeleteGrape() {
+            const grapeRef = await getItemCollectionByName('grapes', state.selectedGrape);
+            grapeRef.delete()
                 .then(() => {
-                    setGrape('');
-                    setGrapeId(null)
+                    dispatch({type: 'RESET'})
                 })
                 .catch(error => {
                     console.log(error.message)
                 })
         }
 
-
-
 /////////////////////////////////LOAD AND SYNC DATA///////////////////////
         React.useEffect(() => {
+            loadAndSyncCollection('grapes', dispatch, 'SET_GRAPES')
 
-
-            grapesRef
-                .orderBy('name')
-                .onSnapshot(snapshot => {
-                    const grapes = snapshot.docs.map(doc => {
-                        return doc.data()
-                    });
-                    setGrapes(grapes);
-                })
         }, []);
 
-///////////////////////////////HANDLE SELECT GRAPE FROM LIST EFFECT//////////////////
-
-        React.useEffect(() => {
-
-            setGrape(selectedGrape);
-            const result = grapes.filter(g => g.name === selectedGrape);
-            debugger
-            if (result.length > 0)
-                setGrapeId(result[0].id)
-
-        }, [selectedGrape]);
-
+        ///////////////////////////////////////FUNCTIONS///////////////////////////
         function getGrapesName() {
-            return grapes.map(g => g.name);
-            debugger
+            if (state.filteredGrapes.length > 0)
+                return state.filteredGrapes.map(g => g.name);
+            else
+                return state.grapes.map(g => g.name);
         }
 
+        function handleSelectGrape(e) {
+            dispatch({type: 'SET_SELECTED_GRAPE', payload: e.target.value})
+        }
+
+        function handleInputChange(e) {
+            dispatch({type: 'SET_GRAPE_VALUE', payload: e.target.value})
+        }
+
+        function handleSearchInput(e) {
+            const query = e.target.value;
+            dispatch({type: 'SET_SEARCH_QUERY', payload: query});
+
+
+        }
+
+        React.useEffect(() => {
+            debugger
+            const matchedGrapes = state.grapes.filter(grape => {
+                return grape.name.toLowerCase().includes(state.queryString.toLowerCase())
+
+            });
+            debugger
+            dispatch({type: 'SET_FILTERED_GRAPES', payload: matchedGrapes});
+
+        }, [state.queryString, state.grapes])
+
 ///////////////////////////////////////////////////RENDER//////////////////////////////////////////////////
-        //console.log('values', values);
-        //console.log('grapeId', grapeId);
-//console.log('grapeRef', grapeRef)
+        console.log('state', state);
 
 
         return (
+
             <div className='container'>
-                <div className='row'>
-                    <div className='col'>
+                <div className='row justify-content-center mt-5'>
+                    <div className='col-6'>
+
+                        <div className='text-center h3 mb-3'>Edit grapes</div>
+
+                        <InputGroup name={'search'}
+                                    type={'text'}
+                                    value={state.queryString}
+                                    label={'Search'}
+                                    labelWidth={80}
+                                    changeHandler={handleSearchInput}
+                        />
 
                         <ListBox
                             items={getGrapesName()}
-                            label={'Grapes'}
-                            changeHandler={e => setSelectedGrape(e.target.value)}
+                            changeHandler={handleSelectGrape}
                             name={'selectedGrape'}/>
 
                         <div className='row'>
 
-                            <div className='col-9'>
-                                <input type='text'
-                                       name={'grape'}
-                                       value={grape}
-                                       className='form-control'
-                                       onChange={e => setGrape(e.target.value)}
-                                       placeholder={'Enter grape'}/>
+                            <div className='col-12 mb-2'>
+                                <InputGroup name={'grape'}
+                                            type={'text'}
+                                            labelWidth={100}
+                                            changeHandler={handleInputChange}
+                                            value={state.grape}
+                                            label={'Grape'}/>
                             </div>
 
-                            <div className='col-1'>
-                                <button className='btn btn-primary btn-sm' onClick={handleAddGrape}>Add grape</button>
+
+                            <div className='col'>
+                                <button className='btn btn-primary btn-block btn-sm' onClick={handleAddGrape}>Add grape
+                                </button>
                             </div>
 
-                            <div className='col-1'>
-                                <button className='btn btn-primary btn-sm' onClick={handleUpdateGrape}>Update</button>
+                            <div className='col'>
+                                <button className='btn btn-info btn-block btn-sm' onClick={handleUpdateGrape}>Update
+                                </button>
                             </div>
 
-                            <div className='col-1'>
-                                <button className='btn btn-primary btn-sm' onClick={handleDeleteGrape}>Delete</button>
+                            <div className='col'>
+                                <button className='btn btn-danger btn-block btn-sm' onClick={handleDeleteGrape}>Delete
+                                </button>
                             </div>
-
                         </div>
-
                     </div>
-
-
                 </div>
-
             </div>
         );
     }
 ;
+
+//todo useReducer pattern here

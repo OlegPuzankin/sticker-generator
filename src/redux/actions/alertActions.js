@@ -1,20 +1,13 @@
-import {SHOW_ALERT_ERROR, SHOW_ALERT_SUCCESS, HIDE_ALERT_ERROR , HIDE_ALERT_SUCCESS} from "../types";
+import {SHOW_ALERT, HIDE_ALERT } from "../types";
 
-export const showError = (text, type)=>({
-    type: SHOW_ALERT_ERROR,
+export const showAlert = (text, type)=>({
+    type: SHOW_ALERT,
     payload: {text, type}
 });
 
 
-export const showSuccess = (text, type)=>({
-    type: SHOW_ALERT_SUCCESS,
-    payload: {text, type}
+
+export const hideAlert = ()=>({
+    type: HIDE_ALERT
 });
 
-export const hideError = ()=>({
-    type: HIDE_ALERT_ERROR
-});
-
-export const hideSuccess = ()=>({
-    type: HIDE_ALERT_SUCCESS
-});

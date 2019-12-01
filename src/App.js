@@ -1,20 +1,18 @@
 import React from 'react';
 
-import {Alert} from "./UI/Alert";
+
 import {Home} from "./components/Home";
 import {About} from "./staticPages/About";
-import {CreateSticker} from "./components/CreateStickerForm/CreateSticker";
 import {Login} from "./components/Auth/Login";
 import {Route, Switch} from "react-router-dom";
-import {useSelector} from "react-redux";
-import Header from "./components/Navbar/Header";
-import {EditDB} from "./components/EditDB/EditDB";
 import {ForgotPassword} from "./components/Auth/ForgotPassword";
 import {EditRegions} from "./components/EditDB/EditRegions";
 import {EditCountries} from "./components/EditDB/EditCountries";
 import {EditAppellations} from "./components/EditDB/EditAppellations";
-import {EditGrapesV2} from "./components/EditDB/EditGrapesV2";
+import {EditGrapes} from "./components/EditDB/EditGrapes";
 import {EditProducers} from "./components/EditDB/EditProducers";
+import Navbar from "./components/Navbar/Navbar";
+import {CreateSticker} from "./components/CreateStickerForm/CreateSticker";
 
 export const App = (props) => {
 
@@ -23,8 +21,8 @@ export const App = (props) => {
 
  return (
      <>
-         {/*<Navbar/>*/}
-         <Header/>
+         <Navbar/>
+         {/*<Header/>*/}
          <Switch>
              <Route exact path={'/'} component={Home}/>
              <Route path={'/about'} component={About}/>
@@ -32,7 +30,7 @@ export const App = (props) => {
              <Route path={'/edit-countries'} component={EditCountries}/>
              <Route path={'/edit-regions'} component={EditRegions}/>
              <Route path={'/edit-appellations'} component={EditAppellations}/>
-             <Route path={'/edit-grapes'} component={EditGrapesV2}/>
+             <Route path={'/edit-grapes'} component={EditGrapes}/>
              <Route path={'/edit-producers'} component={EditProducers}/>
              <Route path={'/login'} component={Login}/>
              <Route path={'/forgot'} component={ForgotPassword}/>

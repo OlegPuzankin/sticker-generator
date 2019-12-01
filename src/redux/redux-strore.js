@@ -1,6 +1,6 @@
 import {createStore, combineReducers} from "redux";
 import {alertReducer} from "./reducers/alertReducer";
-import {createStickerReducer} from "./reducers/createStickerReducer";
+import {stickersReducer} from "./reducers/stickersReducer";
 import {firebaseReduxReducer} from "./reducers/firebaseReduxReducer";
 
 
@@ -10,8 +10,8 @@ import {firebaseReduxReducer} from "./reducers/firebaseReduxReducer";
 //         window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) : compose;
 
 const combinedReduces = combineReducers({
-    // alert: alertReducer,
-    sticker: createStickerReducer,
+    alert: alertReducer,
+    stickers: stickersReducer,
     firebaseRedux: firebaseReduxReducer,
 
 });

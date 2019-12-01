@@ -37,9 +37,6 @@ export const EditProducers = () => {
 
 
         const [state, dispatch] = React.useReducer(reducer, INITIAL_STATE)
-        //const {firebase} = React.useContext(FirebaseContext);
-        //const producersRef = firebase.db.collection('producers');
-
 
         //////////////////////////////////ADD PRODUCER/////////////////////////////////
         async function handleAddProducer() {
@@ -54,8 +51,6 @@ export const EditProducers = () => {
 
         //////////////////////////////////UPDATE PRODUCER/////////////////////////////////
         async function handleUpdateProducer() {
-
-
             const producerRef = await getItemCollectionByName('producers', state.selectedProducer)
 
             producerRef.update({name: state.producer})

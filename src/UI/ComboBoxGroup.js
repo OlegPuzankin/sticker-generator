@@ -9,13 +9,15 @@ export const ComboBoxGroup = (props) => {
         items = [];
 
     //console.log('ComboBoxGroup',props);
+    const style = {color: error&&'red', fontWeight: error&& 'bold'};
+
 
 
     return (
         <>
             <div className="input-group mb-1">
-                <div className="input-group-prepend label-width">
-                    <label className="input-group-text label-width">{label}</label>
+                <div className="input-group-prepend label-width" >
+                    <label className="input-group-text label-width" style={style}>{label}</label>
                 </div>
                 <select name={name}
                         value={value}
@@ -31,7 +33,7 @@ export const ComboBoxGroup = (props) => {
                     }
                 </select>
             </div>
-            {error && <p className='text-danger text-left'>{error}</p>}
+            {/*{error && <p className='text-danger text-left'>{error}</p>}*/}
         </>
     );
 };

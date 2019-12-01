@@ -1,4 +1,4 @@
-import {SHOW_ALERT_ERROR, HIDE_ALERT_ERROR} from "../types";
+import {SHOW_ALERT, HIDE_ALERT} from "../types";
 
 const initialState = {
     isShowAlert: false,
@@ -11,9 +11,11 @@ export const alertReducer = (state=initialState, action) => {
 
 
     switch (action.type){
-        case SHOW_ALERT_ERROR:
+        case SHOW_ALERT:
+            debugger
             return {...state, alertText: payload.text, type: payload.type, isShowAlert:true};
-        case HIDE_ALERT_ERROR:
+        case HIDE_ALERT:
+            debugger
             return {...state, isShowAlert:false};
 
         default:

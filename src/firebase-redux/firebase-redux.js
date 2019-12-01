@@ -1,14 +1,13 @@
 import {setAppellationsData, setCountriesData, setGrapes, setRegionsData} from "../redux/actions/firebaseReduxActions";
 import firebase from '../firebase'
 import {store} from '../redux/redux-strore'
-import {setCreateStickerPageIsLoading} from "../redux/actions/createStickerActions";
+
 
 const {dispatch} = store;
 
 export function getInitialData() {
     debugger
 
-    dispatch(setCreateStickerPageIsLoading(true));
 
     const promiseGrapes =firebase.db.collection('grapes')
         .get()
@@ -78,7 +77,6 @@ export function getInitialData() {
         })
 
     Promise.all([promiseGrapes, promiseCountries, promiseRegions, promiseAppellations]).then(()=>{
-        dispatch(setCreateStickerPageIsLoading(false));
         console.log('GET INITIAL DATA FINISH')
         }
     )

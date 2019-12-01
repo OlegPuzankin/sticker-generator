@@ -14,6 +14,36 @@ export function loadAndSyncCollection (collection, dispatch, type){
 
 }
 
+export function loadCollection (collection){
+
+    return firebase.db.collection(collection)
+        .orderBy('name')
+        .get()
+        .then(snapshot => {
+            return  snapshot.docs.map(doc => {
+                return doc.data()
+            });
+        })
+
+}
+
+export function loadAndSyncStickers (setStickers){
+
+    return firebase.db.collection('stickers')
+        .orderBy('originalTitle')
+        .onSnapshot(snapshot => {
+            const result=  snapshot.docs.map(doc => {
+                //debugger
+                return {...doc.data(), id: doc.id}
+            });
+            setStickers(result)
+        })
+
+
+}
+
+
+
 
 export function getItemCollectionByName(collection, name) {
     debugger
@@ -28,11 +58,15 @@ export function getItemCollectionByName(collection, name) {
         })
 }
 
+export function getSticker(id) {
+   return firebase.db.collection('stickers').doc(id)
+
+}
+
 export function addItemInCollection(collection, item) {
     debugger
 
     return firebase.db.collection(collection).add(item)
-
 }
 
 

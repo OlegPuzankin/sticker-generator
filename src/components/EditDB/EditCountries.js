@@ -4,56 +4,47 @@ import {FirebaseContext} from "../../firebase";
 import useFormValidation from "../Auth/useFormValidation";
 import validateEditDB from "./validateEditDB";
 import {InputGroup} from "../../UI/InputGroup";
+import {Loader} from "../../UI/Loader";
+import {addItemInCollection, getItemCollectionByName, loadAndSyncCollection} from "../../firebase/firebaseFunctions";
 
 
 const INITIAL_STATE = {
 
     country: '',
-    selectedCountry: ''
+    selectedCountry: '',
+    countries: []
 
 };
+
+function reducer(state, action) {
+    switch (action.type) {
+
+        case 'SET_COUNTRIES':
+            return {...state, countries: action.payload};
+        case 'SET_SELECTED_COUNTRY':
+            return {...state, selectedCountry: action.payload, country: action.payload};
+        case 'SET_COUNTRY_VALUE':
+            return {...state, country: action.payload};
+        case 'RESET':
+            return {...state, country: ''};
+
+
+        default:
+            return state
+    }
+}
 
 
 export const EditCountries = () => {
 
-        const {firebase} = React.useContext(FirebaseContext);
-        const countriesRef = firebase.db.collection('countries');
-
-        const [countries, setCountries] = React.useState([]);
-        const [values, setValues] = React.useState(INITIAL_STATE)
-        // const [grape, setGrape] = React.useState({});
-        // const [selectedGrape, setSelectedGrape] = React.useState('');
-        // const [grapeId, setGrapeId] = React.useState(null);
-
-
-        // const {changeHandler, handleBlur, values, setValues, errors, isSubmitting} =
-        //     useFormValidation(INITIAL_STATE, validateEditDB);
-
-        /////////////////////////////////FUNCTIONS///////////////////////////////
-        function getCountryByName(name) {
-
-            return countriesRef
-                .where('name', '==', name)
-                .get()
-                .then(querySnapshot => {
-                    if (querySnapshot.docs.length > 0) {
-                        return querySnapshot.docs[0].ref
-                    }
-                })
-        }
-
-        function changeHandler(e) {
-            setValues({
-                ...values,
-                [e.target.name]: e.target.value
-            })
-        }
+        const [state, dispatch] = React.useReducer(reducer, INITIAL_STATE);
 
         //////////////////////////////////ADD COUNTRY/////////////////////////////////
         async function handleAddCountries() {
             try {
-                await countriesRef.add({name: values.country});
-                setValues(INITIAL_STATE)
+                await addItemInCollection('countries', {name: state.country})
+                //await producersRef.add({name: state.producer});
+                dispatch({type: 'RESET'})
             } catch (e) {
                 console.log(e.message)
             }
@@ -62,13 +53,13 @@ export const EditCountries = () => {
 
         //////////////////////////////////UPDATE COUNTRY/////////////////////////////////
         async function handleUpdateCountry() {
-            debugger
 
-            const countryRef = await getCountryByName(values.selectedCountry);
 
-            countryRef.update({name: values.country})
+            const countryRef = await getItemCollectionByName('countries', state.selectedCountry)
+
+            countryRef.update({name: state.country})
                 .then(() => {
-                    setValues(INITIAL_STATE)
+                    dispatch({type: 'RESET'})
                 })
                 .catch(error => {
                     console.log(error.message)
@@ -79,10 +70,10 @@ export const EditCountries = () => {
 //////////////////////////////////DELETE COUNTRY/////////////////////////////////
         async function handleDeleteCountry() {
 
-            const countryRef = await getCountryByName(values.selectedCountry);
+            const countryRef = await getItemCollectionByName('countries', state.selectedCountry)
             countryRef.delete()
                 .then(() => {
-                    setValues(INITIAL_STATE)
+                    dispatch({type: 'RESET'})
                 })
                 .catch(error => {
                     console.log(error.message)
@@ -91,34 +82,27 @@ export const EditCountries = () => {
 
 /////////////////////////////////LOAD AND SYNC DATA///////////////////////
         React.useEffect(() => {
-            countriesRef
-                .orderBy('name')
-                .onSnapshot(snapshot => {
-                    const countries = snapshot.docs.map(doc => {
-                        return doc.data()
-                    });
-                    setCountries(countries);
-                })
+            loadAndSyncCollection('countries', dispatch, 'SET_COUNTRIES')
+
         }, []);
 
-///////////////////////////////HANDLE SELECT COUNTRY FROM LIST EFFECT//////////////////
 
-        React.useEffect(() => {
-            const result = countries.filter(c => c.name === values.selectedCountry);
-            if (result.length > 0)
-                setValues({...values, country: values.selectedCountry})
-
-        }, [values.selectedCountry]);
 
 ///////////////////////////////////////FUNCTIONS//////////////////////////////////////////////
         function getCountriesName() {
-            return countries.map(g => g.name);
+            return state.countries.map(c => c.name);
+        }
+
+        function handleSelectCountry(e) {
+            dispatch({type: 'SET_SELECTED_COUNTRY', payload: e.target.value})
+        }
+
+        function handleInputChange(e) {
+            dispatch({type: 'SET_COUNTRY_VALUE', payload: e.target.value})
         }
 
 ///////////////////////////////////////////////////RENDER//////////////////////////////////////////////////
-        console.log('values', values);
-        //console.log('grapeId', grapeId);
-//console.log('grapeRef', grapeRef)
+        console.log('state', state);
 
 
         return (
@@ -131,7 +115,7 @@ export const EditCountries = () => {
                         <ListBox
                             items={getCountriesName()}
                             // label={'Countries'}
-                            changeHandler={changeHandler}
+                            changeHandler={handleSelectCountry}
                             name={'selectedCountry'}/>
 
                         <div className='row'>
@@ -140,9 +124,9 @@ export const EditCountries = () => {
                                 <InputGroup name={'country'}
                                             type={'text'}
                                             labelWidth={100}
-                                            changeHandler={changeHandler}
+                                            changeHandler={handleInputChange}
                                     //handleBlur={handleBlur}
-                                            value={values.country}
+                                            value={state.country}
                                     // error={errors['country']}
                                             label={'Country'}/>
                             </div>
@@ -173,3 +157,4 @@ export const EditCountries = () => {
         );
     }
 ;
+

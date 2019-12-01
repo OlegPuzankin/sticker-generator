@@ -21,9 +21,8 @@ function useFormValidation(initialState, validate, submit) {
         }
     }, [errors]);
 
-
     const changeHandler = (e) => {
-        //debugger
+
         setValues({
             ...values,
             [e.target.name]: e.target.value
@@ -36,6 +35,8 @@ function useFormValidation(initialState, validate, submit) {
             ...values,
             [name]: result
         })
+
+
     };
 
     const handleBlur = () => {
