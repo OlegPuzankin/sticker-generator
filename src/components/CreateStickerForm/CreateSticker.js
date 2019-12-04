@@ -55,6 +55,7 @@ const INITIAL_STATE = {
 
 };
 
+
 const regionControlTypes = ['None', 'PDO', 'PJI'];
 
 export const CreateSticker = (props) => {
@@ -63,6 +64,7 @@ export const CreateSticker = (props) => {
 
         const alertState = useSelector(state => state.alert);
         const dispatch = useDispatch();
+        let editState;
 
 
         const {changeHandler, submitHandler, handleBlur, setValues, values, errors, isSubmitting} =

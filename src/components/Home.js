@@ -4,7 +4,7 @@ import {getSticker, loadCollection, loadStickers} from "../firebase/firebaseFunc
 import {Loader} from "../UI/Loader";
 import {StickerCard} from "./StickerCard/StickerCard";
 import {InputGroup} from "../UI/InputGroup";
-import {addStickerToBundle} from "../redux/actions/stickersActions";
+import {addStickerToBundle, removeStickerFromBundle} from "../redux/actions/stickersActions";
 
 export const Home = (props) => {
 
@@ -13,8 +13,7 @@ export const Home = (props) => {
 
 
     const [stickers, setStickers] = React.useState([]);
-    const [queryByCountry, setQueryByCountry] = React.useState('');
-    const [queryByTitle, setQueryByTitle] = React.useState('');
+    const [query, setQuery] = React.useState('');
 
     const [filteredStickers, setFilteredStickers] = React.useState([]);
 
@@ -23,82 +22,64 @@ export const Home = (props) => {
         const stickers = response.map(s => {
             return {...s, isAddedToBundle: false}
         })
-        debugger
         setStickers(stickers);
     }
 
     React.useEffect(() => {
-        debugger
-
         const filteredStickers = stickers.filter(sticker => {
             return (
-                sticker.country.toLowerCase().includes(queryByCountry.toLowerCase())
+                sticker.country.toLowerCase().includes(query.toLowerCase())
+                ||
+                sticker.originalTitle.toLowerCase().includes(query.toLowerCase())
             )
         });
 
         setFilteredStickers(filteredStickers)
 
-    }, [queryByCountry, stickers]);
+    }, [query, stickers]);
 
-    // React.useEffect(() => {
-    //
-    //     const filteredStickers = stickers.filter(sticker => {
-    //         return (
-    //             sticker.originalTitle.toLowerCase().includes(queryByTitle.toLowerCase())
-    //         )
-    //     });
-    //
-    //     setFilteredStickers(filteredStickers)
-    //
-    // }, [queryByTitle, stickers]);
 
     function handleDeleteSticker(stickerId) {
-        debugger
+    debugger
         const stickerRef = getSticker(stickerId);
-        debugger
+    debugger
         stickerRef.delete().then(() => {
-            //const stickerIndex = stickers.findIndex(s => s.id === stickerId);
-            const updatedStickers = stickers.filter(s=>s.id!==stickerId);
-            debugger
+            const updatedStickers = stickers.filter(s => s.id !== stickerId);
             setStickers(updatedStickers);
         })
     }
 
-    function handleAddStickerToBundle(stickerId) {
+
+
+    function toggleStickerToBundle(stickerId) {
 
         const stickerIndex = stickers.findIndex(s => s.id === stickerId);
-
-        debugger
         const s = stickers[stickerIndex]
 
-        dispatch(addStickerToBundle(s));
+        if (s.isAddedToBundle) {
+            dispatch(removeStickerFromBundle(s.id));
+        } else
+            dispatch(addStickerToBundle(s));
 
-        const updatedSticker = {...s, isAddedToBundle: true};
 
-        const updatedStickers=[...stickers];
-        updatedStickers[stickerIndex]=updatedSticker;
-        //const updatedStickers = [...stickers.slice(0, stickerIndex), updatedSticker, ...stickers.slice(stickerIndex + 1)]
+        const updatedSticker = {...s, isAddedToBundle: !s.isAddedToBundle};
+
+        const updatedStickers = [...stickers];
+        updatedStickers[stickerIndex] = updatedSticker;
         setStickers(updatedStickers);
 
     }
 
     function handleRemoveStickerFromBundle(stickerId) {
-
-        //const updatedStickers=stickersBundle.filter(s=>s.id!==stickerId);
-
-
         const stickerIndex = stickers.findIndex(s => s.id === stickerId);
-
-        debugger
         const s = stickers[stickerIndex]
 
-        dispatch(addStickerToBundle(s));
+        dispatch(removeStickerFromBundle(s.id));
 
         const updatedSticker = {...s, isAddedToBundle: false};
 
-        const updatedStickers=[...stickers];
-        updatedStickers[stickerIndex]=updatedSticker;
-        //const updatedStickers = [...stickers.slice(0, stickerIndex), updatedSticker, ...stickers.slice(stickerIndex + 1)]
+        const updatedStickers = [...stickers];
+        updatedStickers[stickerIndex] = updatedSticker;
         setStickers(updatedStickers);
 
     }
@@ -108,8 +89,9 @@ export const Home = (props) => {
     }, [])
 
 
-    console.log('stickers', stickers);
-    console.log('stickersBundle', stickersBundle)
+    // console.log('stickers', stickers);
+    // console.log('stickersBundle', stickersBundle)
+    console.log('filteredStickers', filteredStickers)
 
 
     if (stickers.length === 0)
@@ -119,26 +101,21 @@ export const Home = (props) => {
     return (
         <div className='container'>
             <div className='row mt-2'>
-                <div className='col p-1'>
+                <div className='col-10 p-1'>
                     <InputGroup name={'search'}
                                 type={'text'}
-                                value={queryByCountry}
+                                value={query}
                                 label={'Search by country'}
                                 labelWidth={180}
-                                changeHandler={e => setQueryByCountry(e.target.value)}
+                                changeHandler={e => setQuery(e.target.value)}
                     />
 
                 </div>
+                <div className='col-2 p-1'>
+                    <button type="button" className="btn btn-primary">
+                       Go to preview <span className="badge badge-light">{stickersBundle.length}</span>
+                    </button>
 
-                <div className='col p-1'>
-
-                    <InputGroup name={'search'}
-                                type={'text'}
-                                value={queryByTitle}
-                                label={'Search by title'}
-                                labelWidth={180}
-                                changeHandler={e => setQueryByTitle(e.target.value)}
-                    />
                 </div>
 
 
@@ -150,8 +127,9 @@ export const Home = (props) => {
                             <div className='col-4 p-1' key={sticker.id}>
                                 <StickerCard sticker={sticker}
                                              stickersBundle={stickersBundle}
+                                             toggleStickerToBundle={toggleStickerToBundle}
                                              handleDeleteSticker={handleDeleteSticker}
-                                             handleAddStickerToBundle={handleAddStickerToBundle}/>
+                                            />
 
                             </div>
                         )

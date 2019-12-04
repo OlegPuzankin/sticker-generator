@@ -1,4 +1,4 @@
-import {ADD_STICKER_TO_BUNDLE} from "../types";
+import {ADD_STICKER_TO_BUNDLE, REMOVE_STICKER_FROM_BUNDLE, TOGGLE_STICKER_STATUS_BUNDLE} from "../types";
 
 
 const initialState = {
@@ -13,9 +13,11 @@ export const stickersReducer = (state=initialState, action) => {
 
     switch (action.type){
         case ADD_STICKER_TO_BUNDLE:
-            debugger
-            return {...state, stickersBundle:[...state.stickersBundle, payload]};
 
+            return {...state, stickersBundle:[...state.stickersBundle, payload]};
+        case REMOVE_STICKER_FROM_BUNDLE:
+            const removed =state.stickersBundle.filter(s=>s.id!==payload)
+            return {...state, stickersBundle:[...removed]};
 
 
         default:

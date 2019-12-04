@@ -13,6 +13,7 @@ import {EditGrapes} from "./components/EditDB/EditGrapes";
 import {EditProducers} from "./components/EditDB/EditProducers";
 import Navbar from "./components/Navbar/Navbar";
 import {CreateSticker} from "./components/CreateStickerForm/CreateSticker";
+import {Test} from "./staticPages/Test";
 
 export const App = (props) => {
 
@@ -25,7 +26,7 @@ export const App = (props) => {
          {/*<Header/>*/}
          <Switch>
              <Route exact path={'/'} component={Home}/>
-             <Route path={'/about'} component={About}/>
+             <Route path={'/about'} component={Test}/>
              <Route path={'/create'} component={CreateSticker}/>
              <Route path={'/edit-countries'} component={EditCountries}/>
              <Route path={'/edit-regions'} component={EditRegions}/>

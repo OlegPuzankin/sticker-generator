@@ -63,8 +63,32 @@ select {
 
 .go-button{
   position: absolute;
-  left: 60px;
-  top: 80px
+  font-weight: bold;
+  right: 25px;
+  top: 25px;
+  width: 25px;
+  height: 25px;
+
+}
 
 
+
+.parent {
+  display: flex;
+  flex-direction: row;
+  height: 100vh; /* Or whatever */
+}
+.parent-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+}
+
+.child {
+  text-align: center;
+  width: 100px;  /* Or whatever */
+  background: red;
+  height: 100px; /* Or whatever */
+  margin: auto;  /* Magic! */
 }
