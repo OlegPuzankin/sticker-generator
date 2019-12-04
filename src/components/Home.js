@@ -1,6 +1,6 @@
 import React from 'react';
 import {useDispatch, useSelector} from "react-redux";
-import {getSticker, loadAndSyncStickers} from "../firebase/firebaseFunctions";
+import {getSticker, loadCollection, loadStickers} from "../firebase/firebaseFunctions";
 import {Loader} from "../UI/Loader";
 import {StickerCard} from "./StickerCard/StickerCard";
 import {InputGroup} from "../UI/InputGroup";
@@ -18,14 +18,17 @@ export const Home = (props) => {
 
     const [filteredStickers, setFilteredStickers] = React.useState([]);
 
-    function loadData() {
-        loadAndSyncStickers(setStickers);
+    async function loadData() {
+        const response = await loadStickers();
+        const stickers = response.map(s => {
+            return {...s, isAddedToBundle: false}
+        })
         debugger
-        //setStickers(stickers)
-
+        setStickers(stickers);
     }
 
     React.useEffect(() => {
+        debugger
 
         const filteredStickers = stickers.filter(sticker => {
             return (
@@ -37,32 +40,66 @@ export const Home = (props) => {
 
     }, [queryByCountry, stickers]);
 
-    React.useEffect(() => {
-
-        const filteredStickers = stickers.filter(sticker => {
-            return (
-                sticker.originalTitle.toLowerCase().includes(queryByTitle.toLowerCase())
-            )
-        });
-
-        setFilteredStickers(filteredStickers)
-
-    }, [queryByTitle, stickers]);
+    // React.useEffect(() => {
+    //
+    //     const filteredStickers = stickers.filter(sticker => {
+    //         return (
+    //             sticker.originalTitle.toLowerCase().includes(queryByTitle.toLowerCase())
+    //         )
+    //     });
+    //
+    //     setFilteredStickers(filteredStickers)
+    //
+    // }, [queryByTitle, stickers]);
 
     function handleDeleteSticker(stickerId) {
         debugger
         const stickerRef = getSticker(stickerId);
         debugger
-        stickerRef.delete()
+        stickerRef.delete().then(() => {
+            //const stickerIndex = stickers.findIndex(s => s.id === stickerId);
+            const updatedStickers = stickers.filter(s=>s.id!==stickerId);
+            debugger
+            setStickers(updatedStickers);
+        })
     }
 
     function handleAddStickerToBundle(stickerId) {
 
-        const stickerIndex = stickers.findIndex(s => s.id === stickerId)
+        const stickerIndex = stickers.findIndex(s => s.id === stickerId);
+
         debugger
         const s = stickers[stickerIndex]
 
-        dispatch(addStickerToBundle(s))
+        dispatch(addStickerToBundle(s));
+
+        const updatedSticker = {...s, isAddedToBundle: true};
+
+        const updatedStickers=[...stickers];
+        updatedStickers[stickerIndex]=updatedSticker;
+        //const updatedStickers = [...stickers.slice(0, stickerIndex), updatedSticker, ...stickers.slice(stickerIndex + 1)]
+        setStickers(updatedStickers);
+
+    }
+
+    function handleRemoveStickerFromBundle(stickerId) {
+
+        //const updatedStickers=stickersBundle.filter(s=>s.id!==stickerId);
+
+
+        const stickerIndex = stickers.findIndex(s => s.id === stickerId);
+
+        debugger
+        const s = stickers[stickerIndex]
+
+        dispatch(addStickerToBundle(s));
+
+        const updatedSticker = {...s, isAddedToBundle: false};
+
+        const updatedStickers=[...stickers];
+        updatedStickers[stickerIndex]=updatedSticker;
+        //const updatedStickers = [...stickers.slice(0, stickerIndex), updatedSticker, ...stickers.slice(stickerIndex + 1)]
+        setStickers(updatedStickers);
 
     }
 
@@ -72,7 +109,7 @@ export const Home = (props) => {
 
 
     console.log('stickers', stickers);
-    console.log('stickersBundle',stickersBundle)
+    console.log('stickersBundle', stickersBundle)
 
 
     if (stickers.length === 0)

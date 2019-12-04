@@ -16,12 +16,27 @@ export function loadAndSyncCollection (collection, dispatch, type){
 
 export function loadCollection (collection){
 
+
     return firebase.db.collection(collection)
         .orderBy('name')
         .get()
         .then(snapshot => {
             return  snapshot.docs.map(doc => {
-                return doc.data()
+                return {...doc.data(), id: doc.id}
+            });
+        })
+
+}
+
+export function loadStickers (){
+
+
+    return firebase.db.collection('stickers')
+        .orderBy('originalTitle')
+        .get()
+        .then(snapshot => {
+            return  snapshot.docs.map(doc => {
+                return {...doc.data(), id: doc.id}
             });
         })
 
@@ -38,11 +53,7 @@ export function loadAndSyncStickers (setStickers){
             });
             setStickers(result)
         })
-
-
 }
-
-
 
 
 export function getItemCollectionByName(collection, name) {

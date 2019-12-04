@@ -1,28 +1,32 @@
 import React from 'react';
 
-export const StickerCard = ({sticker, handleDeleteSticker, handleAddStickerToBundle, stickersBundle}) => {
-
-    const index =stickersBundle.findIndex(s=>s.id===sticker.id);
-    let isAdded;
-    if (index>=0)
-        isAdded=true;
+export const StickerCard = ({sticker, handleDeleteSticker, handleAddStickerToBundle}) => {
 
 
-    console.log('index', index)
+
     const grapes = sticker.selectedGrapes.join(', ');
 
     return (
-     <div className="card">
-             <div className="card-body">
-                 <h5 className="card-title">{sticker.originalTitle}</h5>
-                 <p className='card-text'>Country: {sticker.country}</p>
-                 <p className="card-text">Grapes: {grapes}</p>
-                 <button className="btn btn-danger m-1" onClick={()=>handleDeleteSticker(sticker.id)}>Delete Sticker</button>
-                 <button disabled={isAdded} className="btn btn-info m-1" onClick={()=>handleAddStickerToBundle(sticker.id)}>Add Sticker</button>
+        <div className="card">
+            <div className="card-body">
+                <h5 className="card-title">{sticker.originalTitle}</h5>
+                <p className='card-text'>Country: {sticker.country}</p>
+                <p className="card-text">Grapes: {grapes}</p>
+                <button className="btn btn-danger m-1"
+                        onClick={() => handleDeleteSticker(sticker.id)}> Delete Sticker
+                </button>
 
-             </div>
-     </div>
- );
+                {sticker.isAddedToBundle
+                    ?
+                    <button className="btn btn-info m-1"
+                            onClick={() => handleAddStickerToBundle(sticker.id)}>Remove</button>
+                    : <button className="btn btn-info m-1"
+                              onClick={() => handleAddStickerToBundle(sticker.id)}>Add</button>
+                }
+
+            </div>
+        </div>
+    );
 };
 
 
