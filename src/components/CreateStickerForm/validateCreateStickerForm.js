@@ -12,6 +12,13 @@ export default function validateCreateStickerForm(values) {
     else if(/^Select/.test(values.producer)){
         errors.producer='Select producer field'
     }
+    ////////////////////wines color///////////////////////
+    if (!values.color){
+        errors.color='empty color field'
+    }
+    else if(/^Select/.test(values.color)){
+        errors.color='Select color'
+    }
 ////////////////////country///////////////////////
     if (!values.country){
         errors.country='empty country field'

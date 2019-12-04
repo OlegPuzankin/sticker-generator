@@ -1,6 +1,7 @@
 import React from 'react';
 import {Link, NavLink, withRouter} from "react-router-dom";
 import {FirebaseContext} from "../../firebase";
+import '@fortawesome/fontawesome-free/css/all.css'
 
 
 export const Navbar = (props) => {
@@ -18,7 +19,9 @@ export const Navbar = (props) => {
 
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
-            <NavLink className="navbar-brand" to={'/'}>Sticker generator</NavLink>
+            <NavLink className="navbar-brand" to={'/'}>
+                <i className="fas fa-wine-glass-alt text-danger"></i>
+            </NavLink>
             <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
                     aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
                 <span className="navbar-toggler-icon"> </span>

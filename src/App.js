@@ -14,6 +14,7 @@ import {EditProducers} from "./components/EditDB/EditProducers";
 import Navbar from "./components/Navbar/Navbar";
 import {CreateSticker} from "./components/CreateStickerForm/CreateSticker";
 import {Test} from "./staticPages/Test";
+import {Preview} from "./components/Preview/Preview";
 
 export const App = (props) => {
 
@@ -26,7 +27,7 @@ export const App = (props) => {
          {/*<Header/>*/}
          <Switch>
              <Route exact path={'/'} component={Home}/>
-             <Route path={'/about'} component={Test}/>
+             <Route path={'/about'} component={About}/>
              <Route path={'/create'} component={CreateSticker}/>
              <Route path={'/edit-countries'} component={EditCountries}/>
              <Route path={'/edit-regions'} component={EditRegions}/>
@@ -35,6 +36,7 @@ export const App = (props) => {
              <Route path={'/edit-producers'} component={EditProducers}/>
              <Route path={'/login'} component={Login}/>
              <Route path={'/forgot'} component={ForgotPassword}/>
+             <Route path={'/preview'} component={Preview}/>
          </Switch>
      </>
  );

@@ -32,7 +32,7 @@ export function loadStickers (){
 
 
     return firebase.db.collection('stickers')
-        .orderBy('originalTitle')
+        .orderBy('created', 'desc')
         .get()
         .then(snapshot => {
             return  snapshot.docs.map(doc => {

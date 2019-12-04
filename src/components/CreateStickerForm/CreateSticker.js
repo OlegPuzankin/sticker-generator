@@ -26,6 +26,7 @@ const INITIAL_STATE = {
     region: '',
     appellation: '',
     volume: 750,
+    color: '',
     alcohol: 12,
     sugar: 4,
     servingTemperature: 12,
@@ -57,6 +58,7 @@ const INITIAL_STATE = {
 
 
 const regionControlTypes = ['None', 'PDO', 'PJI'];
+const colors = ['Red', 'White', 'Rose'];
 
 export const CreateSticker = (props) => {
 
@@ -104,6 +106,7 @@ export const CreateSticker = (props) => {
                 bottlingYear: values.bottlingYear,
 
                 selectedGrapes: values.selectedGrapes,
+                created: new Date()
             };
 
 
@@ -298,6 +301,14 @@ export const CreateSticker = (props) => {
                         {/*///////////////////1 Column///////////////////////////////*/}
                         <div className='col'>
                             <div className='mb-2 text-center'>Basic parameters</div>
+
+                            <ComboBoxGroup name='color'
+                                           placeholder={'Select color'}
+                                           error={errors['color']}
+                                           items={colors}
+                                           value={values.color}
+                                           label={'Wine`s Color'}
+                                           changeHandler={changeHandler}/>
 
                             <InputGroup name={'volume'}
                                         type={'number'}

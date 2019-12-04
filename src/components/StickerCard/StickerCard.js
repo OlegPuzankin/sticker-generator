@@ -1,4 +1,5 @@
 import React from 'react';
+import '@fortawesome/fontawesome-free/css/all.css'
 
 export const StickerCard = ({sticker, handleDeleteSticker, toggleStickerToBundle}) => {
 
@@ -9,13 +10,17 @@ export const StickerCard = ({sticker, handleDeleteSticker, toggleStickerToBundle
     return (
         <div className="card h-100 ">
             <div className="card-body d-flex flex-column justify-content-between">
-                <div className='go-button pointer' onClick={() => handleDeleteSticker(sticker.id) }>X</div>
-                <h5 className="card-title">{sticker.originalTitle}</h5>
-                <p className='card-text'>Country: {sticker.country}</p>
-                <p className="card-text">Grapes: {grapes}</p>
-                {/*<button className="btn btn-danger m-1"*/}
-                {/*        onClick={() => handleDeleteSticker(sticker.id)}> Delete Sticker*/}
-                {/*</button>*/}
+                <div className='d-flex flex-row justify-content-between'>
+                    <div className="card-title font-weight-bold">{sticker.originalTitle}</div>
+                    <div className='pointer' onClick={() => handleDeleteSticker(sticker.id) }>
+                        <i className="fas fa-trash-alt"></i>
+                    </div>
+                </div>
+
+
+                <div className='card-text'>Country: {sticker.country}</div>
+                <div className="card-text">Grapes: {grapes}</div>
+
 
                 {sticker.isAddedToBundle
                     ?

@@ -6,7 +6,7 @@ import {StickerCard} from "./StickerCard/StickerCard";
 import {InputGroup} from "../UI/InputGroup";
 import {addStickerToBundle, removeStickerFromBundle} from "../redux/actions/stickersActions";
 
-export const Home = (props) => {
+export const Home = ({history}) => {
 
     const {stickersBundle} = useSelector(state => state.stickers);
     const dispatch = useDispatch();
@@ -14,15 +14,32 @@ export const Home = (props) => {
 
     const [stickers, setStickers] = React.useState([]);
     const [query, setQuery] = React.useState('');
+    const [loading, setLoading] = React.useState(false);
 
     const [filteredStickers, setFilteredStickers] = React.useState([]);
 
     async function loadData() {
+        setLoading(true)
         const response = await loadStickers();
         const stickers = response.map(s => {
             return {...s, isAddedToBundle: false}
         })
+        debugger
+        if(stickersBundle.length>0){
+            stickers.forEach(s => {
+                debugger
+                stickersBundle.forEach(sb => {
+                    if (s.id === sb.id) {
+                        debugger
+                        s.isAddedToBundle = true
+                    }
+
+                })
+            })
+        }
+        debugger
         setStickers(stickers);
+        setLoading(false)
     }
 
     React.useEffect(() => {
@@ -40,15 +57,12 @@ export const Home = (props) => {
 
 
     function handleDeleteSticker(stickerId) {
-    debugger
         const stickerRef = getSticker(stickerId);
-    debugger
         stickerRef.delete().then(() => {
             const updatedStickers = stickers.filter(s => s.id !== stickerId);
             setStickers(updatedStickers);
         })
     }
-
 
 
     function toggleStickerToBundle(stickerId) {
@@ -70,21 +84,10 @@ export const Home = (props) => {
 
     }
 
-    function handleRemoveStickerFromBundle(stickerId) {
-        const stickerIndex = stickers.findIndex(s => s.id === stickerId);
-        const s = stickers[stickerIndex]
 
-        dispatch(removeStickerFromBundle(s.id));
-
-        const updatedSticker = {...s, isAddedToBundle: false};
-
-        const updatedStickers = [...stickers];
-        updatedStickers[stickerIndex] = updatedSticker;
-        setStickers(updatedStickers);
-
-    }
 
     React.useEffect(() => {
+
         loadData()
     }, [])
 
@@ -92,9 +95,10 @@ export const Home = (props) => {
     // console.log('stickers', stickers);
     // console.log('stickersBundle', stickersBundle)
     console.log('filteredStickers', filteredStickers)
+    console.log(history)
 
 
-    if (stickers.length === 0)
+    if (loading)
         return (<Loader/>)
 
 
@@ -105,14 +109,17 @@ export const Home = (props) => {
                     <InputGroup name={'search'}
                                 type={'text'}
                                 value={query}
-                                label={'Search by country'}
-                                labelWidth={180}
+                                label={'Search by country or title'}
+                                labelWidth={200}
                                 changeHandler={e => setQuery(e.target.value)}
                     />
 
                 </div>
                 <div className='col-2 p-1'>
-                    <button type="button" className="btn btn-primary">
+                    <button disabled={stickersBundle.length===0}
+                            type="button"
+                            className="btn btn-primary w-100"
+                            onClick={()=>{history.push('/preview')}}>
                        Go to preview <span className="badge badge-light">{stickersBundle.length}</span>
                     </button>
 
