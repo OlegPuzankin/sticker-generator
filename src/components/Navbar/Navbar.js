@@ -19,6 +19,7 @@ export const Navbar = (props) => {
 
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
+
             <NavLink className="navbar-brand" to={'/'}>
                 <i className="fas fa-wine-glass-alt text-danger"></i>
             </NavLink>
