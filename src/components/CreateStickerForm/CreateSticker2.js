@@ -1,5 +1,4 @@
 import React from 'react';
-import useFormValidation from "../Auth/useFormValidation";
 import validateCreateStickerForm from "./validateCreateStickerForm";
 import {ListBox} from "../../UI/ListBox";
 import {ComboBoxGroup} from "../../UI/ComboBoxGroup";
@@ -9,7 +8,7 @@ import {Alert} from "../../UI/Alert";
 import {hideAlert, showAlert} from "../../redux/actions/alertActions";
 
 import {Loader} from "../../UI/Loader";
-import {addItemInCollection, loadCollection} from "../../firebase/firebaseFunctions";
+import {addItemInCollection, getSticker, loadCollection} from "../../firebase/firebaseFunctions";
 import {
     getAppellationsName,
     getCountriesName,
@@ -17,80 +16,58 @@ import {
     getProducersName,
     getRegionsName
 } from "../../functions/utils";
-
-
-const INITIAL_STATE = {
-    producer: '',
-    originalTitle: 'Some title',
-    country: '',
-    region: '',
-    appellation: '',
-    volume: 750,
-    color: '',
-    alcohol: 12,
-    sugar: 4,
-    servingTemperature: 12,
-    shelfLifetime: 12,
-    lotNumber: 'вказано на пляшці',
-    regionControl: '',
-
-    currentGrape: '',
-    harvestYear: '2002',
-    bottlingYear: '2011-11',
-
-    harvestYears: [],
-
-    grapes: [],
-    selectedGrapes: [],
-    filteredGrapes: [],
-    queryString: '',
-
-    countries: [],
-    regions: [],
-    appellations: [],
-    producers: [],
-
-
-    filteredRegions: [],
-    filteredAppellations: []
-
-};
+import useFormValidationStickerForm from "../Auth/useFormValidationStickerForm";
+import {Transition, CSSTransition} from "react-transition-group";
+import {resetStickerState} from "../../redux/actions/stickersActions";
 
 
 const regionControlTypes = ['None', 'PDO', 'PJI'];
-const colors = ['Red', 'White', 'Rose'];
+const colors = ['Червоне', 'Біле', 'Рожеве'];
 
-export const CreateSticker = (props) => {
 
-        //const [alertState, dispatch] = React.useReducer(alertReducer, alertInitialState);
+export const CreateSticker2 = (props) => {
+        //just for testing purpose
+        //const [toggle, setToggle] = React.useState(true);
+
+        const [filteredGrapes, setFilteredGrapes] = React.useState([]);
+        //const [selectedGrapes, setSelectedGrapes] = React.useState([]);
+
+        const [filteredRegions, setFilteredRegions] = React.useState([]);
+        const [filteredAppellations, setFilteredAppellations] = React.useState([]);
+
+        const [queryString, setQueryString] = React.useState('');
+
+        const [countries, setCountries] = React.useState([]);
+        const [regions, setRegions] = React.useState([]);
+        const [appellations, setAppellations] = React.useState([]);
+        const [producers, setProducers] = React.useState([]);
+        const [grapes, setGrapes] = React.useState([]);
+        const [harvestYears, setHarvestYears] = React.useState([]);
+        const [isLoading, setIsLoading] = React.useState(false);
 
         const alertState = useSelector(state => state.alert);
         const dispatch = useDispatch();
-        let editState;
 
 
-        const {changeHandler, submitHandler, handleBlur, setValues, values, errors, isSubmitting} =
-            useFormValidation(INITIAL_STATE, validateCreateStickerForm, saveSticker);
+        const stickerState = useSelector(state =>state.stickerState);
+        //const test = useSelector(state=>state.stickers)
+        //debugger
+
+        const {changeHandler, submitHandler, setValues, values, errors, isTriedSubmit, handleBlur, setIsTriedSubmit} =
+            useFormValidationStickerForm(stickerState,
+                validateCreateStickerForm,
+                saveSticker,
+                dispatch
+                );
 
 
 ////////////////////////////////////////////////////FUNCTIONS///////////////////////////////////////////
 
-        // async function loadCollections() {
-        //     const countries = await loadCollection('countries');
-        //     const regions = await loadCollection('regions');
-        //     const appellations = await loadCollection('appellations');
-        //     const producers = await loadCollection('producers');
-        //     const grapes = await loadCollection('grapes');
-        //     const harvestYears = await loadCollection('harvest');
-        //
-        //     setValues({...values, countries, regions, appellations, producers, grapes, harvestYears});
-        // }
-
         async function saveSticker() {
-
 
             const sticker = {
                 originalTitle: values.originalTitle,
+                color: values.color,
                 producer: values.producer,
                 country: values.country,
                 region: values.region,
@@ -104,52 +81,72 @@ export const CreateSticker = (props) => {
                 regionControl: values.regionControl,
                 harvestYear: values.harvestYear,
                 bottlingYear: values.bottlingYear,
-
                 selectedGrapes: values.selectedGrapes,
-                created: new Date()
+                created: new Date(),
             };
 
-
-            await addItemInCollection('stickers', sticker);
-
-
-            dispatch(showAlert('Sticker was created', 'primary'));
-            setTimeout(() => {
-                dispatch(hideAlert());
-                setValues({
-                    ...values,
-                    originalTitle: '',
-                    selectedGrapes: [],
-                    producer: '',
-                    country: '',
-                    region: '',
-                    appellation: '',
-                    regionControl: '',
-                    filteredGrapes: values.grapes
-                });
-            }, 2000);
+            debugger
 
 
-        }
+            if (values.id) {
+                debugger
+                await getSticker(stickerState.id).update(sticker);
+                dispatch(showAlert('Sticker was updated', 'primary'));
+                setTimeout(() => {
+                    //setToggle(false)
+                    dispatch(hideAlert());
+                }, 4500);
 
-        function handleSearchInput(e) {
-            setValues({...values, queryString: e.target.value})
+            } else {
+                await addItemInCollection('stickers', sticker);
+                dispatch(showAlert('Sticker was created', 'primary'));
+                setTimeout(() => {
+                    //setToggle(false)
+                    dispatch(hideAlert());
+                    clearFormHandler();
+                }, 4500);
+            }
         }
 
 
         function resetGrapes(e) {
 
             e.preventDefault();
-
-            setValues({...values, filteredGrapes: values.grapes, selectedGrapes: []})
+            setValues({...values, selectedGrapes: []});
+            setFilteredGrapes(grapes)
 
         }
 
-        ///////////////////////////////////////LOAD DATA FROM FIREBASE EFFECT//////////////////////////////////////////
+        function clearFormHandler() {
 
+            //dispatch(resetStickerState());
+
+            setValues({
+                ...values,
+                id: null,
+                sku: '',
+                originalTitle: '',
+                selectedGrapes: [],
+                color: '',
+                producer: '',
+                country: '',
+                region: '',
+                currentGrape: '',
+                appellation: '',
+                regionControl: '',
+            });
+            setFilteredGrapes(grapes);
+            setIsTriedSubmit(false);
+        }
+
+        ////////////////////////LOAD DATA FROM FIREBASE EFFECT//////////////////////////////////////////
         React.useEffect(() => {
+            // console.log('load data effect');
 
             async function loadCollections() {
+
+                setIsLoading(true);
+
                 const countries = await loadCollection('countries');
                 const regions = await loadCollection('regions');
                 const appellations = await loadCollection('appellations');
@@ -157,140 +154,226 @@ export const CreateSticker = (props) => {
                 const grapes = await loadCollection('grapes');
                 const harvestYears = await loadCollection('harvest');
 
-                setValues({...values, countries, regions, appellations, producers, grapes, harvestYears});
+                setIsLoading(false);
+
+                setCountries(countries);
+                setRegions(regions);
+                setAppellations(appellations);
+                setProducers(producers);
+                setGrapes(grapes);
+                setHarvestYears(harvestYears)
+
             }
 
-            loadCollections()
+            const promise = loadCollections();
+
+            return () => promise;
 
         }, [loadCollection]);
-
-
-///////////////////////////SELECT COUNTRY EFFECT////////////////////////////////////////
+        ////////////////////SELECT COUNTRY EFFECT////////////////////////////////////////
         React.useEffect(() => {
-            console.log('select country effect')
-            if (values.countries.length > 0) {
 
-                let filteredRegions = values.regions.filter(r => r.country === values.country);
+            // console.log('select country effect start');
+            if (countries.length > 0) {
+                // console.log('select country effect body');
+
+
+                let filteredRegions = regions.filter(r => r.country === values.country);
 
                 if (filteredRegions.length > 0) {
+                    setFilteredRegions(filteredRegions)
+                    // setValues({...values, filteredRegions, filteredAppellations: []});
 
-                    setValues({...values, filteredRegions, filteredAppellations: []});
+                } else
+                    setFilteredRegions([])
+                //setValues({...values, filteredRegions: []});
+            }
+            // console.log('select country effect end');
 
+        }, [values.country]);
+        /////////////////////////SELECT REGION EFFECT////////////////////////////////////////
+        React.useEffect(() => {
+            // console.log('select region effect start');
+            if (regions.length > 0) {
+                // console.log('select region effect body');
+
+
+                let filteredAppellations = appellations.filter(a => a.region === values.region);
+
+                if (filteredAppellations.length > 0) {
+                    setFilteredAppellations(filteredAppellations)
                     //console.log('values', values)
                     //setValues({...values, filteredAppellations: []});
                 } else
-                    setValues({...values, filteredRegions: []});
+                    setFilteredAppellations([])
             }
-        }, [values.country]);
+            // console.log('select region effect end');
 
-
-        /////////////////////////SELECT REGION EFFECT////////////////////////////////////////
-        React.useEffect(() => {
-            //
-            if (values.regions.length > 0) {
-
-                let filteredAppellations = values.appellations.filter(a => a.region === values.region);
-
-                if (filteredAppellations.length > 0) {
-
-                    setValues({...values, filteredAppellations});
-
-                    //console.log('values', values)
-                    //setValues({...values, filteredAppellations: []});
-                }
-                //else
-                //     setValues({...values, filteredRegions:[]});
-            }
         }, [values.region]);
-
-/////////////////////////////Search effect///////////////////////////////////
+        /////////////////////Search effect///////////////////////////////////
         React.useEffect(() => {
 
-            const query = values.queryString.toLowerCase();
-            const filteredGrapes = values.grapes.filter(grape => {
+            //console.log('search effect');
+            const query = queryString.toLowerCase();
+            const filteredGrapes = grapes.filter(grape => {
                 return (
                     grape.name.toLowerCase().includes(query)
                 )
             });
 
-            setValues({...values, filteredGrapes})
+            setFilteredGrapes(filteredGrapes)
 
-        }, [values.queryString, values.grapes]);
-
-        /////////////////////////////Alert effect///////////////////////////////////
-
-        React.useEffect(() => {
-
-            console.log('use effect alert body')
-
-
-            if (!(Object.keys(errors).length === 0)) {
-                console.log('use effect show')
-                dispatch(showAlert('Please check all fields', 'danger'))
-            } else {
-                //console.log('use effect hide')
-                //dispatch(hideError())
-            }
-
-        }, [errors]);
-
-        // if (!(Object.keys(errors).length === 0))
-        //     dispatch(showAlert('Please check all fields', 'danger'))
-
+        }, [queryString, grapes]);
         //////////////////////////select grape effect///////////////////////////
-
         React.useEffect(() => {
+
+            //console.log('select grape effect start');
+
 
             if (values.currentGrape !== '') {
-                const filteredGrapes = values.filteredGrapes.filter(grape => grape.name !== values.currentGrape);
+                //console.log('select grape effect body')
+                const filtered = filteredGrapes.filter(grape => grape.name !== values.currentGrape);
 
-                setValues({
-                    ...values,
-                    selectedGrapes: [...values.selectedGrapes, values.currentGrape],
-                    filteredGrapes,
-                    queryString: '',
-                })
+                setValues({...values, selectedGrapes: [...values.selectedGrapes, values.currentGrape]});
+                setFilteredGrapes(filtered);
+                setQueryString('');
+
             }
+            //console.log('select grape effect end');
+
         }, [values.currentGrape]);
+        /////////////////////////////////LOAD STICKER TO EDIT////////////////////////////////
+        React.useEffect(() => {
+            debugger
 
 
+            if (stickerState.id) {
+                //console.log('LOAD STICKER TO EDIT START');
+                if (regions.length > 0) {
+                    const filteredRegions = regions.filter(r => r.country === values.country);
+
+                    if (filteredRegions.length > 0) {
+
+                        setFilteredRegions(filteredRegions);
+                        //console.log('filtered regions are set');
+                    }
+                }
+
+                if (appellations.length > 0) {
+                    const filteredAppellations = appellations.filter(a => a.region === values.region);
+
+                    if (filteredAppellations.length > 0) {
+
+                        setFilteredAppellations(filteredAppellations)
+                        //console.log('filtered appellations are set');
+
+                    }
+                }
 
 
-        console.log('values', values);
+                if (grapes.length > 0) {
+                    const _filteredGrapes = [];
+                    grapes.forEach(g => {
+                        if (!values.selectedGrapes.includes(g.name)) {
+                            _filteredGrapes.push(g)
+                        }
+                    });
+                    setFilteredGrapes(_filteredGrapes);
+                }
+                //console.log('LOAD STICKER TO EDIT END')
+            }
+        }, [stickerState.id]);
+
+        //regions, appellations, grapes
+
+        //////////////////////////////////alert effect//////////////////////////////////////////
+        // React.useEffect(() => {
+        //     // console.log('alert effect');
+        //     // console.log(alertState.isShowAlert);
+        //     // // if (alertState.isShowAlert)
+        //         setToggle(alertState.isShowAlert);
+        //     //
+        //     // setTimeout(() => {
+        //     //     if (alertState.isShowAlert)
+        //     //         setToggle(false)
+        //     // }, 6000)
+        //
+        // }, [alertState.isShowAlert]);
+
+        //console.log('render');
+        console.log(stickerState.id)
         //console.log('values', values);
+        //console.log('stickerState', stickerState);
+        // console.log('isTriedSubmit', isTriedSubmit)
 
-        if (values.countries.length === 0 && values.regions.length === 0 && values.appellations.length === 0) {
+        if (isLoading) {
             return <Loader/>
         }
 
 
         return (
             <>
-
-
                 <form className='container mt-2' onSubmit={submitHandler}>
-                    {alertState.isShowAlert &&
-                    <Alert alert={alertState} hide={() => dispatch(hideAlert())}/>
-                    }
+                    <div className=' alert-container'>
+
+                        <Transition
+                            in={alertState.isShowAlert}
+                            timeout={{
+                                enter: 800,
+                                exit: 400
+                            }}
+                            mountOnEnter
+                            unmountOnExit
+                        >{
+                            state => (<div className={`animation-container ${state}`}>
+                                <Alert alert={alertState} hide={() => dispatch(hideAlert())}/>
+
+                            </div>)
+                        }
+
+                        </Transition>
+
+                    </div>
 
                     {/*///////////////////TITLE ///////////////////////////////*/}
-                    <div className='row justify-content-start'>
+                    <div className='row justify-content-start mt-2'>
 
-                        <div className='col-8 mb-2'>
+                        <div className='col-6 mb-2'>
 
                             <InputGroup name={'originalTitle'}
+
                                         value={values.originalTitle}
                                         label={'Title'}
                                         type={'text'}
+                                        labelWidth={100}
                                         placeholder={'Enter title'}
                                         changeHandler={changeHandler}
-                                //handleBlur={handleBlur}
-                                        error={errors['originalTitle']}/>
+                                        handleBlur={handleBlur}
+                                        error={isTriedSubmit && errors['originalTitle']}/>
                         </div>
 
-                        <div className='col '>
-                            {/*////////////////////////NEXT BTN///////////////////////////*/}
-                            <button onSubmit={submitHandler} className='btn btn-primary mr-1'>Done</button>
+                        <div className='col-4 mb-2'>
+
+                            <InputGroup name={'sku'}
+                                        labelWidth={80}
+                                        value={alertState.isShowAlert}
+                                        label={'SKU'}
+                                        type={'text'}
+                                        placeholder={'Enter SKU'}
+                                        changeHandler={changeHandler}
+                                        handleBlur={handleBlur}
+                                        error={errors['sku']}/>
+                        </div>
+
+                        <div className='col-1 p-0'>
+                            {/*////////////////////////Done///////////////////////////*/}
+                            <button onSubmit={submitHandler} className='btn btn-primary w-100'>Done</button>
+
+                        </div>
+
+                        <div className='col-1'>
+                            {/*////////////////////////Clear///////////////////////////*/}
+                            <div onClick={clearFormHandler} className='btn btn-danger w-100'>Clear</div>
 
                         </div>
 
@@ -304,7 +387,7 @@ export const CreateSticker = (props) => {
 
                             <ComboBoxGroup name='color'
                                            placeholder={'Select color'}
-                                           error={errors['color']}
+                                           error={isTriedSubmit && errors['color']}
                                            items={colors}
                                            value={values.color}
                                            label={'Wine`s Color'}
@@ -354,7 +437,7 @@ export const CreateSticker = (props) => {
                             <ComboBoxGroup name='harvestYear'
                                            placeholder={'Select harvest year'}
                                            error={errors['harvestYear']}
-                                           items={getHarvestYearsName(values.harvestYears)}
+                                           items={getHarvestYearsName(harvestYears)}
                                            value={values.harvestYear}
                                            label={'Harvest year'}
                                            changeHandler={changeHandler}
@@ -374,7 +457,7 @@ export const CreateSticker = (props) => {
                             <InputGroup name={'lotNumber'}
                                         type={'text'}
                                         value={values.lotNumber}
-                                        error={errors['lotNumber']}
+                                        error={isTriedSubmit && errors['lotNumber']}
                                         label={'Lot number'}
                                         changeHandler={changeHandler}
                                 //handleBlur={handleBlur}
@@ -388,51 +471,51 @@ export const CreateSticker = (props) => {
 
                             <ComboBoxGroup name='producer'
                                            placeholder={'Select producer'}
-                                           error={errors['producer']}
+                                           error={isTriedSubmit && errors['producer']}
                                            value={values.producer}
-                                           items={getProducersName(values.producers)}
+                                           items={getProducersName(producers)}
                                            label={'Select producer'}
                                            changeHandler={changeHandler}
-                                //handleBlur={handleBlur}
+                                           handleBlur={handleBlur}
                             />
 
                             <ComboBoxGroup name='regionControl'
                                            value={values.regionControl}
                                            placeholder={'Select control type'}
-                                           error={errors['regionControl']}
+                                           error={isTriedSubmit && errors['regionControl']}
                                            items={regionControlTypes}
                                            label={'Origin control'}
                                            changeHandler={changeHandler}
-                                //handleBlur={handleBlur}
+                                           handleBlur={handleBlur}
                             />
                             <ComboBoxGroup name='country'
                                            value={values.country}
                                            placeholder={'Select country'}
-                                           error={errors['country']}
-                                           items={getCountriesName(values.countries)}
+                                           error={isTriedSubmit && errors['country']}
+                                           items={getCountriesName(countries)}
                                            label={'Select country'}
                                            changeHandler={changeHandler}
-                                //handleBlur={handleBlur}
+                                           handleBlur={handleBlur}
                             />
 
                             <ComboBoxGroup name='region'
                                            placeholder={'Select region'}
                                            value={values.region}
                                            error={errors['region']}
-                                           items={getRegionsName(values.filteredRegions)}
+                                           items={getRegionsName(filteredRegions)}
                                            label={'Select region'}
                                            changeHandler={changeHandler}
-                                //handleBlur={handleBlur}
+                                           handleBlur={handleBlur}
                             />
 
                             <ComboBoxGroup name='appellation'
                                            placeholder={'Select appellation'}
                                            value={values.appellation}
                                            error={errors['appellation']}
-                                           items={getAppellationsName(values.filteredAppellations)}
+                                           items={getAppellationsName(filteredAppellations)}
                                            label={'Select appellation'}
                                            changeHandler={changeHandler}
-                                //handleBlur={handleBlur}
+                                           handleBlur={handleBlur}
                             />
 
                         </div>
@@ -441,20 +524,20 @@ export const CreateSticker = (props) => {
                             <div className='mb-2 text-center'>Grapes</div>
 
                             <InputGroup name={'search'}
-                                        type={'text'}
-                                        value={values.queryString}
+                                        type={'search'}
+                                        value={queryString}
                                         label={'Search'}
                                         labelWidth={80}
-                                        changeHandler={handleSearchInput}
+                                        changeHandler={e => setQueryString(e.target.value)}
                             />
 
 
                             <div>
                                 <ListBox
-                                    items={getGrapesName(values.filteredGrapes)}
+                                    items={getGrapesName(filteredGrapes)}
                                     label={'Select grapes from the list below'}
-                                    error={errors.selectedGrapes}
-                                    //handleBlur={handleBlur}
+                                    error={isTriedSubmit && errors.selectedGrapes}
+                                    handleBlur={handleBlur}
                                     changeHandler={changeHandler}
                                     name={'currentGrape'}/>
                             </div>

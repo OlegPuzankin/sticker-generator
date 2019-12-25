@@ -8,7 +8,6 @@ export const Input = (props) => {
     const htmlFor=`${name} ${label}`;
 
     //console.log('errors[name]', errors[name]);
-    debugger
 
  return (
      <div className="form-group">
@@ -21,7 +20,7 @@ export const Input = (props) => {
                 className="form-control"
                 id={htmlFor}
                 placeholder={placeholder}/>
-         {errors[name] && <p className='text-danger text-left'>{errors[name]}</p>}
+         {errors[name] && <p className='text-warning font-weight-bold text-left'>{errors[name]}</p>}
 
      </div>
  );

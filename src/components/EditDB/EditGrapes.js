@@ -29,7 +29,7 @@ function reducer(state, action) {
         case 'SET_FILTERED_GRAPES':
             return {...state, filteredGrapes: action.payload};
         case 'RESET':
-            return {...state, grape: ''};
+            return {...state, grape: '', queryString: ''};
 
 
         default:
@@ -44,6 +44,7 @@ export const EditGrapes = () => {
 
         //////////////////////////////////ADD GRAPE/////////////////////////////////
         async function handleAddGrape() {
+            debugger
             try {
                 await addItemInCollection('grapes', {name: state.grape});
                 //await producersRef.add({name: state.producer});
@@ -162,12 +163,12 @@ export const EditGrapes = () => {
                             </div>
 
                             <div className='col'>
-                                <button className='btn btn-info btn-block btn-sm' onClick={handleUpdateGrape}>Update
+                                <button disabled={state.selectedGrape.length===0}className='btn btn-info btn-block btn-sm' onClick={handleUpdateGrape}>Update
                                 </button>
                             </div>
 
                             <div className='col'>
-                                <button className='btn btn-danger btn-block btn-sm' onClick={handleDeleteGrape}>Delete
+                                <button disabled={state.selectedGrape.length===0} className='btn btn-danger btn-block btn-sm' onClick={handleDeleteGrape}>Delete
                                 </button>
                             </div>
                         </div>

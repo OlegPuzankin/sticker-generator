@@ -3,7 +3,7 @@ export default function validateCreateStickerForm(values) {
     let errors = {};
 ////////////////////title///////////////////////
     if(!values.originalTitle){
-        errors.originalTitle='empty wine\'s name field'
+        errors.originalTitle='empty title field'
     }
 ////////////////////producer///////////////////////
     if (!values.producer){
@@ -18,6 +18,13 @@ export default function validateCreateStickerForm(values) {
     }
     else if(/^Select/.test(values.color)){
         errors.color='Select color'
+    }
+    ////////////////////region control///////////////////////
+    if (!values.regionControl){
+        errors.regionControl='empty region control field'
+    }
+    else if(/^Select/.test(values.regionControl)){
+        errors.regionControl='Select region control'
     }
 ////////////////////country///////////////////////
     if (!values.country){

@@ -203,12 +203,12 @@ export const EditRegions = () => {
                             </div>
 
                             <div className='col'>
-                                <button className='btn btn-info btn-block btn-sm' onClick={handleUpdateRegion}>Update
+                                <button disabled={state.selectedRegion.length===0} className='btn btn-info btn-block btn-sm' onClick={handleUpdateRegion}>Update
                                 </button>
                             </div>
 
                             <div className='col'>
-                                <button className='btn btn-danger btn-block btn-sm' onClick={handleDeleteRegion}>Delete
+                                <button disabled={state.selectedRegion.length===0} className='btn btn-danger btn-block btn-sm' onClick={handleDeleteRegion}>Delete
                                 </button>
                             </div>
 

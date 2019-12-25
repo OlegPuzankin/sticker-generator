@@ -19,7 +19,7 @@ export const Login = (props) => {
     const [login, setLogin] = React.useState(true);
     const [loginError, setLoginError] = React.useState(null);
     const {firebase, user}=React.useContext(FirebaseContext);
-    debugger
+
 
     const {changeHandler, submitHandler, handleBlur, values, errors, isSubmitting} =
         useFormValidation(INITIAL_STATE, validateLogin, authenticateUser);
@@ -48,7 +48,7 @@ export const Login = (props) => {
     return (
         <form className='mt-5' onSubmit={submitHandler}>
             <div className='row justify-content-center'>
-                <div className='col-5 bg-info rounded p-3'>
+                <div className='col-5 bg-info rounded p-4'>
 
                     {!login && (
                         <Input type={'text'}
@@ -83,7 +83,7 @@ export const Login = (props) => {
                            placeholder={'Password'}
                            htmlFor={'input Password'}/>
 
-                    {loginError && <p className='text-warning font-weight-bold'>{loginError}</p>}
+                    {loginError && <p className='text-dark font-weight-bold'>{loginError}</p>}
 
                     <div  className='row justify-content-between pl-3 pr-3'>
                         <button type="submit"

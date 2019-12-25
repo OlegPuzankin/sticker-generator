@@ -136,12 +136,12 @@ export const EditProducers = () => {
                             </div>
 
                             <div className='col'>
-                                <button className='btn btn-info btn-block btn-sm' onClick={handleUpdateProducer}>Update
+                                <button disabled={state.selectedProducer.length===0} className='btn btn-info btn-block btn-sm' onClick={handleUpdateProducer}>Update
                                 </button>
                             </div>
 
                             <div className='col'>
-                                <button className='btn btn-danger btn-block btn-sm' onClick={handleDeleteProducer}>Delete
+                                <button disabled={state.selectedProducer.length===0} className='btn btn-danger btn-block btn-sm' onClick={handleDeleteProducer}>Delete
                                 </button>
                             </div>
 

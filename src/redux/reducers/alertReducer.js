@@ -12,10 +12,8 @@ export const alertReducer = (state=initialState, action) => {
 
     switch (action.type){
         case SHOW_ALERT:
-            debugger
             return {...state, alertText: payload.text, type: payload.type, isShowAlert:true};
         case HIDE_ALERT:
-            debugger
             return {...state, isShowAlert:false};
 
         default:
@@ -24,4 +22,4 @@ export const alertReducer = (state=initialState, action) => {
 
 };
 
-export default  initialState;
+//export default  initialState;

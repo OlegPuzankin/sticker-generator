@@ -139,12 +139,12 @@ export const EditCountries = () => {
                             </div>
 
                             <div className='col'>
-                                <button className='btn btn-info btn-block btn-sm' onClick={handleUpdateCountry}>Update
+                                <button disabled={state.selectedCountry.length===0} className='btn btn-info btn-block btn-sm' onClick={handleUpdateCountry}>Update
                                 </button>
                             </div>
 
                             <div className='col'>
-                                <button className='btn btn-danger btn-block btn-sm' onClick={handleDeleteCountry}>Delete
+                                <button disabled={state.selectedCountry.length===0} className='btn btn-danger btn-block btn-sm' onClick={handleDeleteCountry}>Delete
                                 </button>
                             </div>
 

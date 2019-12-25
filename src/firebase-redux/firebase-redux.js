@@ -1,4 +1,4 @@
-import {setAppellationsData, setCountriesData, setGrapes, setRegionsData} from "../redux/actions/firebaseReduxActions";
+import {setAppellationsData, setCountriesData, setGrapesData, setRegionsData} from "../redux/actions/firebaseReduxActions";
 import firebase from '../firebase'
 import {store} from '../redux/redux-strore'
 
@@ -15,7 +15,7 @@ export function getInitialData() {
             const grapes = snapshot.docs.map(doc => {
                 return doc.data()
             });
-            dispatch(setGrapes(grapes))
+            dispatch(setGrapesData(grapes))
             console.log('GET INITIAL DATA GRAPES')
 
         })

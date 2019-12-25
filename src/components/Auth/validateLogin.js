@@ -1,5 +1,4 @@
 export default function validateLogin(values) {
-    debugger
     let errors = {};
 
     if(!values.email){

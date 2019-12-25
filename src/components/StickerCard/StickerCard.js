@@ -1,7 +1,8 @@
 import React from 'react';
 import '@fortawesome/fontawesome-free/css/all.css'
+import {useHistory} from 'react-router-dom'
 
-export const StickerCard = ({sticker, handleDeleteSticker, toggleStickerToBundle}) => {
+export const StickerCard = ({sticker, handleDeleteSticker, toggleStickerToBundle, sendStickerToEdit}) => {
 
 
 
@@ -11,25 +12,32 @@ export const StickerCard = ({sticker, handleDeleteSticker, toggleStickerToBundle
         <div className="card h-100 ">
             <div className="card-body d-flex flex-column justify-content-between">
                 <div className='d-flex flex-row justify-content-between'>
-                    <div className="card-title font-weight-bold">{sticker.originalTitle}</div>
-                    <div className='pointer' onClick={() => handleDeleteSticker(sticker.id) }>
-                        <i className="fas fa-trash-alt"></i>
+                    <div className="card-title font-weight-bold w-80">{sticker.originalTitle}</div>
+                    <div className='pointer' onClick={() => handleDeleteSticker(sticker.id)}>
+                        <i className="fas fa-trash-alt"> </i>
+                    </div>
+                    <div className='pointer' onClick={() => sendStickerToEdit(sticker)}>
+                        <i className="fas fa-edit"> </i>
                     </div>
                 </div>
 
 
                 <div className='card-text'>Country: {sticker.country}</div>
+                <div className='card-text'>Region control: {sticker.regionControl}</div>
+
+                <div className='card-text'>Region: {sticker.region}</div>
+                <div className='card-text'>Appellation: {sticker.appellation}</div>
                 <div className="card-text">Grapes: {grapes}</div>
 
-
-                {sticker.isAddedToBundle
-                    ?
-                    <button className="btn btn-primary w-100"
-                            onClick={() => toggleStickerToBundle(sticker.id)}>Remove</button>
-                    : <button className="btn btn-warning w-100"
-                              onClick={() => toggleStickerToBundle(sticker.id)}>Add</button>
-                }
-
+                <div className='text-center mt-1'>
+                    {sticker.isAddedToBundle
+                        ?
+                        <button className="btn btn-primary w-50"
+                                onClick={() => toggleStickerToBundle(sticker.id)}>Remove</button>
+                        : <button className="btn btn-warning w-50"
+                                  onClick={() => toggleStickerToBundle(sticker.id)}>Add</button>
+                    }
+                </div>
             </div>
         </div>
     );

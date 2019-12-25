@@ -4,22 +4,22 @@ body {
   margin: 0;
   background-color: lightgray;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
+  "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+  sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+  monospace;
 }
 
-.h100vh{
+.h100vh {
   height: 100vh;
 }
 
-.border-box{
+.border-box {
   box-sizing: border-box;
 }
 
@@ -29,11 +29,11 @@ code {
   color: black;
 }
 
-.pointer{
+.pointer {
   cursor: pointer;
 }
 
-.height300{
+.height300 {
   height: 200px;
 }
 
@@ -53,7 +53,7 @@ code {
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
-.label-width{
+.label-width {
   width: 150px;
 }
 
@@ -61,7 +61,7 @@ select {
   overflow-y: auto;
 }
 
-.go-button{
+.go-button {
   position: absolute;
   font-weight: bold;
   right: 15px;
@@ -72,12 +72,12 @@ select {
 }
 
 
-
 .parent {
   display: flex;
   flex-direction: row;
   height: 100vh; /* Or whatever */
 }
+
 .parent-column {
   display: flex;
   flex-direction: column;
@@ -87,8 +87,94 @@ select {
 
 .child {
   text-align: center;
-  width: 100px;  /* Or whatever */
+  width: 100px; /* Or whatever */
   background: red;
   height: 100px; /* Or whatever */
-  margin: auto;  /* Magic! */
+  margin: auto; /* Magic! */
+}
+
+.w-80 {
+  width: 80%;
+}
+
+.alert-container {
+  height: 50px;
+
+}
+
+//.alert-animation-container{
+//  //animation:  alertAnimation 500ms ease-out forwards;
+//
+//}
+
+.animation-container.entering {
+  animation: alertAnimation 800ms ease-out forwards;
+}
+
+.animation-container.exiting {
+  animation: alertAnimation 400ms ease-out alternate-reverse;
+}
+
+.aa-enter {
+  opacity: 0;
+}
+
+.aa-enter-active {
+  opacity: 1;
+  transition: all 1s;
+}
+
+.aa-enter-done {
+  transition: all 1s;
+}
+
+.aa-exit {
+  opacity: 1;
+}
+
+.aa-exit-active {
+  opacity: 0;
+  transition: all 1s;
+}
+
+.aa-exit-done {
+  opacity: 0;
+}
+
+@keyframes alertAnimation {
+  0% {
+    opacity: 0;
+    transform: translateY(-100px);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(30px) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.add-sticker-container {
+  top: 90px;
+  //display: flex;
+  //align-items: center;
+  //justify-content: center;
+  left: 40px;
+  z-index: 5;
+  //background-color: red;
+}
+
+.btn-circle {
+  //text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 70px;
+  height: 70px;
+  //padding: 16px 16px;
+  border-radius: 35px;
+  font-size: 24px;
+  line-height: 1.33;
 }

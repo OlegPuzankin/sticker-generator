@@ -243,12 +243,14 @@ export const EditAppellations = () => {
                             </div>
 
                             <div className='col'>
-                                <button className='btn btn-info btn-block btn-sm' onClick={handleUpdateAppellation}>Update
+                                <button disabled={state.selectedAppellation.length===0}
+                                        className='btn btn-info btn-block btn-sm' onClick={handleUpdateAppellation}>Update
                                 </button>
                             </div>
 
                             <div className='col'>
-                                <button className='btn btn-danger btn-block btn-sm' onClick={handleDeleteAppellation}>Delete
+                                <button disabled={state.selectedAppellation.length===0}
+                                        className='btn btn-danger btn-block btn-sm' onClick={handleDeleteAppellation}>Delete
                                 </button>
                             </div>
 
