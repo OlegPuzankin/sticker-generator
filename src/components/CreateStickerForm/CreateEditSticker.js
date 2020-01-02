@@ -8,7 +8,7 @@ import {Alert} from "../../UI/Alert";
 import {hideAlert, showAlert} from "../../redux/actions/alertActions";
 
 import {Loader} from "../../UI/Loader";
-import {addItemInCollection, getSticker, loadCollection} from "../../firebase/firebaseFunctions";
+import {addItemInCollection, getItemCollectionById} from "../../firebase/firebaseFunctions";
 import {
     getAppellationsName,
     getCountriesName,
@@ -17,12 +17,20 @@ import {
     getRegionsName
 } from "../../functions/utils";
 import useFormValidationStickerForm from "../Auth/useFormValidationStickerForm";
-import {Transition, CSSTransition} from "react-transition-group";
-import {resetStickerState} from "../../redux/actions/stickersActions";
+import {Transition} from "react-transition-group";
+import {addStickerToStore, updateStickerInStore} from "../../redux/actions/stickersActions";
+import {
+    selectAppellations,
+    selectCountries,
+    selectGrapes, selectHarvestYears, selectIsLoading,
+    selectProducers,
+    selectRegions
+} from "../../redux/selectors/firebase-redux-selectors";
+import {selectFormState} from "../../redux/selectors/form-state-selectors";
 
 
 const regionControlTypes = ['None', 'PDO', 'PJI'];
-const colors = ['Червоне', 'Біле', 'Рожеве'];
+const colors = ['червоне', 'біле', 'рожеве'];
 
 
 export const CreateEditSticker = (props) => {
@@ -37,42 +45,46 @@ export const CreateEditSticker = (props) => {
 
         const [queryString, setQueryString] = React.useState('');
 
-        const countries=useSelector(state=>state.firebaseRedux.countries);
-        const producers=useSelector(state=>state.firebaseRedux.producers);
+        const countries = useSelector(selectCountries);
+        const producers = useSelector(selectProducers);
 
-        const regions=useSelector(state=>state.firebaseRedux.regions);
-        const appellations=useSelector(state=>state.firebaseRedux.appellations)
-        const grapes=useSelector(state=>state.firebaseRedux.grapes);
-        const harvestYears=useSelector(state=>state.firebaseRedux.harvestYears);
+        const regions = useSelector(selectRegions);
+        const appellations = useSelector(selectAppellations);
+        const grapes = useSelector(selectGrapes);
+        const harvestYears = useSelector(selectHarvestYears);
 
 
-
-        const isLoading=useSelector(state=>state.firebaseRedux.isLoading);
+        const isLoading = useSelector(selectIsLoading);
 
         const alertState = useSelector(state => state.alert);
         const dispatch = useDispatch();
 
 
-        const stickerState = useSelector(state =>state.stickerState);
+        const stickerState = useSelector(selectFormState);
         //const test = useSelector(state=>state.stickers)
-        //debugger
+        //
 
         const {changeHandler, submitHandler, setValues, values, errors, isTriedSubmit, handleBlur, setIsTriedSubmit} =
             useFormValidationStickerForm(stickerState,
                 validateCreateStickerForm,
                 saveSticker,
                 dispatch
-                );
+            );
 
 
 ////////////////////////////////////////////////////FUNCTIONS///////////////////////////////////////////
 
         async function saveSticker() {
 
+            const producer = producers.find(producer => producer.name === values.producer);
+            debugger
+
             const sticker = {
                 originalTitle: values.originalTitle,
+                stickerTitle:values.stickerTitle,
                 color: values.color,
                 producer: values.producer,
+                producerFullData: producer.producerFullData,
                 country: values.country,
                 region: values.region,
                 appellation: values.appellation,
@@ -89,12 +101,15 @@ export const CreateEditSticker = (props) => {
                 created: new Date(),
             };
 
-            debugger
-
 
             if (values.id) {
-                debugger
-                await getSticker(stickerState.id).update(sticker);
+
+                await getItemCollectionById('stickers', stickerState.id).update(sticker);
+                dispatch(updateStickerInStore({
+                    ...sticker,
+                    id: stickerState.id,
+                    isAddedToBundle: stickerState.isAddedToBundle
+                }));
                 dispatch(showAlert('Sticker was updated', 'primary'));
                 setTimeout(() => {
                     //setToggle(false)
@@ -102,7 +117,10 @@ export const CreateEditSticker = (props) => {
                 }, 4500);
 
             } else {
-                await addItemInCollection('stickers', sticker);
+                const response = await addItemInCollection('stickers', sticker);
+
+                debugger
+                dispatch(addStickerToStore({...sticker, id: response.id, isAddedToBundle: false}))
                 dispatch(showAlert('Sticker was created', 'primary'));
                 setTimeout(() => {
                     //setToggle(false)
@@ -121,8 +139,6 @@ export const CreateEditSticker = (props) => {
         }
 
         function clearFormHandler() {
-
-            //dispatch(resetStickerState());
 
             setValues({
                 ...values,
@@ -198,8 +214,6 @@ export const CreateEditSticker = (props) => {
         React.useEffect(() => {
 
             //console.log('select grape effect start');
-
-
             if (values.currentGrape !== '') {
                 //console.log('select grape effect body')
                 const filtered = filteredGrapes.filter(grape => grape.name !== values.currentGrape);
@@ -207,15 +221,12 @@ export const CreateEditSticker = (props) => {
                 setValues({...values, selectedGrapes: [...values.selectedGrapes, values.currentGrape]});
                 setFilteredGrapes(filtered);
                 setQueryString('');
-
             }
             //console.log('select grape effect end');
 
         }, [values.currentGrape]);
         /////////////////////////////////LOAD STICKER TO EDIT////////////////////////////////
         React.useEffect(() => {
-            debugger
-
 
             if (stickerState.id) {
                 //console.log('LOAD STICKER TO EDIT START');
@@ -223,7 +234,6 @@ export const CreateEditSticker = (props) => {
                     const filteredRegions = regions.filter(r => r.country === values.country);
 
                     if (filteredRegions.length > 0) {
-
                         setFilteredRegions(filteredRegions);
                         //console.log('filtered regions are set');
                     }
@@ -256,11 +266,10 @@ export const CreateEditSticker = (props) => {
         //regions, appellations, grapes
 
 
-
         //console.log('render');
-        console.log(stickerState.id)
-        //console.log('values', values);
-        //console.log('stickerState', stickerState);
+        //console.log(stickerState.id)
+        console.log('values', values);
+        console.log('stickerState', stickerState);
         // console.log('isTriedSubmit', isTriedSubmit)
 
         if (isLoading) {
@@ -295,45 +304,38 @@ export const CreateEditSticker = (props) => {
                     {/*///////////////////TITLE ///////////////////////////////*/}
                     <div className='row justify-content-start mt-2'>
 
-                        <div className='col-6 mb-2'>
+                        <div className='col-10 mb-2'>
 
                             <InputGroup name={'originalTitle'}
 
                                         value={values.originalTitle}
-                                        label={'Title'}
+                                        label={'Original title'}
                                         type={'text'}
-                                        labelWidth={100}
+                                        labelWidth={120}
                                         placeholder={'Enter title'}
                                         changeHandler={changeHandler}
                                         handleBlur={handleBlur}
                                         error={isTriedSubmit && errors['originalTitle']}/>
-                        </div>
 
-                        <div className='col-4 mb-2'>
-
-                            <InputGroup name={'sku'}
-                                        labelWidth={80}
-                                        value={alertState.isShowAlert}
-                                        label={'SKU'}
+                            <InputGroup name={'stickerTitle'}
+                                        value={values.stickerTitle}
+                                        label={'Sticker title'}
                                         type={'text'}
-                                        placeholder={'Enter SKU'}
+                                        labelWidth={120}
+                                        placeholder={'Enter sticker title'}
                                         changeHandler={changeHandler}
                                         handleBlur={handleBlur}
-                                        error={errors['sku']}/>
+                                        error={isTriedSubmit && errors['stickerTitle']}/>
                         </div>
 
-                        <div className='col-1 p-0'>
-                            {/*////////////////////////Done///////////////////////////*/}
-                            <button onSubmit={submitHandler} className='btn btn-primary w-100'>Done</button>
 
+                        <div className='col-2'>
+                            {/*////////////////////////Buttons///////////////////////////*/}
+                            <div className='mb-1'>
+                                <button onSubmit={submitHandler} className='btn btn-primary w-100'>Done</button>
+                            </div>
+                            <button onClick={clearFormHandler} className='btn btn-danger w-100'>Clear</button>
                         </div>
-
-                        <div className='col-1'>
-                            {/*////////////////////////Clear///////////////////////////*/}
-                            <div onClick={clearFormHandler} className='btn btn-danger w-100'>Clear</div>
-
-                        </div>
-
 
                     </div>
                     {/*///////////////////2_ROW///////////////////////////////*/}
@@ -388,7 +390,7 @@ export const CreateEditSticker = (props) => {
                                 //handleBlur={handleBlur}
                                         value={values.servingTemperature}
                                         error={errors['servingTemperature']}
-                                        label={'Serving temp C'}/>
+                                        label={'Serving temp °С'}/>
 
 
                             <ComboBoxGroup name='harvestYear'
@@ -403,7 +405,7 @@ export const CreateEditSticker = (props) => {
 
 
                             <InputGroup name={'bottlingYear'}
-                                        type={'month'}
+                                        type={'date'}
                                         value={values.bottlingYear}
                                         error={errors['bottlingYear']}
                                         label={'Bottling year'}
@@ -419,6 +421,15 @@ export const CreateEditSticker = (props) => {
                                         changeHandler={changeHandler}
                                 //handleBlur={handleBlur}
                             />
+
+                            <InputGroup name={'sku'}
+                                        value={alertState.sku}
+                                        label={'SKU'}
+                                        type={'text'}
+                                        placeholder={'Enter SKU'}
+                                        changeHandler={changeHandler}
+                                        handleBlur={handleBlur}
+                                        error={errors['sku']}/>
 
 
                         </div>
@@ -496,6 +507,7 @@ export const CreateEditSticker = (props) => {
                                     error={isTriedSubmit && errors.selectedGrapes}
                                     handleBlur={handleBlur}
                                     changeHandler={changeHandler}
+                                    height={200}
                                     name={'currentGrape'}/>
                             </div>
 
@@ -508,7 +520,7 @@ export const CreateEditSticker = (props) => {
                                             <div className='col p-0 font-weight-bold'>Selected grapes:</div>
                                             <div className='col p-0 text-right'>
 
-                                                <button onClick={resetGrapes} className='btn btn-primary btn-sm'>Reset
+                                                <button onClick={resetGrapes} className='btn btn-danger btn-sm'>Reset
                                                 </button>
                                             </div>
                                         </div>

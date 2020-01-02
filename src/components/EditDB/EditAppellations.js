@@ -222,6 +222,7 @@ export const EditAppellations = () => {
                             items={getAppellationsName(state.filteredAppellations)}
                             label={'Appellations'}
                             changeHandler={handleSelectAppellation}
+                            height={200}
                             name={'selectedAppellation'}/>
 
                         <div className='row'>

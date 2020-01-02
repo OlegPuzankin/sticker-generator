@@ -116,6 +116,7 @@ export const EditCountries = () => {
                             items={getCountriesName()}
                             // label={'Countries'}
                             changeHandler={handleSelectCountry}
+                            height={350}
                             name={'selectedCountry'}/>
 
                         <div className='row'>

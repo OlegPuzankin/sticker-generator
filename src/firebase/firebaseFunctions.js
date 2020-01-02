@@ -7,7 +7,7 @@ export function loadAndSyncCollection (collection, dispatch, type){
         .orderBy('name')
         .onSnapshot(snapshot => {
             const result =  snapshot.docs.map(doc => {
-                return doc.data()
+                return {id:doc.id,...doc.data()}
             });
             dispatch({type, payload: result});
         })
@@ -69,8 +69,8 @@ export function getItemCollectionByName(collection, name) {
         })
 }
 
-export function getSticker(id) {
-   return firebase.db.collection('stickers').doc(id)
+export function getItemCollectionById(collection,id) {
+    return firebase.db.collection(collection).doc(id)
 
 }
 

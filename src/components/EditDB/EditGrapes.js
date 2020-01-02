@@ -143,6 +143,7 @@ export const EditGrapes = () => {
                         <ListBox
                             items={getGrapesName()}
                             changeHandler={handleSelectGrape}
+                            height={350}
                             name={'selectedGrape'}/>
 
                         <div className='row'>

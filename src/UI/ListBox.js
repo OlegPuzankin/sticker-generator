@@ -18,7 +18,7 @@ function getSelectValues(select) {
 export const ListBox = (props) => {
     const multipleSelect = React.useRef(null);
 
-    const {name, changeHandler, label, items, error, handleBlur} = props;
+    const {name, changeHandler, label, items, error, handleBlur, height} = props;
 
     const style = {color: error&&'red', fontWeight: error&& 'bold'};
 
@@ -38,7 +38,7 @@ export const ListBox = (props) => {
                     
                     onBlur={handleBlur}
                     onChange={changeHandler}
-                    className="user-form-control height300">
+                    className={`user-form-control height${height}`}>
                 {
                     items.map((item, index)=>{
                         return <option key={`${item} - ${index}`} value={item}>{item}</option>

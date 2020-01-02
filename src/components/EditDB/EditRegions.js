@@ -183,6 +183,7 @@ export const EditRegions = () => {
                             items={getRegionsName()}
                             label={'Regions'}
                             changeHandler={handleSelectRegion}
+                            height={350}
                             name={'selectedRegion'}/>
 
                         <div className='row'>

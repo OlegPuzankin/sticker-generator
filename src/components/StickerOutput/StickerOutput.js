@@ -1,5 +1,5 @@
 import React from 'react';
-import {getStickerText, getTitle} from "../../functions/processSticker";
+import {getOrigin, getTitle} from "../../functions/sticker-output-utils";
 
 
 const INITIAL_STATE = {
@@ -42,7 +42,7 @@ export const StickerOutput = ({sticker}) => {
     debugger
 
     const title =getTitle(sticker);
-    const mainText = getStickerText(sticker);
+    const mainText = getOrigin(sticker);
 
     debugger
     return (

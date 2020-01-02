@@ -36,7 +36,7 @@ export const Navbar = (props) => {
 
 
                     <li className="nav-item">
-                        <NavLink className="nav-link" to={'/about'}>ABOUT</NavLink>
+                        <NavLink className="nav-link" to={'/about'}>HELP</NavLink>
                     </li>
 
                     {user &&
@@ -73,7 +73,7 @@ export const Navbar = (props) => {
                              <span className='text-dark pr-5 pointer' onClick={handleLogout}>Logout</span>
                          </>
                      )
-                     : (<NavLink to="/login" className="nav-link"> Login </NavLink>)
+                     : (<NavLink to="/login" className=""> Login </NavLink>)
                  }
 
                 </span>

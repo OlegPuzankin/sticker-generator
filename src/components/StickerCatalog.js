@@ -1,69 +1,69 @@
 import React from 'react';
 import {useDispatch, useSelector} from "react-redux";
-import {getSticker, loadCollection, loadStickers} from "../firebase/firebaseFunctions";
+import {getItemCollectionById} from "../firebase/firebaseFunctions";
 import {Loader} from "../UI/Loader";
 import {StickerCard} from "./StickerCard/StickerCard";
 import {InputGroup} from "../UI/InputGroup";
-import {addStickerToBundle, removeStickerFromBundle, setStickerState} from "../redux/actions/stickersActions";
+import {
+    addStickerToBundle,
+    removeStickerFromBundle,
+    setStickersAction,
+    setStickerState
+} from "../redux/actions/stickersActions";
 import {hideAlert} from "../redux/actions/alertActions";
-import {AddStickerCard} from "./StickerCard/AddStickerCard";
+import {selectStickersBundle, selectStickersCatalog} from "../redux/selectors/stickers-selectors";
+import {selectIsLoading} from "../redux/selectors/firebase-redux-selectors";
+import {StickerCard2} from "./StickerCard/StickerCard2";
+import {FirebaseContext} from "../firebase";
 
 export const StickerCatalog = ({history}) => {
 
-    const {stickersBundle} = useSelector(state => state.stickers);
+    const stickersBundle = useSelector(selectStickersBundle);
+    const {user} = React.useContext(FirebaseContext);
+
+    //todo selector
+    const stickers = useSelector(selectStickersCatalog);
+    const loading = useSelector(selectIsLoading);
+    //debugger
     const dispatch = useDispatch();
-
-
-    const [stickers, setStickers] = React.useState([]);
     const [query, setQuery] = React.useState('');
-    const [loading, setLoading] = React.useState(false);
-
     const [filteredStickers, setFilteredStickers] = React.useState([]);
 
-
-    async function loadData() {
-        setLoading(true);
-        const response = await loadStickers();
-        const stickers = response.map(s => {
-            return {...s, isAddedToBundle: false}
-        });
-        if (stickersBundle.length > 0) {
-            stickers.forEach(s => {
-                stickersBundle.forEach(sb => {
-                    if (s.id === sb.id) {
-                        s.isAddedToBundle = true
-                    }
-                })
-            })
-        }
-        setStickers(stickers);
-        setLoading(false)
-    }
-
     React.useEffect(() => {
-        const filteredStickers = stickers.filter(sticker => {
-            return (
-                sticker.country.toLowerCase().includes(query.toLowerCase())
-                ||
-                sticker.originalTitle.toLowerCase().includes(query.toLowerCase())
-            )
-        });
 
-        setFilteredStickers(filteredStickers)
+        if (stickers.length) {
+            const filteredStickers = stickers.filter(sticker => {
+                return (
+                    sticker.country.toLowerCase().includes(query.toLowerCase())
+                    ||
+                    sticker.originalTitle.toLowerCase().includes(query.toLowerCase())
+                )
+            });
+            setFilteredStickers(filteredStickers)
+        }
 
     }, [query, stickers]);
 
 
     function handleDeleteSticker(stickerId) {
-        const stickerRef = getSticker(stickerId);
+        //const stickerRef = getSticker(stickerId);
+        const stickerRef=getItemCollectionById('stickers',stickerId);
+        debugger
+
         stickerRef.delete().then(() => {
             const updatedStickers = stickers.filter(s => s.id !== stickerId);
-            setStickers(updatedStickers);
+            dispatch(setStickersAction(updatedStickers));
+            const stickerToRemoveFromBundle = stickersBundle.find(s => s.id === stickerId);
+            debugger
+            if (stickerToRemoveFromBundle) {
+                dispatch(removeStickerFromBundle(stickerToRemoveFromBundle))
+            }
+            //setStickers(updatedStickers);
         })
     }
 
     function sendStickerToEdit(sticker) {
-        // debugger
+        //
 
         dispatch(setStickerState(sticker));
         dispatch(hideAlert());
@@ -78,24 +78,10 @@ export const StickerCatalog = ({history}) => {
         const s = stickers[stickerIndex];
 
         if (s.isAddedToBundle) {
-            dispatch(removeStickerFromBundle(s.id));
+            dispatch(removeStickerFromBundle(s));
         } else
             dispatch(addStickerToBundle(s));
-
-
-        const updatedSticker = {...s, isAddedToBundle: !s.isAddedToBundle};
-
-        const updatedStickers = [...stickers];
-        updatedStickers[stickerIndex] = updatedSticker;
-        setStickers(updatedStickers);
-
     }
-
-
-    React.useEffect(() => {
-
-        loadData()
-    }, []);
 
 
     // console.log('stickers', stickers);
@@ -110,11 +96,11 @@ export const StickerCatalog = ({history}) => {
 
     return (
         <>
-            <div className='position-fixed add-sticker-container'>
-                <button onClick={()=>history.push('/create') } className='btn btn-primary btn-circle '>
+            {user&&<div className='position-fixed add-sticker-container'>
+                <button onClick={() => history.push('/create')} className='btn btn-primary btn-circle '>
                     <i className="fas fa-plus fa-lg"></i>
                 </button>
-            </div>
+            </div>}
 
             <div className='container'>
                 <div className='row mt-2'>
@@ -147,11 +133,11 @@ export const StickerCatalog = ({history}) => {
                         filteredStickers.map((sticker) => {
                             return (
                                 <div className='col-4 p-1' key={sticker.id}>
-                                    <StickerCard sticker={sticker}
-                                                 stickersBundle={stickersBundle}
-                                                 toggleStickerToBundle={toggleStickerToBundle}
-                                                 handleDeleteSticker={handleDeleteSticker}
-                                                 sendStickerToEdit={sendStickerToEdit}
+                                    <StickerCard2 sticker={sticker}
+                                                  stickersBundle={stickersBundle}
+                                                  toggleStickerToBundle={toggleStickerToBundle}
+                                                  handleDeleteSticker={handleDeleteSticker}
+                                                  sendStickerToEdit={sendStickerToEdit}
                                     />
 
                                 </div>

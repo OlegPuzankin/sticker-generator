@@ -6,6 +6,8 @@ const initialState = {
     sku: '',
     producer: '',
     originalTitle: '',
+    stickerTitle: '',
+    //todo stickerTitle
     country: '',
     region: '',
     appellation: '',
@@ -14,17 +16,17 @@ const initialState = {
     alcohol: 12,
     sugar: 4,
     servingTemperature: 12,
-    shelfLifetime: 12,
+    shelfLifetime: 3,
     lotNumber: 'вказано на пляшці',
     regionControl: '',
     selectedGrapes: [],
 
     currentGrape: '',
     harvestYear: '2002',
-    bottlingYear: '2011-11',
+    bottlingYear: '2018-01-01',
 };
 
-export const stickerStateReducer = (state=initialState, action) => {
+export const formStateReducer = (state=initialState, action) => {
     const {payload} = action;
     //debugger
 

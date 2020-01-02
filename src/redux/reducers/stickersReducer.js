@@ -1,52 +1,50 @@
-import {ADD_STICKER_TO_BUNDLE, REMOVE_STICKER_FROM_BUNDLE, RESET_STICKER_STATE, SET_STICKER_STATE} from "../types";
+import {
+    ADD_STICKER_TO_BUNDLE,
+    ADD_STICKER_TO_STORE,
+    REMOVE_STICKER_FROM_BUNDLE,
+    SET_STICKERS,
+    UPDATE_STICKER_IN_STORE
+} from "../types";
+import {getUpdatedStickers} from "../../functions/redux-utils";
 
 
 const initialState = {
+    stickersCatalog: [],
     stickersBundle: [],
-    editSticker: {},
-    stickerState:{
-        id: null,
-        sku: '',
-        producer: '',
-        originalTitle: '',
-        country: '',
-        region: '',
-        appellation: '',
-        volume: 750,
-        color: '',
-        alcohol: 12,
-        sugar: 4,
-        servingTemperature: 12,
-        shelfLifetime: 12,
-        lotNumber: 'вказано на пляшці',
-        regionControl: '',
-        selectedGrapes: [],
-
-        currentGrape: '',
-        harvestYear: '2002',
-        bottlingYear: '2011-11',
-    }
 };
 
 export const stickersReducer = (state = initialState, action) => {
     const {payload} = action;
-    //debugger
+
+    let updatedStickers = [];
 
     switch (action.type) {
         case ADD_STICKER_TO_BUNDLE:
-            return {...state, stickersBundle: [...state.stickersBundle, payload]};
+           updatedStickers=getUpdatedStickers(state.stickersCatalog, payload.id, true)
+            return {...state, stickersBundle: [...state.stickersBundle, payload], stickersCatalog: updatedStickers};
 
         case REMOVE_STICKER_FROM_BUNDLE:
-            const removed = state.stickersBundle.filter(s => s.id !== payload)
-            return {...state, stickersBundle: [...removed]};
 
-        // case RESET_STICKER_STATE:
-        //     debugger
-        //     return {...state, stickerState: initialState.stickerState }
+            const removed = state.stickersBundle.filter(s => s.id !== payload.id);
+            updatedStickers = getUpdatedStickers(state.stickersCatalog, payload.id, false)
+            return {...state, stickersBundle: [...removed], stickersCatalog: updatedStickers};
 
-        // case SET_STICKER_STATE:
-        //     debugger
-        //     return {...state, stickerState: payload};
+        case SET_STICKERS:
+
+            return {...state, stickersCatalog: payload};
+
+        case ADD_STICKER_TO_STORE:
+            return {...state, stickersCatalog: [payload, ...state.stickersCatalog]};
+        case UPDATE_STICKER_IN_STORE:
+            debugger
+            const updatedStickerIndex=state.stickersCatalog.findIndex(sticker=>sticker.id===payload.id);
+            updatedStickers = [
+                ...state.stickersCatalog.slice(0, updatedStickerIndex),
+                payload,
+                ...state.stickersCatalog.slice(updatedStickerIndex+1)
+            ];
+            debugger
+            return {...state, stickersCatalog:updatedStickers}
 
         default:
             return state

@@ -13,10 +13,9 @@ import {EditGrapes} from "./components/EditDB/EditGrapes";
 import {EditProducers} from "./components/EditDB/EditProducers";
 import Navbar from "./components/Navbar/Navbar";
 import {Preview} from "./components/Preview/Preview";
-import {CreateSticker2} from "./components/CreateStickerForm/CreateSticker2";
 import {CreateEditSticker} from "./components/CreateStickerForm/CreateEditSticker";
 import {useDispatch, useSelector} from "react-redux";
-import {loadCollection} from "./firebase/firebaseFunctions";
+import {loadCollection, loadStickers} from "./firebase/firebaseFunctions";
 import {
     setAppellationsData,
     setCountriesData,
@@ -24,11 +23,35 @@ import {
     setProducersData,
     setRegionsData
 } from "./redux/actions/firebaseReduxActions";
-import {Loader} from "./UI/Loader";
+import {setStickersAction} from "./redux/actions/stickersActions";
+import {selectStickersBundle} from "./redux/selectors/stickers-selectors";
+import {Preview2} from "./components/Preview/Preview2";
 
 export const App = (props) => {
 
     const dispatch = useDispatch();
+    const stickersBundle = useSelector(selectStickersBundle);
+
+    async function loadAndSyncStickersState(){
+        const response = await loadStickers();
+        const stickers = response.map(s => {
+            return {...s, isAddedToBundle: false}
+        });
+
+        dispatch(setStickersAction(stickers));
+
+        if (stickersBundle.length > 0) {
+            stickers.forEach(s => {
+                stickersBundle.forEach(sb => {
+                    if (s.id === sb.id) {
+                        s.isAddedToBundle = true
+                    }
+                })
+            })
+        }
+        dispatch(setStickersAction(stickers));
+    }
+
 
     ////////////////////////LOAD DATA FROM FIREBASE EFFECT//////////////////////////////////////////
     React.useEffect(() => {
@@ -38,6 +61,9 @@ export const App = (props) => {
 
             dispatch(setLoading(true));
 
+            await loadAndSyncStickersState();
+            //debugger
+
             const countries = await loadCollection('countries');
             const regions = await loadCollection('regions');
             const appellations = await loadCollection('appellations');
@@ -45,7 +71,7 @@ export const App = (props) => {
             const grapes = await loadCollection('grapes');
             const harvestYears = await loadCollection('harvest');
 
-            debugger
+            //debugger
 
             dispatch(setCountriesData(countries));
             dispatch(setRegionsData(regions));
@@ -62,7 +88,7 @@ export const App = (props) => {
 
         return () => promise;
 
-    }, [loadCollection]);
+    }, []);
 
 
 
@@ -82,7 +108,7 @@ export const App = (props) => {
              <Route path={'/edit-producers'} component={EditProducers}/>
              <Route path={'/login'} component={Login}/>
              <Route path={'/forgot'} component={ForgotPassword}/>
-             <Route path={'/preview'} component={Preview}/>
+             <Route path={'/preview'} component={Preview2}/>
          </Switch>
      </>
  );

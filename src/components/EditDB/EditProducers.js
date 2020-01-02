@@ -4,27 +4,35 @@ import {FirebaseContext} from "../../firebase";
 import {InputGroup} from "../../UI/InputGroup";
 import {addItemInCollection, getItemCollectionByName, loadAndSyncCollection} from "../../firebase/firebaseFunctions";
 import {Loader} from "../../UI/Loader";
+import {TextArea} from "../../UI/TextArea";
 
 
 const INITIAL_STATE = {
 
     producer: '',
+    producerFullData: '',
     selectedProducer: '',
     producers: []
 
 };
 
 function reducer(state, action) {
+    const {payload}=action;
     switch (action.type) {
 
         case 'SET_PRODUCERS':
-            return {...state, producers: action.payload}
+            return {...state, producers:payload};
         case 'SET_SELECTED_PRODUCER':
-            return {...state, selectedProducer: action.payload, producer: action.payload}
+            debugger
+            const selectedProducer= state.producers.find(pr=>pr.name===payload);
+            debugger
+            return {...state, selectedProducer: payload, producer: payload, producerFullData: selectedProducer.producerFullData};
         case 'SET_PRODUCER_VALUE':
-            return {...state, producer: action.payload}
+            return {...state, producer: payload};
+        case 'SET_PRODUCER_FULL_DATA':
+            return {...state, producerFullData: payload};
         case 'RESET':
-            return {...state, selectedProducer: '', producer: ''}
+            return {...state, selectedProducer: '', producer: '', producerFullData:''};
 
 
         default:
@@ -36,12 +44,12 @@ function reducer(state, action) {
 export const EditProducers = () => {
 
 
-        const [state, dispatch] = React.useReducer(reducer, INITIAL_STATE)
+        const [state, dispatch] = React.useReducer(reducer, INITIAL_STATE);
 
         //////////////////////////////////ADD PRODUCER/////////////////////////////////
         async function handleAddProducer() {
             try {
-                await addItemInCollection('producers', {name: state.producer})
+                await addItemInCollection('producers', {name: state.producer, producerFullData:state.producerFullData});
                 //await producersRef.add({name: state.producer});
                 dispatch({type: 'RESET'})
             } catch (e) {
@@ -51,9 +59,9 @@ export const EditProducers = () => {
 
         //////////////////////////////////UPDATE PRODUCER/////////////////////////////////
         async function handleUpdateProducer() {
-            const producerRef = await getItemCollectionByName('producers', state.selectedProducer)
+            const producerRef = await getItemCollectionByName('producers', state.selectedProducer);
 
-            producerRef.update({name: state.producer})
+            producerRef.update({name: state.producer, producerFullData: state.producerFullData})
                 .then(() => {
                     dispatch({type: 'RESET'})
                 })
@@ -66,7 +74,7 @@ export const EditProducers = () => {
 //////////////////////////////////DELETE PRODUCER/////////////////////////////////
         async function handleDeleteProducer() {
 
-            const producerRef = await getItemCollectionByName('producers', state.selectedProducer)
+            const producerRef = await getItemCollectionByName('producers', state.selectedProducer);
             producerRef.delete()
                 .then(() => {
                     dispatch({type: 'RESET'})
@@ -91,8 +99,12 @@ export const EditProducers = () => {
             dispatch({type: 'SET_SELECTED_PRODUCER', payload: e.target.value})
         }
 
-        function handleInputChange(e) {
+        function handleInputProducer(e) {
             dispatch({type: 'SET_PRODUCER_VALUE', payload: e.target.value})
+        }
+
+        function handleInputFullData(e) {
+            dispatch({type: 'SET_PRODUCER_FULL_DATA', payload: e.target.value})
         }
 
 ///////////////////////////////////////////////////RENDER//////////////////////////////////////////////////
@@ -115,17 +127,27 @@ export const EditProducers = () => {
                             items={getProducersName()}
                             // label={'Countries'}
                             changeHandler={handleSelectProducer}
+                            height={200}
                             name={'selectedProducer'}/>
 
                         <div className='row'>
 
                             <div className='col-12 mb-2'>
-                                <InputGroup name={'country'}
+                                <InputGroup name={'producer'}
                                             type={'text'}
-                                            labelWidth={100}
-                                            changeHandler={handleInputChange}
+                                            labelWidth={180}
+                                            changeHandler={handleInputProducer}
                                             value={state.producer}
-                                            label={'Producer'}/>
+                                            label={'Producer (short name)'}/>
+                            </div>
+
+                            <div className='col-12 mb-2'>
+                                <TextArea
+                                    label={'Producer detail data'}
+                                    changeHandler={handleInputFullData}
+                                    value={state.producerFullData}
+                                />
+
                             </div>
 
 

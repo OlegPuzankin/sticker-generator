@@ -32,7 +32,7 @@ export const Login = (props) => {
             login
                 ? await firebase.login(email, password)
                 : await firebase.register(name, email, password);
-            props.history.push('/create')
+            props.history.push('/')
         } catch (error) {
             setLoginError(error.message)
         }

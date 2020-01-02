@@ -2,7 +2,7 @@ import {createStore, combineReducers} from "redux";
 import {alertReducer} from "./reducers/alertReducer";
 import {stickersReducer} from "./reducers/stickersReducer";
 import {firebaseReduxReducer} from "./reducers/firebaseReduxReducer";
-import {stickerStateReducer} from "./reducers/stickerStateReducer";
+import {formStateReducer} from "./reducers/formStateReducer";
 import {persistReducer, persistStore} from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 
@@ -23,7 +23,7 @@ const rootReducer = combineReducers({
     alert: alertReducer,
     stickers: stickersReducer,
     firebaseRedux: firebaseReduxReducer,
-    stickerState: stickerStateReducer
+    formState: formStateReducer
 
 });
 
