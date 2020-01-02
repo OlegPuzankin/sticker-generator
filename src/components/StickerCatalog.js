@@ -19,11 +19,8 @@ export const StickerCatalog = ({history}) => {
 
     const stickersBundle = useSelector(selectStickersBundle);
     const {user} = React.useContext(FirebaseContext);
-
-    //todo selector
     const stickers = useSelector(selectStickersCatalog);
     const loading = useSelector(selectIsLoading);
-    //debugger
     const dispatch = useDispatch();
     const [query, setQuery] = React.useState('');
     const [filteredStickers, setFilteredStickers] = React.useState([]);
@@ -40,20 +37,21 @@ export const StickerCatalog = ({history}) => {
             });
             setFilteredStickers(filteredStickers)
         }
+        else
+            setFilteredStickers([])
 
-    }, [query, stickers]);
+    }, [query, stickers.length]);
 
 
     function handleDeleteSticker(stickerId) {
         //const stickerRef = getSticker(stickerId);
         const stickerRef=getItemCollectionById('stickers',stickerId);
-        debugger
 
         stickerRef.delete().then(() => {
             const updatedStickers = stickers.filter(s => s.id !== stickerId);
+            console.log(updatedStickers);
             dispatch(setStickersAction(updatedStickers));
             const stickerToRemoveFromBundle = stickersBundle.find(s => s.id === stickerId);
-            debugger
             if (stickerToRemoveFromBundle) {
                 dispatch(removeStickerFromBundle(stickerToRemoveFromBundle))
             }
@@ -62,11 +60,8 @@ export const StickerCatalog = ({history}) => {
     }
 
     function sendStickerToEdit(sticker) {
-        //
-
         dispatch(setStickerState(sticker));
         dispatch(hideAlert());
-
         history.push('/create')
     }
 

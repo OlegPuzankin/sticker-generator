@@ -28,6 +28,8 @@ import {
 } from "../../redux/selectors/firebase-redux-selectors";
 import {selectFormState} from "../../redux/selectors/form-state-selectors";
 import {ListBoxGrapes} from "../../UI/ListBoxGrapes";
+import {FirebaseContext} from "../../firebase";
+import {Redirect} from "react-router-dom";
 
 
 const regionControlTypes = ['None', 'PDO', 'PJI'];
@@ -35,11 +37,11 @@ const colors = ['червоне', 'біле', 'рожеве'];
 
 
 export const CreateEditSticker = (props) => {
-        //just for testing purpose
-        //const [toggle, setToggle] = React.useState(true);
+
+        const {user} = React.useContext(FirebaseContext);
+
 
         const [filteredGrapes, setFilteredGrapes] = React.useState([]);
-        //const [selectedGrapes, setSelectedGrapes] = React.useState([]);
 
         const [filteredRegions, setFilteredRegions] = React.useState([]);
         const [filteredAppellations, setFilteredAppellations] = React.useState([]);
@@ -68,21 +70,41 @@ export const CreateEditSticker = (props) => {
         const {changeHandler, submitHandler, setValues, values, errors, isTriedSubmit, handleBlur, setIsTriedSubmit} =
             useFormValidationStickerForm(stickerState,
                 validateCreateStickerForm,
-                saveSticker,
+                handleDone,
                 dispatch
             );
 
 
 ////////////////////////////////////////////////////FUNCTIONS///////////////////////////////////////////
 
-        async function saveSticker() {
+        function clearForm() {
+            setValues({
+                ...values,
+                id: null,
+                sku: '',
+                originalTitle: '',
+                stickerTitle: '',
+                selectedGrapes: [],
+                color: '',
+                producer: '',
+                country: '',
+                region: '',
+                currentGrape: '',
+                appellation: '',
+                regionControl: '',
+            });
+            setFilteredGrapes(grapes);
+            setIsTriedSubmit(false);
+        }
 
+
+        async function handleDone() {
             const producer = producers.find(producer => producer.name === values.producer);
             debugger
 
             const sticker = {
                 originalTitle: values.originalTitle,
-                stickerTitle:values.stickerTitle,
+                stickerTitle: values.stickerTitle,
                 color: values.color,
                 producer: values.producer,
                 producerFullData: producer.producerFullData,
@@ -99,37 +121,41 @@ export const CreateEditSticker = (props) => {
                 harvestYear: values.harvestYear,
                 bottlingYear: values.bottlingYear,
                 selectedGrapes: values.selectedGrapes,
-                sku:values.sku,
+                sku: values.sku,
                 created: new Date(),
             };
-
-
             if (values.id) {
-
-                await getItemCollectionById('stickers', stickerState.id).update(sticker);
-                dispatch(updateStickerInStore({
-                    ...sticker,
-                    id: stickerState.id,
-                    isAddedToBundle: stickerState.isAddedToBundle
-                }));
-                dispatch(showAlert('Sticker was updated', 'primary'));
-                setTimeout(() => {
-                    //setToggle(false)
-                    dispatch(hideAlert());
-                }, 4500);
-
+                await updateSticker(sticker)
             } else {
-                const response = await addItemInCollection('stickers', sticker);
-
-                debugger
-                dispatch(addStickerToStore({...sticker, id: response.id, isAddedToBundle: false}))
-                dispatch(showAlert('Sticker was created', 'primary'));
-                setTimeout(() => {
-                    //setToggle(false)
-                    dispatch(hideAlert());
-                    clearFormHandler();
-                }, 4500);
+                await saveSticker(sticker)
             }
+        }
+
+
+        async function saveSticker(sticker) {
+            const response = await addItemInCollection('stickers', sticker);
+            debugger
+            dispatch(addStickerToStore({...sticker, id: response.id, isAddedToBundle: false}));
+            dispatch(showAlert('Sticker was created', 'primary'));
+            setTimeout(() => {
+                dispatch(hideAlert());
+                clearForm();
+            }, 4500);
+
+        }
+
+        async function updateSticker(sticker) {
+            await getItemCollectionById('stickers', values.id).update(sticker);
+            dispatch(updateStickerInStore({
+                ...sticker,
+                id: stickerState.id,
+                isAddedToBundle: stickerState.isAddedToBundle
+            }));
+            dispatch(showAlert('Sticker was updated', 'primary'));
+            setTimeout(() => {
+                dispatch(hideAlert());
+            }, 4500);
+
         }
 
         function resetGrapes(e) {
@@ -141,34 +167,15 @@ export const CreateEditSticker = (props) => {
         }
 
         function clearFormHandler(e) {
-            e.preventDefault()
 
-            if(values.id){
-                setValues({
-                    ...values,
-                    id: null,
-                    sku: '',
-                    originalTitle: '',
-                    stickerTitle: '',
-                    selectedGrapes: [],
-                    color: '',
-                    producer: '',
-                    country: '',
-                    region: '',
-                    currentGrape: '',
-                    appellation: '',
-                    regionControl: '',
-                });
-                setFilteredGrapes(grapes);
-                setIsTriedSubmit(false);
+            e.preventDefault();
+            clearForm();
 
-                dispatch(showAlert('Form was cleared', 'primary'));
-                setTimeout(() => {
-                    //setToggle(false)
-                    dispatch(hideAlert());
-                }, 4500);
-
-            }
+            dispatch(showAlert('Form was cleared', 'primary'));
+            setTimeout(() => {
+                //setToggle(false)
+                dispatch(hideAlert());
+            }, 2000);
         }
 
         ////////////////////SELECT COUNTRY EFFECT////////////////////////////////////////
@@ -284,6 +291,11 @@ export const CreateEditSticker = (props) => {
         console.log('stickerState', stickerState);
         // console.log('isTriedSubmit', isTriedSubmit)
 
+        if (!user) {
+            return <Redirect to={'/'}/>
+        }
+
+
         if (isLoading) {
             return <Loader/>
         }
@@ -297,7 +309,7 @@ export const CreateEditSticker = (props) => {
                         <Transition
                             in={alertState.isShowAlert}
                             timeout={{
-                                enter: 800,
+                                enter: 700,
                                 exit: 400
                             }}
                             mountOnEnter
@@ -489,7 +501,7 @@ export const CreateEditSticker = (props) => {
                             />
 
                             <ComboBoxGroup name='appellation'
-                                           placeholder={'Select appellation'}F
+                                           placeholder={'Select appellation'} F
                                            value={values.appellation}
                                            error={errors['appellation']}
                                            items={getAppellationsName(filteredAppellations)}

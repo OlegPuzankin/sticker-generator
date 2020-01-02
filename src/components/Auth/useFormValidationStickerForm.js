@@ -10,19 +10,15 @@ function useFormValidationStickerForm(initialState, validate, submit, dispatch) 
 
 
     React.useEffect(() => {
-        //debugger
         if (isSubmitting) {
             const noErrors = (Object.keys(errors).length === 0);
             if (noErrors) {
-                //debugger
                 submit();
                 setIsSubmitting(false);
             } else {
 
                 dispatch(showAlert('Please check all fields', 'danger'));
-                //setToggle(true);
                 setTimeout(() => {
-                   //setToggle(false);
                     dispatch(hideAlert())
                  }, 4500);
                 setIsSubmitting(false);
