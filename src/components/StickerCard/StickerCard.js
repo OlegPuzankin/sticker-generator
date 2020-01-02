@@ -1,47 +1,64 @@
 import React from 'react';
-import cn from 'classnames'
 import '@fortawesome/fontawesome-free/css/all.css'
+import format from 'date-fns/format'
 
 
 export const StickerCard = ({sticker, handleDeleteSticker, toggleStickerToBundle, sendStickerToEdit}) => {
 
 
     const grapes = sticker.selectedGrapes.join(', ');
+    const bottlingDate = format(new Date (sticker.bottlingYear), 'dd.MM.yyyy');
+
 
 
     return (
-        <div className={`card h-100 ${cn({'bg-info':sticker.isAddedToBundle})}`} onClick={()=>toggleStickerToBundle(sticker.id)}>
-            <div className="card-body d-flex flex-column justify-content-between">
-                <div className='d-flex flex-row justify-content-between'>
-                    <div className="card-title font-weight-bold w-80">{sticker.originalTitle}</div>
-                    <div className='pointer' onClick={() => handleDeleteSticker(sticker.id)}>
-                        <i className="fas fa-trash-alt"> </i>
-                    </div>
-                    <div className='pointer' onClick={() => sendStickerToEdit(sticker)}>
-                        <i className="fas fa-edit"> </i>
-                    </div>
+        <div className='card h-100 p-2'>
+
+
+            <div className='d-flex justify-content-between mb-1'>
+                <div className="font-weight-bold w-80">{sticker.originalTitle}</div>
+                <div className='pointer' onClick={() => handleDeleteSticker(sticker.id)}>
+                    <i className="fas fa-trash-alt"> </i>
                 </div>
+                <div className='pointer' onClick={() => sendStickerToEdit(sticker)}>
+                    <i className="fas fa-edit"> </i>
+                </div>
+            </div>
 
+            <div className='d-flex flex-column justify-content-between h-100'>
+                <div>
+                    <div>Виробник: {sticker.producer}</div>
+                    <div>Країна: {sticker.country}</div>
+                    {/*<div className='card-text'>Region control: {sticker.regionControl}</div>*/}
+                    {sticker.region && <div>Регіон: {sticker.region}</div>}
+                    {sticker.appellation && <div>Апеласьон: {sticker.appellation}</div>}
+                    <div>Сорти винограду: <em>{grapes}</em></div>
+                    <span className='mr-1'>
+                        {sticker.color.toUpperCase()}, рік: {sticker.harvestYear}, алк.: {sticker.alcohol}%, bottled:{bottlingDate}
+                    </span>
+                </div>
+                <div className='d-flex mt-1 align-items-center justify-content-center'>
+                    {/*<div className='w-50'>*/}
+                    {/*    <span className='mr-1'>Колір:{sticker.color}</span>*/}
+                    {/*    <span className='mr-1'>Рік:{sticker.harvestYear}</span>*/}
 
-                <div className='card-text'>Country: {sticker.country}</div>
-                <div className='card-text'>Region control: {sticker.regionControl}</div>
+                    {/*</div>*/}
+                    {/*<span>Алк.:{sticker.alcohol}%</span>*/}
 
-                {sticker.region && <div className='card-text'>Region: {sticker.region}</div>}
-                {sticker.appellation && <div className='card-text'>Appellation: {sticker.appellation}</div>}
+                    <div className='text-center w-75'>
+                        {sticker.isAddedToBundle
+                            ?
+                            <button className="btn btn-sm btn-primary w-100"
+                                    onClick={() => toggleStickerToBundle(sticker.id)}>Remove</button>
+                            : <button className="btn btn-sm btn-warning w-100"
+                                      onClick={() => toggleStickerToBundle(sticker.id)}>Add</button>
+                        }
+                    </div>
 
-                <div className="card-text">Grapes: {grapes}</div>
-
-                {/*<div className='text-center mt-1'>*/}
-                {/*    {sticker.isAddedToBundle*/}
-                {/*        ?*/}
-                {/*        <button className="btn btn-primary w-50"*/}
-                {/*                onClick={() => toggleStickerToBundle(sticker.id)}>Remove</button>*/}
-                {/*        : <button className="btn btn-warning w-50"*/}
-                {/*                  onClick={() => toggleStickerToBundle(sticker.id)}>Add</button>*/}
-                {/*    }*/}
-                {/*</div>*/}
+                </div>
             </div>
         </div>
+
     );
 };
 

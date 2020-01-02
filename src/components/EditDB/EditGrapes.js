@@ -1,14 +1,19 @@
 import React from 'react';
 import {ListBox} from "../../UI/ListBox";
 import {InputGroup} from "../../UI/InputGroup";
-import {addItemInCollection, getItemCollectionByName, loadAndSyncCollection} from "../../firebase/firebaseFunctions";
+import {
+    addItemInCollection,
+    getItemCollectionById,
+    getItemCollectionByName,
+    loadAndSyncCollection
+} from "../../firebase/firebaseFunctions";
 
 
 const INITIAL_STATE = {
 
     grape: '',
     grapes: [],
-    selectedGrape: '',
+    selectedGrapeId: '',
     filteredGrapes: [],
 
     queryString: ''
@@ -16,20 +21,22 @@ const INITIAL_STATE = {
 };
 
 function reducer(state, action) {
+    const {payload}=action
     switch (action.type) {
 
         case 'SET_GRAPES':
-            return {...state, grapes: action.payload};
+            return {...state, grapes: payload};
         case 'SET_SELECTED_GRAPE':
-            return {...state, selectedGrape: action.payload, grape: action.payload};
+            const {id, name} = payload;
+            return {...state, selectedGrapeId: id, grape: name};
         case 'SET_GRAPE_VALUE':
-            return {...state, grape: action.payload};
+            return {...state, grape: payload};
         case 'SET_SEARCH_QUERY':
-            return {...state, queryString: action.payload};
+            return {...state, queryString: payload};
         case 'SET_FILTERED_GRAPES':
-            return {...state, filteredGrapes: action.payload};
+            return {...state, filteredGrapes: payload};
         case 'RESET':
-            return {...state, grape: '', queryString: ''};
+            return {...state, grape: '', selectedGrapeId: '', queryString: ''};
 
 
         default:
@@ -56,7 +63,7 @@ export const EditGrapes = () => {
 
         //////////////////////////////////UPDATE GRAPE/////////////////////////////////
         async function handleUpdateGrape() {
-            const grapeRef = await getItemCollectionByName('grapes', state.selectedGrape);
+            const grapeRef = await getItemCollectionById('grapes', state.selectedGrapeId);
 
             grapeRef.update({name: state.grape})
                 .then(() => {
@@ -70,7 +77,7 @@ export const EditGrapes = () => {
 
 //////////////////////////////////DELETE GRAPE/////////////////////////////////
         async function handleDeleteGrape() {
-            const grapeRef = await getItemCollectionByName('grapes', state.selectedGrape);
+            const grapeRef = await getItemCollectionById('grapes', state.selectedGrapeId);
             grapeRef.delete()
                 .then(() => {
                     dispatch({type: 'RESET'})
@@ -95,7 +102,8 @@ export const EditGrapes = () => {
         }
 
         function handleSelectGrape(e) {
-            dispatch({type: 'SET_SELECTED_GRAPE', payload: e.target.value})
+            const selectedGrape = state.grapes.find(g=>g.id===e.target.value)
+            dispatch({type: 'SET_SELECTED_GRAPE', payload: selectedGrape})
         }
 
         function handleInputChange(e) {
@@ -141,7 +149,7 @@ export const EditGrapes = () => {
                         />
 
                         <ListBox
-                            items={getGrapesName()}
+                            items={state.filteredGrapes}
                             changeHandler={handleSelectGrape}
                             height={350}
                             name={'selectedGrape'}/>
@@ -164,12 +172,12 @@ export const EditGrapes = () => {
                             </div>
 
                             <div className='col'>
-                                <button disabled={state.selectedGrape.length===0}className='btn btn-info btn-block btn-sm' onClick={handleUpdateGrape}>Update
+                                <button disabled={state.selectedGrapeId.length===0}className='btn btn-info btn-block btn-sm' onClick={handleUpdateGrape}>Update
                                 </button>
                             </div>
 
                             <div className='col'>
-                                <button disabled={state.selectedGrape.length===0} className='btn btn-danger btn-block btn-sm' onClick={handleDeleteGrape}>Delete
+                                <button disabled={state.selectedGrapeId.length===0} className='btn btn-danger btn-block btn-sm' onClick={handleDeleteGrape}>Delete
                                 </button>
                             </div>
                         </div>

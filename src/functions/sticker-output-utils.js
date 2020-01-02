@@ -43,15 +43,26 @@ export function getOrigin(sticker) {
         else
             result.push('. ')
     }
-    const grapes = sticker.selectedGrapes.join(', ');
+    const grapes=sticker.selectedGrapes.map(g=>g.toLowerCase())
+    const grapesResult = grapes.join(', ');
+    debugger
 
     if (sticker.selectedGrapes.length === 1)
-        result.push(`Сорт винограду: ${sticker.selectedGrapes}. `);
+        result.push(`Сорт винограду: ${grapesResult}. `);
     else
-        result.push(`Сорти винограду: ${grapes}. `);
+        result.push(`Сорти винограду: ${grapesResult}. `);
 
     result.push(`Рекомендована температура сервірування від +${sticker.servingTemperature}°С до +${Number(sticker.servingTemperature)+2}°С.`);
 
 
     return result.join('');
+}
+
+export function getShelfLifetime(shelfLifetime) {
+    if(Number(shelfLifetime)===1)
+        return `1 рік`;
+    else if (Number(shelfLifetime)>=5)
+        return `${shelfLifetime} років`;
+    else
+        return `${shelfLifetime} роки`
 }

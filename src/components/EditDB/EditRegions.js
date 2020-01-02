@@ -2,8 +2,14 @@ import React from 'react';
 import {ListBox} from "../../UI/ListBox";
 import {InputGroup} from "../../UI/InputGroup";
 import {ComboBoxGroup} from "../../UI/ComboBoxGroup";
-import {addItemInCollection, getItemCollectionByName, loadAndSyncCollection} from "../../firebase/firebaseFunctions";
+import {
+    addItemInCollection,
+    getItemCollectionById,
+    getItemCollectionByName,
+    loadAndSyncCollection
+} from "../../firebase/firebaseFunctions";
 import {Loader} from "../../UI/Loader";
+import {sanitizeHtml} from "bootstrap/js/src/tools/sanitizer";
 
 
 const INITIAL_STATE = {
@@ -13,30 +19,31 @@ const INITIAL_STATE = {
     region: '',
     regions: [],
     filteredRegions: [],
-    selectedRegion: '',
+    selectedRegionId: '',
 
     //refreshTrigger: true,
 };
 
 function reducer(state, action) {
+
+    const {payload}=action
     switch (action.type) {
 
         case 'SET_COUNTRIES':
-            return {...state, countries: action.payload};
+            return {...state, countries: payload};
         case 'SET_REGIONS':
-            return {...state, regions: action.payload};
+            return {...state, regions: payload};
         case 'SET_SELECTED_COUNTRY':
-            return {...state, selectedCountry: action.payload};
+            return {...state, selectedCountry: payload};
         case 'SET_FILTERED_REGIONS':
-            return {...state, filteredRegions: action.payload};
+            return {...state, filteredRegions: payload};
         case 'SET_SELECTED_REGION':
-            return {...state, selectedRegion: action.payload};
+            const {id, name}=payload;
+            return {...state, selectedRegionId: id, region: name};
         case 'SET_REGION_VALUE':
-            return {...state, region: action.payload};
-        // case 'REFRESH':
-        //     return {...state, refreshTrigger: !state.refreshTrigger};
+            return {...state, region: payload}
         case 'RESET':
-            return {...state, selectedRegion: '', region: ''};
+            return {...state, selectedRegionId: '', region: ''};
 
 
         default:
@@ -62,12 +69,16 @@ export const EditRegions = () => {
             const filteredRegions = state.regions.filter(r => r.country === selectedCountry);
             if (filteredRegions.length > 0)
                 dispatch({type: 'SET_FILTERED_REGIONS', payload: filteredRegions})
+            else
+                dispatch({type: 'SET_FILTERED_REGIONS', payload: []})
 
         }
 
         function handleSelectRegion(e) {
-            dispatch({type: 'SET_SELECTED_REGION', payload: e.target.value})
-            dispatch({type: 'SET_REGION_VALUE', payload: e.target.value})
+            const selectedRegion=state.regions.find(r=>r.id===e.target.value);
+            console.log (selectedRegion)
+            dispatch({type: 'SET_SELECTED_REGION', payload: selectedRegion})
+            // dispatch({type: 'SET_REGION_VALUE', payload: e.target.value})
         }
 
         function handleInputChange(e) {
@@ -79,10 +90,7 @@ export const EditRegions = () => {
             return state.countries.map(g => g.name);
         }
 
-        function getRegionsName() {
 
-            return state.filteredRegions.map(r => r.name);
-        }
 
 
         //////////////////////////////////ADD REGION/////////////////////////////////
@@ -101,8 +109,8 @@ export const EditRegions = () => {
         //////////////////////////////////UPDATE REGION/////////////////////////////////
         async function handleUpdateRegion() {
 
-            const regionRef = await getItemCollectionByName('regions', state.selectedRegion);
-            regionRef.update({name: state.region})
+            const regionRef = await getItemCollectionById('regions', state.selectedRegionId);
+            regionRef.update({name: state.region, country: state.selectedCountry})
                 .then(() => {
                     dispatch({type: 'RESET'})
                 })
@@ -115,7 +123,7 @@ export const EditRegions = () => {
 //////////////////////////////////DELETE REGION/////////////////////////////////
         async function handleDeleteRegion() {
 
-            const regionRef = await getItemCollectionByName('regions', state.selectedRegion);
+            const regionRef = await getItemCollectionById('regions', state.selectedRegionId);
 
             regionRef.delete()
                 .then(() => {
@@ -127,14 +135,14 @@ export const EditRegions = () => {
         }
 
 /////////////////////////////////LOAD AND SYNC DATA///////////////////////
-        React.useEffect(() => {
-            console.log('start load')
+        React.useEffect( () => {
+            // console.log('start load')
 
 
             loadAndSyncCollection('countries', dispatch, 'SET_COUNTRIES');
             loadAndSyncCollection('regions', dispatch, 'SET_REGIONS')
 
-            console.log('end load')
+            // console.log('end load')
 
 
         }, []);
@@ -162,9 +170,6 @@ export const EditRegions = () => {
             return <Loader/>
         }
 
-
-
-
         return (
 
             <div className='container'>
@@ -180,7 +185,7 @@ export const EditRegions = () => {
                                        changeHandler={handleSelectCountry}/>
 
                         <ListBox
-                            items={getRegionsName()}
+                            items={state.filteredRegions}
                             label={'Regions'}
                             changeHandler={handleSelectRegion}
                             height={350}
@@ -204,12 +209,12 @@ export const EditRegions = () => {
                             </div>
 
                             <div className='col'>
-                                <button disabled={state.selectedRegion.length===0} className='btn btn-info btn-block btn-sm' onClick={handleUpdateRegion}>Update
+                                <button disabled={state.selectedRegionId.length===0} className='btn btn-info btn-block btn-sm' onClick={handleUpdateRegion}>Update
                                 </button>
                             </div>
 
                             <div className='col'>
-                                <button disabled={state.selectedRegion.length===0} className='btn btn-danger btn-block btn-sm' onClick={handleDeleteRegion}>Delete
+                                <button disabled={state.selectedRegionId.length===0} className='btn btn-danger btn-block btn-sm' onClick={handleDeleteRegion}>Delete
                                 </button>
                             </div>
 

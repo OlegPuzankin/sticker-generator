@@ -5,28 +5,35 @@ import useFormValidation from "../Auth/useFormValidation";
 import validateEditDB from "./validateEditDB";
 import {InputGroup} from "../../UI/InputGroup";
 import {Loader} from "../../UI/Loader";
-import {addItemInCollection, getItemCollectionByName, loadAndSyncCollection} from "../../firebase/firebaseFunctions";
+import {
+    addItemInCollection,
+    getItemCollectionById,
+    getItemCollectionByName,
+    loadAndSyncCollection
+} from "../../firebase/firebaseFunctions";
 
 
 const INITIAL_STATE = {
 
     country: '',
-    selectedCountry: '',
+    selectedCountryId: '',
     countries: []
 
 };
 
 function reducer(state, action) {
+    const {payload}=action;
     switch (action.type) {
 
         case 'SET_COUNTRIES':
-            return {...state, countries: action.payload};
+            return {...state, countries: payload};
         case 'SET_SELECTED_COUNTRY':
-            return {...state, selectedCountry: action.payload, country: action.payload};
+            const {id, name}=payload;
+            return {...state, selectedCountryId: id, country: name};
         case 'SET_COUNTRY_VALUE':
-            return {...state, country: action.payload};
+            return {...state, country: payload};
         case 'RESET':
-            return {...state, country: ''};
+            return {...state, country: '', selectedCountryId: '' };
 
 
         default:
@@ -53,10 +60,8 @@ export const EditCountries = () => {
 
         //////////////////////////////////UPDATE COUNTRY/////////////////////////////////
         async function handleUpdateCountry() {
-
-
-            const countryRef = await getItemCollectionByName('countries', state.selectedCountry)
-
+            const countryRef = await getItemCollectionById('countries', state.selectedCountryId);
+            debugger
             countryRef.update({name: state.country})
                 .then(() => {
                     dispatch({type: 'RESET'})
@@ -64,13 +69,10 @@ export const EditCountries = () => {
                 .catch(error => {
                     console.log(error.message)
                 })
-
         }
-
 //////////////////////////////////DELETE COUNTRY/////////////////////////////////
         async function handleDeleteCountry() {
-
-            const countryRef = await getItemCollectionByName('countries', state.selectedCountry)
+            const countryRef = await getItemCollectionById('countries', state.selectedCountryId);
             countryRef.delete()
                 .then(() => {
                     dispatch({type: 'RESET'})
@@ -86,15 +88,17 @@ export const EditCountries = () => {
 
         }, []);
 
-
-
 ///////////////////////////////////////FUNCTIONS//////////////////////////////////////////////
         function getCountriesName() {
             return state.countries.map(c => c.name);
         }
 
         function handleSelectCountry(e) {
-            dispatch({type: 'SET_SELECTED_COUNTRY', payload: e.target.value})
+            const target = e.target.value;
+            const selectedCountry = state.countries.find(c=>c.id===target);
+            debugger
+            console.log(selectedCountry);
+            dispatch({type: 'SET_SELECTED_COUNTRY', payload: selectedCountry})
         }
 
         function handleInputChange(e) {
@@ -113,7 +117,8 @@ export const EditCountries = () => {
                         <div className='text-center h3 mb-1'>Edit countries</div>
 
                         <ListBox
-                            items={getCountriesName()}
+                            //items={getCountriesName()}
+                            items={state.countries}
                             // label={'Countries'}
                             changeHandler={handleSelectCountry}
                             height={350}
@@ -140,12 +145,12 @@ export const EditCountries = () => {
                             </div>
 
                             <div className='col'>
-                                <button disabled={state.selectedCountry.length===0} className='btn btn-info btn-block btn-sm' onClick={handleUpdateCountry}>Update
+                                <button disabled={state.selectedCountryId.length===0} className='btn btn-info btn-block btn-sm' onClick={handleUpdateCountry}>Update
                                 </button>
                             </div>
 
                             <div className='col'>
-                                <button disabled={state.selectedCountry.length===0} className='btn btn-danger btn-block btn-sm' onClick={handleDeleteCountry}>Delete
+                                <button disabled={state.selectedCountryId.length===0} className='btn btn-danger btn-block btn-sm' onClick={handleDeleteCountry}>Delete
                                 </button>
                             </div>
 

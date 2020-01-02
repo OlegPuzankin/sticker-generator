@@ -27,6 +27,7 @@ import {
     selectRegions
 } from "../../redux/selectors/firebase-redux-selectors";
 import {selectFormState} from "../../redux/selectors/form-state-selectors";
+import {ListBoxGrapes} from "../../UI/ListBoxGrapes";
 
 
 const regionControlTypes = ['None', 'PDO', 'PJI'];
@@ -98,6 +99,7 @@ export const CreateEditSticker = (props) => {
                 harvestYear: values.harvestYear,
                 bottlingYear: values.bottlingYear,
                 selectedGrapes: values.selectedGrapes,
+                sku:values.sku,
                 created: new Date(),
             };
 
@@ -138,26 +140,36 @@ export const CreateEditSticker = (props) => {
 
         }
 
-        function clearFormHandler() {
+        function clearFormHandler(e) {
+            e.preventDefault()
 
-            setValues({
-                ...values,
-                id: null,
-                sku: '',
-                originalTitle: '',
-                selectedGrapes: [],
-                color: '',
-                producer: '',
-                country: '',
-                region: '',
-                currentGrape: '',
-                appellation: '',
-                regionControl: '',
-            });
-            setFilteredGrapes(grapes);
-            setIsTriedSubmit(false);
+            if(values.id){
+                setValues({
+                    ...values,
+                    id: null,
+                    sku: '',
+                    originalTitle: '',
+                    stickerTitle: '',
+                    selectedGrapes: [],
+                    color: '',
+                    producer: '',
+                    country: '',
+                    region: '',
+                    currentGrape: '',
+                    appellation: '',
+                    regionControl: '',
+                });
+                setFilteredGrapes(grapes);
+                setIsTriedSubmit(false);
+
+                dispatch(showAlert('Form was cleared', 'primary'));
+                setTimeout(() => {
+                    //setToggle(false)
+                    dispatch(hideAlert());
+                }, 4500);
+
+            }
         }
-
 
         ////////////////////SELECT COUNTRY EFFECT////////////////////////////////////////
         React.useEffect(() => {
@@ -358,7 +370,7 @@ export const CreateEditSticker = (props) => {
                                 //handleBlur={handleBlur}
                                         value={values.volume}
                                         error={errors['volume']}
-                                        label={'Volume,ml'}/>
+                                        label={'Volume, ml'}/>
 
 
                             <InputGroup name={'alcohol'}
@@ -366,7 +378,7 @@ export const CreateEditSticker = (props) => {
                                         changeHandler={changeHandler}
                                         value={values.alcohol}
                                         error={errors['alcohol']}
-                                        label={'Alcohol %'}/>
+                                        label={'Alcohol, %'}/>
 
                             <InputGroup name={'sugar'}
                                         type={'number'}
@@ -374,7 +386,7 @@ export const CreateEditSticker = (props) => {
                                 //handleBlur={handleBlur}
                                         value={values.sugar}
                                         error={errors['sugar']}
-                                        label={'Sugar ml '}/>
+                                        label={'Sugar, ml '}/>
 
                             <InputGroup name={'shelfLifetime'}
                                         type={'number'}
@@ -382,7 +394,7 @@ export const CreateEditSticker = (props) => {
                                 //handleBlur={handleBlur}
                                         value={values.shelfLifetime}
                                         error={errors['shelfLifetime']}
-                                        label={'Shelf lifetime'}/>
+                                        label={'Shelf life, years'}/>
 
                             <InputGroup name={'servingTemperature'}
                                         type={'number'}
@@ -390,7 +402,7 @@ export const CreateEditSticker = (props) => {
                                 //handleBlur={handleBlur}
                                         value={values.servingTemperature}
                                         error={errors['servingTemperature']}
-                                        label={'Serving temp °С'}/>
+                                        label={'Serving temp, °С'}/>
 
 
                             <ComboBoxGroup name='harvestYear'
@@ -423,7 +435,7 @@ export const CreateEditSticker = (props) => {
                             />
 
                             <InputGroup name={'sku'}
-                                        value={alertState.sku}
+                                        value={values.sku}
                                         label={'SKU'}
                                         type={'text'}
                                         placeholder={'Enter SKU'}
@@ -477,7 +489,7 @@ export const CreateEditSticker = (props) => {
                             />
 
                             <ComboBoxGroup name='appellation'
-                                           placeholder={'Select appellation'}
+                                           placeholder={'Select appellation'}F
                                            value={values.appellation}
                                            error={errors['appellation']}
                                            items={getAppellationsName(filteredAppellations)}
@@ -501,8 +513,8 @@ export const CreateEditSticker = (props) => {
 
 
                             <div>
-                                <ListBox
-                                    items={getGrapesName(filteredGrapes)}
+                                <ListBoxGrapes
+                                    items={filteredGrapes}
                                     label={'Select grapes from the list below'}
                                     error={isTriedSubmit && errors.selectedGrapes}
                                     handleBlur={handleBlur}

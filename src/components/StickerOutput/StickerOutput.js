@@ -1,68 +1,78 @@
 import React from 'react';
-import {getOrigin, getTitle} from "../../functions/sticker-output-utils";
+import {getOrigin, getShelfLifetime, getTitle} from "../../functions/sticker-output-utils";
+import format from 'date-fns/format'
 
 
-const INITIAL_STATE = {
-    producer: '',
-    originalTitle: 'Some title',
-    country: '',
-    region: '',
-    appellation: '',
-    volume: 750,
-    color: '',
-    alcohol: 12,
-    sugar: 4,
-    servingTemperature: 12,
-    shelfLifetime: 12,
-    lotNumber: 'вказано на пляшці',
-    regionControl: '',
 
-    currentGrape: '',
-    harvestYear: '2002',
-    bottlingYear: '2011-11',
-
-    harvestYears: [],
-
-    grapes: [],
-    selectedGrapes: [],
-    filteredGrapes: [],
-    queryString: '',
-
-    countries: [],
-    regions: [],
-    appellations: [],
-    producers: [],
-
-
-    filteredRegions: [],
-    filteredAppellations: []
-
-};
 export const StickerOutput = ({sticker}) => {
-    debugger
+    const title = getTitle(sticker);
+    const origin = getOrigin(sticker);
+    const bottlingDate = format (new Date (sticker.bottlingYear), 'dd.MM.yyyy');
 
-    const title =getTitle(sticker);
-    const mainText = getOrigin(sticker);
-
     debugger
+    console.log('bottlingDate', bottlingDate);
+
     return (
-        <tr className=''>
-            <td className='w-25'>
-                <h5>
-                    {sticker.originalTitle}
-                </h5>
-            </td>
+        <div className='card d-flex flex-column p-2 mb-2'>
+            <h2 className='text-center mb-2'>
+                {sticker.originalTitle}
+            </h2>
 
-            <td className='w-75'>
-                <div className='text-center font-weight-bold'>
-                    {title}
+            <div className='d-flex flex-column border border-dark p-2'>
+                <h4 className='text-center'>{title}</h4>
+
+                <div>{origin} </div>
+
+                <div>
+                    Гарантійний термін зберігання {getShelfLifetime(sticker.shelfLifetime)}. Якщо після закінчення гарантійного терміну зберігання,
+                    не з’явились помутніння чи видимий осад, вино придатне для подальшого зберігання та реалізації.
+                    Зберігати в затемнених приміщеннях за температури від +5˚С до +20˚С. Без додавання спирту, цукру,
+                    без додавання концентратів.
+                </div>
+
+                <div>
+                    <b>Виробник: </b>
+                    {sticker.producerFullData}
+                </div>
+
+                <div>
+                    <b>Імпортер: </b>
+                    ТОВ «СІЛЬПО-ФУД» вул. Бутлерова 1, м. Київ, 02090, Україна, тел.: +38 044 496 32 55.
+                </div>
+
+                <div>
+                    <b>
+                        Заборонено вживати дітям віком до 18 років, вагітним жінкам, особам, які мають медичні чи
+                        професійні
+                        протипоказання до вживання алкогольних напоїв.
+                    </b>
+                </div>
+
+                <div>
+                    Дата виготовлення (розливу)/Bottling date: {bottlingDate}
+                </div>
+
+                <div>
+                    Номер партії/Lot number: {sticker.lotNumber}
+                </div>
+
+                <div>
+                    <b>Містить сульфіти. </b>
+                </div>
+
+                <div>
+                    Місткіть: {sticker.volume/1000} л(L)
                 </div>
                 <div>
-                    {mainText}
+                    Вміст спирту: {sticker.alcohol} об. (% vol.)
                 </div>
-            </td>
+            </div>
+
+            <br/>
 
 
-        </tr>
+        </div>
+
+
     );
 };

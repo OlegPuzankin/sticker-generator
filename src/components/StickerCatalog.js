@@ -2,7 +2,6 @@ import React from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {getItemCollectionById} from "../firebase/firebaseFunctions";
 import {Loader} from "../UI/Loader";
-import {StickerCard} from "./StickerCard/StickerCard";
 import {InputGroup} from "../UI/InputGroup";
 import {
     addStickerToBundle,
@@ -13,7 +12,7 @@ import {
 import {hideAlert} from "../redux/actions/alertActions";
 import {selectStickersBundle, selectStickersCatalog} from "../redux/selectors/stickers-selectors";
 import {selectIsLoading} from "../redux/selectors/firebase-redux-selectors";
-import {StickerCard2} from "./StickerCard/StickerCard2";
+import {StickerCard} from "./StickerCard/StickerCard";
 import {FirebaseContext} from "../firebase";
 
 export const StickerCatalog = ({history}) => {
@@ -133,11 +132,11 @@ export const StickerCatalog = ({history}) => {
                         filteredStickers.map((sticker) => {
                             return (
                                 <div className='col-4 p-1' key={sticker.id}>
-                                    <StickerCard2 sticker={sticker}
-                                                  stickersBundle={stickersBundle}
-                                                  toggleStickerToBundle={toggleStickerToBundle}
-                                                  handleDeleteSticker={handleDeleteSticker}
-                                                  sendStickerToEdit={sendStickerToEdit}
+                                    <StickerCard sticker={sticker}
+                                                 stickersBundle={stickersBundle}
+                                                 toggleStickerToBundle={toggleStickerToBundle}
+                                                 handleDeleteSticker={handleDeleteSticker}
+                                                 sendStickerToEdit={sendStickerToEdit}
                                     />
 
                                 </div>

@@ -12,7 +12,6 @@ import {EditAppellations} from "./components/EditDB/EditAppellations";
 import {EditGrapes} from "./components/EditDB/EditGrapes";
 import {EditProducers} from "./components/EditDB/EditProducers";
 import Navbar from "./components/Navbar/Navbar";
-import {Preview} from "./components/Preview/Preview";
 import {CreateEditSticker} from "./components/CreateStickerForm/CreateEditSticker";
 import {useDispatch, useSelector} from "react-redux";
 import {loadCollection, loadStickers} from "./firebase/firebaseFunctions";
@@ -25,7 +24,7 @@ import {
 } from "./redux/actions/firebaseReduxActions";
 import {setStickersAction} from "./redux/actions/stickersActions";
 import {selectStickersBundle} from "./redux/selectors/stickers-selectors";
-import {Preview2} from "./components/Preview/Preview2";
+import {Preview} from './components/Preview/Preview';
 
 export const App = (props) => {
 
@@ -108,7 +107,7 @@ export const App = (props) => {
              <Route path={'/edit-producers'} component={EditProducers}/>
              <Route path={'/login'} component={Login}/>
              <Route path={'/forgot'} component={ForgotPassword}/>
-             <Route path={'/preview'} component={Preview2}/>
+             <Route path={'/preview'} component={Preview}/>
          </Switch>
      </>
  );

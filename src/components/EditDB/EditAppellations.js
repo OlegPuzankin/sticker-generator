@@ -6,7 +6,7 @@ import validateEditDB from "./validateEditDB";
 import {InputGroup} from "../../UI/InputGroup";
 import {ComboBoxGroup} from "../../UI/ComboBoxGroup";
 import {
-    addItemInCollection,
+    addItemInCollection, getItemCollectionById,
     getItemCollectionByName,
     loadAndSyncCollection,
     loadCollection
@@ -26,7 +26,7 @@ const INITIAL_STATE = {
 
     appellations: [],
     appellation: '',
-    selectedAppellation: '',
+    selectedAppellationId: '',
     filteredAppellations: [],
     refreshTrigger: true,
 
@@ -34,35 +34,38 @@ const INITIAL_STATE = {
 };
 
 function reducer(state, action) {
+    const {payload}=action;
     switch (action.type) {
+
+
 
         case 'SET_COUNTRIES':
 
-            return {...state, countries: action.payload};
+            return {...state, countries: payload};
         case 'SET_REGIONS':
-            return {...state, regions: action.payload};
+            return {...state, regions:payload};
         case 'SET_APPELLATIONS':
-            return {...state, appellations: action.payload};
+            return {...state, appellations: payload};
 
         case 'SET_SELECTED_COUNTRY':
-            return {...state, selectedCountry: action.payload};
+            return {...state, selectedCountry:payload};
         case 'SET_SELECTED_REGION':
-            return {...state, selectedRegion: action.payload};
+            return {...state, selectedRegion: payload};
         case 'SET_SELECTED_APPELLATION':
-            return {...state, selectedAppellation: action.payload};
+            const {id, name} = payload;
+            return {...state, selectedAppellationId:id, appellation: name};
 
         case 'SET_FILTERED_APPELLATIONS':
-            return {...state, filteredAppellations: action.payload};
+            return {...state, filteredAppellations:payload};
 
         case 'SET_FILTERED_REGIONS':
-            return {...state, filteredRegions: action.payload};
+            return {...state, filteredRegions: payload};
 
         case 'SET_APPELLATION_VALUE':
-            return {...state, appellation: action.payload};
-        // case 'REFRESH':
-        //     return {...state, refreshTrigger: !state.refreshTrigger};
+            return {...state, appellation: payload};
+
         case 'RESET':
-            return {...state, selectedAppellation: '', appellation: ''};
+            return {...state, selectedAppellationId: '', appellation: ''};
 
 
         default:
@@ -119,8 +122,9 @@ export const EditAppellations = () => {
         }
 
         function handleSelectAppellation(e) {
-            dispatch({type: 'SET_SELECTED_APPELLATION', payload: e.target.value});
-            dispatch({type: 'SET_APPELLATION_VALUE', payload: e.target.value})
+            const selectedAppellation=state.appellations.find(a=>a.id===e.target.value);
+            dispatch({type: 'SET_SELECTED_APPELLATION', payload: selectedAppellation});
+            // dispatch({type: 'SET_APPELLATION_VALUE', payload: e.target.value})
         }
 
         function handleInputChange(e) {
@@ -146,8 +150,8 @@ export const EditAppellations = () => {
         async function handleUpdateAppellation() {
 
 
-            const appellationRef = await getItemCollectionByName('appellations', state.selectedAppellation);
-            appellationRef.update({name: state.appellation})
+            const appellationRef = await getItemCollectionById('appellations', state.selectedAppellationId);
+            appellationRef.update({name: state.appellation, region: state.selectedRegion})
                 .then(() => {
                     dispatch({type: 'RESET'})
                 })
@@ -160,7 +164,7 @@ export const EditAppellations = () => {
 //////////////////////////////////HANDLE DELETE APPELLATION/////////////////////////////////
         async function handleDeleteAppellation() {
 
-            const appellationRef = await getItemCollectionByName('appellations', state.selectedAppellation);
+            const appellationRef = await getItemCollectionById('appellations', state.selectedAppellationId);
 
             appellationRef.delete()
                 .then(() => {
@@ -173,8 +177,7 @@ export const EditAppellations = () => {
 
 /////////////////////////////////LOAD AND SYNC DATA///////////////////////
         React.useEffect(() => {
-
-            loadData()
+            loadData().catch(e=>console.log(e.message))
 
         }, []);
 
@@ -184,7 +187,9 @@ export const EditAppellations = () => {
             const filteredAppellations = state.appellations.filter(a => a.region === state.selectedRegion);
 
             if (filteredAppellations.length > 0)
-                dispatch({type: 'SET_FILTERED_APPELLATIONS', payload: filteredAppellations})
+                dispatch({type: 'SET_FILTERED_APPELLATIONS', payload: filteredAppellations});
+            else
+                dispatch({type: 'SET_FILTERED_APPELLATIONS', payload: []})
 
         }, [state.appellations]);
 
@@ -219,7 +224,7 @@ export const EditAppellations = () => {
                                        changeHandler={handleSelectRegion}/>
 
                         <ListBox
-                            items={getAppellationsName(state.filteredAppellations)}
+                            items={state.filteredAppellations}
                             label={'Appellations'}
                             changeHandler={handleSelectAppellation}
                             height={200}
@@ -244,13 +249,13 @@ export const EditAppellations = () => {
                             </div>
 
                             <div className='col'>
-                                <button disabled={state.selectedAppellation.length===0}
+                                <button disabled={state.selectedAppellationId.length===0}
                                         className='btn btn-info btn-block btn-sm' onClick={handleUpdateAppellation}>Update
                                 </button>
                             </div>
 
                             <div className='col'>
-                                <button disabled={state.selectedAppellation.length===0}
+                                <button disabled={state.selectedAppellationId.length===0}
                                         className='btn btn-danger btn-block btn-sm' onClick={handleDeleteAppellation}>Delete
                                 </button>
                             </div>

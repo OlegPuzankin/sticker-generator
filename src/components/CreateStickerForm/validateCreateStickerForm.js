@@ -1,9 +1,13 @@
 export default function validateCreateStickerForm(values) {
     //debugger
     let errors = {};
-////////////////////title///////////////////////
+////////////////////original title///////////////////////
     if(!values.originalTitle){
-        errors.originalTitle='empty title field'
+        errors.originalTitle='empty field'
+    }
+    ////////////////////sticker title///////////////////////
+    if(!values.stickerTitle){
+        errors.stickerTitle='empty field'
     }
 ////////////////////producer///////////////////////
     if (!values.producer){

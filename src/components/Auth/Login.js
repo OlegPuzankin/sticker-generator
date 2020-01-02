@@ -54,7 +54,7 @@ export const Login = (props) => {
                         <Input type={'text'}
                                name={'name'}
                                changeHandler={changeHandler}
-                               handleBlur={handleBlur}
+                               // handleBlur={handleBlur}
                                value={values.name}
                                errors={errors}
                                label={'Enter your name'}
@@ -66,7 +66,7 @@ export const Login = (props) => {
                     <Input type={'email'}
                            name={'email'}
                            changeHandler={changeHandler}
-                           handleBlur={handleBlur}
+                           // handleBlur={handleBlur}
                            value={values.email}
                            errors={errors}
                            label={'Email address'}
@@ -76,7 +76,7 @@ export const Login = (props) => {
                     <Input type={'password'}
                            name={'password'}
                            changeHandler={changeHandler}
-                           handleBlur={handleBlur}
+                           // handleBlur={handleBlur}
                            value={values.password}
                            errors={errors}
                            label={'Password'}

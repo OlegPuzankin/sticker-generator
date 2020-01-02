@@ -2,7 +2,12 @@ import React from 'react';
 import {ListBox} from "../../UI/ListBox";
 import {FirebaseContext} from "../../firebase";
 import {InputGroup} from "../../UI/InputGroup";
-import {addItemInCollection, getItemCollectionByName, loadAndSyncCollection} from "../../firebase/firebaseFunctions";
+import {
+    addItemInCollection,
+    getItemCollectionById,
+    getItemCollectionByName,
+    loadAndSyncCollection
+} from "../../firebase/firebaseFunctions";
 import {Loader} from "../../UI/Loader";
 import {TextArea} from "../../UI/TextArea";
 
@@ -11,7 +16,7 @@ const INITIAL_STATE = {
 
     producer: '',
     producerFullData: '',
-    selectedProducer: '',
+    selectedProducerId: '',
     producers: []
 
 };
@@ -23,16 +28,16 @@ function reducer(state, action) {
         case 'SET_PRODUCERS':
             return {...state, producers:payload};
         case 'SET_SELECTED_PRODUCER':
-            debugger
-            const selectedProducer= state.producers.find(pr=>pr.name===payload);
-            debugger
-            return {...state, selectedProducer: payload, producer: payload, producerFullData: selectedProducer.producerFullData};
+            const {id,name, producerFullData }=payload;
+            //const selectedProducer= state.producers.find(pr=>pr.name===payload);
+
+            return {...state, selectedProducerId: id, producer: name, producerFullData: producerFullData};
         case 'SET_PRODUCER_VALUE':
             return {...state, producer: payload};
         case 'SET_PRODUCER_FULL_DATA':
             return {...state, producerFullData: payload};
         case 'RESET':
-            return {...state, selectedProducer: '', producer: '', producerFullData:''};
+            return {...state, selectedProducerId: '', producer: '', producerFullData:''};
 
 
         default:
@@ -59,7 +64,7 @@ export const EditProducers = () => {
 
         //////////////////////////////////UPDATE PRODUCER/////////////////////////////////
         async function handleUpdateProducer() {
-            const producerRef = await getItemCollectionByName('producers', state.selectedProducer);
+            const producerRef = await getItemCollectionById('producers', state.selectedProducerId);
 
             producerRef.update({name: state.producer, producerFullData: state.producerFullData})
                 .then(() => {
@@ -74,7 +79,7 @@ export const EditProducers = () => {
 //////////////////////////////////DELETE PRODUCER/////////////////////////////////
         async function handleDeleteProducer() {
 
-            const producerRef = await getItemCollectionByName('producers', state.selectedProducer);
+            const producerRef = await getItemCollectionById('producers', state.selectedProducerId);
             producerRef.delete()
                 .then(() => {
                     dispatch({type: 'RESET'})
@@ -91,12 +96,12 @@ export const EditProducers = () => {
 
 
 ///////////////////////////////////////FUNCTIONS//////////////////////////////////////////////
-        function getProducersName() {
-            return state.producers.map(p => p.name);
-        }
 
         function handleSelectProducer(e) {
-            dispatch({type: 'SET_SELECTED_PRODUCER', payload: e.target.value})
+            const selectedProducer = state.producers.find(p=>p.id===e.target.value);
+            debugger
+
+            dispatch({type: 'SET_SELECTED_PRODUCER', payload:selectedProducer})
         }
 
         function handleInputProducer(e) {
@@ -124,7 +129,7 @@ export const EditProducers = () => {
                         <div className='text-center h3 mb-1'>Edit producers</div>
 
                         <ListBox
-                            items={getProducersName()}
+                            items={state.producers}
                             // label={'Countries'}
                             changeHandler={handleSelectProducer}
                             height={200}
@@ -158,12 +163,12 @@ export const EditProducers = () => {
                             </div>
 
                             <div className='col'>
-                                <button disabled={state.selectedProducer.length===0} className='btn btn-info btn-block btn-sm' onClick={handleUpdateProducer}>Update
+                                <button disabled={state.selectedProducerId.length===0} className='btn btn-info btn-block btn-sm' onClick={handleUpdateProducer}>Update
                                 </button>
                             </div>
 
                             <div className='col'>
-                                <button disabled={state.selectedProducer.length===0} className='btn btn-danger btn-block btn-sm' onClick={handleDeleteProducer}>Delete
+                                <button disabled={state.selectedProducerId.length===0} className='btn btn-danger btn-block btn-sm' onClick={handleDeleteProducer}>Delete
                                 </button>
                             </div>
 

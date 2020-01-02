@@ -25,16 +25,15 @@ export const Preview = (props) => {
 
 
                 <div id='exportContent'>
-                    <table className='table bg-white'>
+                    {
+                        stickersBundle.map((sticker) => {
+                            return (
+                                <StickerOutput sticker={sticker} key={sticker.id}/>
 
-                        {
-                            stickersBundle.map((sticker, idx) => {
-                                return <StickerOutput sticker={sticker} key={sticker.id}/>
-                            })
+                            )
+                        })
 
-                        }
-
-                    </table>
+                    }
                 </div>
 
 
