@@ -5,22 +5,18 @@ import {Dropdown} from "./Drop-down";
 
 const Header = (props) => {
 
-    const {firebase, user} = React.useContext(FirebaseContext);
-    //const history = useHistory();
 
+    const {firebase, user} = React.useContext(FirebaseContext);
     async function handleLogout (){
-        debugger
         await firebase.logout();
-        debugger
         props.history.push('/')
     }
+
 
     return (
         <nav className="navbar navbar-expand bg-light navbar-light justify-content-between align-items-center">
             <div className="navbar-nav">
                 <NavLink className="navbar-brand" to={'/'}>Sticker generator</NavLink>
-
-
                 <ul className="navbar-nav">
                     <li className="nav-item">
                         <NavLink exact className="nav-link" to={'/'}>Home</NavLink>
@@ -29,8 +25,6 @@ const Header = (props) => {
                     <li className="nav-item">
                         <NavLink className="nav-link" to={'/about'}>About</NavLink>
                     </li>
-
-
                     {user &&
                     <>
                         <li className="nav-item">
@@ -39,10 +33,7 @@ const Header = (props) => {
 
                         <Dropdown/>
                     </>}
-
-
                 </ul>
-
             </div>
 
             <div className='navbar-nav'>

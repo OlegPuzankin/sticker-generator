@@ -33,6 +33,8 @@ export const StickerCatalog = ({history}) => {
                     sticker.country.toLowerCase().includes(query.toLowerCase())
                     ||
                     sticker.originalTitle.toLowerCase().includes(query.toLowerCase())
+                    ||
+                    sticker.sku.toLowerCase().includes(query.toLowerCase())
                 )
             });
             setFilteredStickers(filteredStickers)
@@ -40,7 +42,7 @@ export const StickerCatalog = ({history}) => {
         else
             setFilteredStickers([])
 
-    }, [query, stickers.length]);
+    }, [query, stickers]);
 
 
     function handleDeleteSticker(stickerId) {
@@ -67,9 +69,12 @@ export const StickerCatalog = ({history}) => {
 
 
     function toggleStickerToBundle(stickerId) {
+        // const stickerIndex = stickers.findIndex(s => s.id === stickerId);
+        // const s = stickers[stickerIndex];
 
-        const stickerIndex = stickers.findIndex(s => s.id === stickerId);
-        const s = stickers[stickerIndex];
+        const s= stickers.find(s=>s.id===stickerId)
+        debugger
+
 
         if (s.isAddedToBundle) {
             dispatch(removeStickerFromBundle(s));
@@ -79,9 +84,9 @@ export const StickerCatalog = ({history}) => {
 
 
     // console.log('stickers', stickers);
-    // console.log('stickersBundle', stickersBundle)
-    // console.log('filteredStickers', filteredStickers)
-    // console.log(history)
+    console.log('stickersBundle', stickersBundle)
+    console.log('filteredStickers', filteredStickers)
+    console.log('render catalog')
 
 
     if (loading)
@@ -128,7 +133,6 @@ export const StickerCatalog = ({history}) => {
                             return (
                                 <div className='col-4 p-1' key={sticker.id}>
                                     <StickerCard sticker={sticker}
-                                                 stickersBundle={stickersBundle}
                                                  toggleStickerToBundle={toggleStickerToBundle}
                                                  handleDeleteSticker={handleDeleteSticker}
                                                  sendStickerToEdit={sendStickerToEdit}

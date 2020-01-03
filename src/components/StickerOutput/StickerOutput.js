@@ -61,10 +61,10 @@ export const StickerOutput = ({sticker}) => {
                 </div>
 
                 <div>
-                    Місткіть: {sticker.volume/1000} л(L)
+                    Місткіть: <b>{sticker.volume/1000} л(L)</b>
                 </div>
                 <div>
-                    Вміст спирту: {sticker.alcohol} об. (% vol.)
+                    Вміст спирту: <b>{sticker.alcohol} об. (% vol.)</b>
                 </div>
             </div>
 

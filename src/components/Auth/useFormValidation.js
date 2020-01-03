@@ -8,12 +8,9 @@ function useFormValidation(initialState, validate, submit) {
 
 
     React.useEffect(() => {
-        //debugger
-        //console.log('use effect')
         if (isSubmitting) {
             const noErrors = (Object.keys(errors).length === 0);
             if (noErrors) {
-                //debugger
                 submit();
                 setIsSubmitting(false);
             } else
@@ -30,17 +27,13 @@ function useFormValidation(initialState, validate, submit) {
     };
 
     const changeHandlerMultipleSelectHandler = (name, result) => {
-        //debugger
         setValues({
             ...values,
             [name]: result
         })
-
-
     };
 
     const handleBlur = () => {
-        //debugger
         const validateErrors = validate(values);
         setErrors(validateErrors);
     };

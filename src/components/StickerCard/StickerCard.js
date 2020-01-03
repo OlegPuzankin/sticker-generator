@@ -1,6 +1,7 @@
 import React from 'react';
 import '@fortawesome/fontawesome-free/css/all.css'
 import format from 'date-fns/format'
+import validateLogin from "../Auth/validateLogin";
 
 
 export const StickerCard = ({sticker, handleDeleteSticker, toggleStickerToBundle, sendStickerToEdit}) => {
@@ -8,6 +9,9 @@ export const StickerCard = ({sticker, handleDeleteSticker, toggleStickerToBundle
 
     const grapes = sticker.selectedGrapes.join(', ');
     const bottlingDate = format(new Date (sticker.bottlingYear), 'dd.MM.yyyy');
+
+    console.log('sticker card render', sticker.isAddedToBundle, sticker.id);
+
 
 
 
@@ -33,8 +37,12 @@ export const StickerCard = ({sticker, handleDeleteSticker, toggleStickerToBundle
                     {sticker.region && <div>Регіон: {sticker.region}</div>}
                     {sticker.appellation && <div>Апеласьон: {sticker.appellation}</div>}
                     <div>Сорти винограду: <em>{grapes}</em></div>
-                    <span className='mr-1'>
-                        {sticker.color.toUpperCase()}, рік: {sticker.harvestYear}, алк.: {sticker.alcohol}%, bottled:{bottlingDate}
+                    <span className='mr-1 text-info'>
+                        SKU: {`${sticker.sku} .`}
+                        {sticker.color},
+                        рік: {sticker.harvestYear},
+                        алк.: {sticker.alcohol}%,
+                        bottled: {bottlingDate}
                     </span>
                 </div>
                 <div className='d-flex mt-1 align-items-center justify-content-center'>

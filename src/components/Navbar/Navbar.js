@@ -3,7 +3,6 @@ import {Link, NavLink, withRouter} from "react-router-dom";
 import {FirebaseContext} from "../../firebase";
 import '@fortawesome/fontawesome-free/css/all.css'
 
-
 export const Navbar = (props) => {
 
     const {firebase, user} = React.useContext(FirebaseContext);
@@ -46,7 +45,7 @@ export const Navbar = (props) => {
                         {/*</li>*/}
 
                         <li className="nav-item dropdown">
-                            <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            <a className="nav-link dropdown-toggle" href={'#'} id="navbarDropdown" role="button"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 EDIT DATABASE
                             </a>

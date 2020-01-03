@@ -3,11 +3,10 @@ import {SET_STICKER_STATE} from "../types";
 
 const initialState = {
     id: null,
-    sku: '',
+    sku: '123456768',
     producer: 'Felix',
-    originalTitle: 'hey yo',
+    originalTitle: 'Hi Iryna',
     stickerTitle: 'hey yo',
-    //todo stickerTitle
     country: 'Іспанія',
     region: '',
     appellation: '',
