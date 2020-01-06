@@ -416,17 +416,13 @@ export const CreateEditSticker = (props) => {
                                         error={errors['servingTemperature']}
                                         label={'Serving temp, °С'}/>
 
-
-                            <ComboBoxGroup name='harvestYear'
-                                           placeholder={'Select harvest year'}
-                                           error={errors['harvestYear']}
-                                           items={getHarvestYearsName(harvestYears)}
-                                           value={values.harvestYear}
-                                           label={'Harvest year'}
-                                           changeHandler={changeHandler}
+                            <InputGroup name={'harvestYear'}
+                                        type={'number'}
+                                        changeHandler={changeHandler}
                                 //handleBlur={handleBlur}
-                            />
-
+                                        value={values.harvestYear}
+                                        error={errors['harvestYear']}
+                                        label={'Harvest year'}/>
 
                             <InputGroup name={'bottlingYear'}
                                         type={'date'}
