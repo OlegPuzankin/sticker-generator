@@ -1,32 +1,29 @@
 import React from 'react';
 import '@fortawesome/fontawesome-free/css/all.css'
 import format from 'date-fns/format'
-import validateLogin from "../Auth/validateLogin";
+import {FirebaseContext} from "../../firebase";
+
 
 
 export const StickerCard = ({sticker, handleDeleteSticker, toggleStickerToBundle, sendStickerToEdit}) => {
-
-
+    const {user} = React.useContext(FirebaseContext);
     const grapes = sticker.selectedGrapes.join(', ');
     const bottlingDate = format(new Date (sticker.bottlingYear), 'dd.MM.yyyy');
-
-    console.log('sticker card render', sticker.isAddedToBundle, sticker.id);
-
-
-
-
+    // console.log('sticker card render', sticker.isAddedToBundle, sticker.id);
     return (
         <div className='card h-100 p-2'>
 
 
             <div className='d-flex justify-content-between mb-1'>
                 <div className="font-weight-bold w-80">{sticker.originalTitle}</div>
-                <div className='pointer' onClick={() => handleDeleteSticker(sticker.id)}>
-                    <i className="fas fa-trash-alt"> </i>
-                </div>
-                <div className='pointer' onClick={() => sendStickerToEdit(sticker)}>
-                    <i className="fas fa-edit"> </i>
-                </div>
+                {user && <>
+                    <div className='pointer' onClick={() => handleDeleteSticker(sticker.id)}>
+                        <i className="fas fa-trash-alt"> </i>
+                    </div>
+                    <div className='pointer' onClick={() => sendStickerToEdit(sticker)}>
+                        <i className="fas fa-edit"> </i>
+                    </div>
+                </>}
             </div>
 
             <div className='d-flex flex-column justify-content-between h-100'>
@@ -38,11 +35,13 @@ export const StickerCard = ({sticker, handleDeleteSticker, toggleStickerToBundle
                     {sticker.appellation && <div>Апеласьон: {sticker.appellation}</div>}
                     <div>Сорти винограду: <em>{grapes}</em></div>
                     <span className='mr-1 text-info'>
-                        SKU: {`${sticker.sku} .`}
-                        {sticker.color},
-                        рік: {sticker.harvestYear},
-                        алк.: {sticker.alcohol}%,
-                        bottled: {bottlingDate}
+                        SKU: {`${sticker.sku}`}&#9679;
+                        {`${sticker.color}`}&#9679;
+                        рік:{sticker.harvestYear}&#9679;
+                        алк.:{sticker.alcohol}%&#9679;
+                        {`bottled:${bottlingDate}`}&#9679;
+                        {sticker.regionControl==='PDO' && 'PDO'}
+                        {sticker.regionControl==='PJI' && 'PJI'}
                     </span>
                 </div>
                 <div className='d-flex mt-1 align-items-center justify-content-center'>

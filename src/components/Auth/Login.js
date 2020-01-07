@@ -19,9 +19,10 @@ export const Login = (props) => {
     const [login, setLogin] = React.useState(true);
     const [loginError, setLoginError] = React.useState(null);
     const {firebase, user}=React.useContext(FirebaseContext);
+    const [countTrySubmit, setCountTrySubmit]=React.useState(0)
 
 
-    const {changeHandler, submitHandler, handleBlur, values, errors, isSubmitting} =
+    const {changeHandler, submitHandler, values, errors, isSubmitting} =
         useFormValidation(INITIAL_STATE, validateLogin, authenticateUser);
 
 
@@ -34,7 +35,8 @@ export const Login = (props) => {
                 : await firebase.register(name, email, password);
             props.history.push('/')
         } catch (error) {
-            setLoginError(error.message)
+            setLoginError(error.message);
+            setCountTrySubmit(countTrySubmit=>countTrySubmit+1);
         }
     }
 
@@ -97,9 +99,13 @@ export const Login = (props) => {
                         </button>
                     </div>
 
-                    <div className='mt-2 ml-2'>
-                        <Link to={"/forgot"} className='text-warning font-weight-bold'>Forgot password?</Link>
-                    </div>
+                    {countTrySubmit>1 && (
+                        <div className='mt-2 ml-2'>
+                            <Link to={"/forgot"} className='text-warning font-weight-bold'>Forgot password?</Link>
+                        </div>)
+                    }
+
+
 
 
                 </div>

@@ -30,6 +30,7 @@ import {selectFormState} from "../../redux/selectors/form-state-selectors";
 import {ListBoxGrapes} from "../../UI/ListBoxGrapes";
 import {FirebaseContext} from "../../firebase";
 import {Redirect} from "react-router-dom";
+import {InputGroupNumber} from "../../UI/InputGroupNumber";
 
 
 const regionControlTypes = ['None', 'PDO', 'PJI'];
@@ -54,7 +55,6 @@ export const CreateEditSticker = (props) => {
         const regions = useSelector(selectRegions);
         const appellations = useSelector(selectAppellations);
         const grapes = useSelector(selectGrapes);
-        const harvestYears = useSelector(selectHarvestYears);
 
 
         const isLoading = useSelector(selectIsLoading);
@@ -337,8 +337,8 @@ export const CreateEditSticker = (props) => {
                                         type={'text'}
                                         labelWidth={120}
                                         placeholder={'Enter title'}
-                                        changeHandler={changeHandler}
-                                        handleBlur={handleBlur}
+                                        onChange={changeHandler}
+                                        onBlur={handleBlur}
                                         error={isTriedSubmit && errors['originalTitle']}/>
 
                             <InputGroup name={'stickerTitle'}
@@ -347,8 +347,8 @@ export const CreateEditSticker = (props) => {
                                         type={'text'}
                                         labelWidth={120}
                                         placeholder={'Enter sticker title'}
-                                        changeHandler={changeHandler}
-                                        handleBlur={handleBlur}
+                                        onChange={changeHandler}
+                                        onBlur={handleBlur}
                                         error={isTriedSubmit && errors['stickerTitle']}/>
                         </div>
 
@@ -368,88 +368,109 @@ export const CreateEditSticker = (props) => {
                         <div className='col'>
                             <div className='mb-2 text-center'>Basic parameters</div>
 
-                            <ComboBoxGroup name='color'
-                                           placeholder={'Select color'}
-                                           error={isTriedSubmit && errors['color']}
-                                           items={colors}
-                                           value={values.color}
-                                           label={'Wine`s Color'}
-                                           changeHandler={changeHandler}/>
+                            <ComboBoxGroup
+                                name='color'
+                                placeholder={'Select color'}
+                                error={isTriedSubmit && errors['color']}
+                                items={colors}
+                                value={values.color}
+                                label={'Wine`s Color'}
+                                onChange={changeHandler}
+                               />
 
-                            <InputGroup name={'volume'}
-                                        type={'number'}
-                                        changeHandler={changeHandler}
+                            <InputGroup
+                                name={'volume'}
+                                type={'number'}
+                                onChange={changeHandler}
                                 //handleBlur={handleBlur}
-                                        value={values.volume}
-                                        error={errors['volume']}
-                                        label={'Volume, ml'}/>
+                                value={values.volume}
+                                error={errors['volume']}
+                                label={'Volume, ml'}/>
 
 
-                            <InputGroup name={'alcohol'}
-                                        type={'number'}
-                                        changeHandler={changeHandler}
-                                        value={values.alcohol}
-                                        error={errors['alcohol']}
-                                        label={'Alcohol, %'}/>
+                            {/*<InputGroup*/}
+                            {/*    name={'alcohol'}*/}
+                            {/*    type={'number'}*/}
+                            {/*    changeHandler={changeHandler}*/}
+                            {/*    value={values.alcohol}*/}
+                            {/*    error={errors['alcohol']}*/}
+                            {/*    label={'Alcohol, %'}/>*/}
 
-                            <InputGroup name={'sugar'}
-                                        type={'number'}
-                                        changeHandler={changeHandler}
+                            <InputGroupNumber
+                                name={'alcohol'}
+                                type={'number'}
+                                labelWidth={150}
+                                onChange={changeHandler}
+                                value={values.alcohol}
+                                step={0.5}
+                                error={errors['alcohol']}
+                                label={'Alcohol, %'}/>
+
+                            <InputGroup
+                                name={'sugar'}
+                                type={'number'}
+                                onChange={changeHandler}
                                 //handleBlur={handleBlur}
-                                        value={values.sugar}
-                                        error={errors['sugar']}
-                                        label={'Sugar, ml '}/>
+                                value={values.sugar}
+                                error={errors['sugar']}
+                                label={'Sugar, ml '}/>
 
-                            <InputGroup name={'shelfLifetime'}
-                                        type={'number'}
-                                        changeHandler={changeHandler}
+                            <InputGroup
+                                name={'shelfLifetime'}
+                                type={'number'}
+                                onChange={changeHandler}
                                 //handleBlur={handleBlur}
-                                        value={values.shelfLifetime}
-                                        error={errors['shelfLifetime']}
-                                        label={'Shelf life, years'}/>
+                                value={values.shelfLifetime}
+                                error={errors['shelfLifetime']}
+                                label={'Shelf life, years'}/>
 
-                            <InputGroup name={'servingTemperature'}
-                                        type={'number'}
-                                        changeHandler={changeHandler}
+                            <InputGroup
+                                name={'servingTemperature'}
+                                type={'number'}
+                                onChange={changeHandler}
                                 //handleBlur={handleBlur}
-                                        value={values.servingTemperature}
-                                        error={errors['servingTemperature']}
-                                        label={'Serving temp, °С'}/>
+                                value={values.servingTemperature}
+                                error={errors['servingTemperature']}
+                                label={'Serving temp, °С'}/>
 
-                            <InputGroup name={'harvestYear'}
-                                        type={'number'}
-                                        changeHandler={changeHandler}
+                            <InputGroup
+                                name={'harvestYear'}
+                                type={'number'}
+                                onChange={changeHandler}
                                 //handleBlur={handleBlur}
-                                        value={values.harvestYear}
-                                        error={errors['harvestYear']}
-                                        label={'Harvest year'}/>
+                                value={values.harvestYear}
+                                error={errors['harvestYear']}
+                                label={'Harvest year'}/>
 
-                            <InputGroup name={'bottlingYear'}
-                                        type={'date'}
-                                        value={values.bottlingYear}
-                                        error={errors['bottlingYear']}
-                                        label={'Bottling year'}
-                                        changeHandler={changeHandler}
+                            <InputGroup
+                                name={'bottlingYear'}
+                                type={'date'}
+                                value={values.bottlingYear}
+                                error={errors['bottlingYear']}
+                                label={'Bottling year'}
+                                onChange={changeHandler}
                                 //handleBlur={handleBlur}
                             />
 
-                            <InputGroup name={'lotNumber'}
-                                        type={'text'}
-                                        value={values.lotNumber}
-                                        error={isTriedSubmit && errors['lotNumber']}
-                                        label={'Lot number'}
-                                        changeHandler={changeHandler}
+                            <InputGroup
+                                name={'lotNumber'}
+                                type={'text'}
+                                value={values.lotNumber}
+                                error={isTriedSubmit && errors['lotNumber']}
+                                label={'Lot number'}
+                                onChange={changeHandler}
                                 //handleBlur={handleBlur}
                             />
 
-                            <InputGroup name={'sku'}
-                                        value={values.sku}
-                                        label={'SKU'}
-                                        type={'text'}
-                                        placeholder={'Enter SKU'}
-                                        changeHandler={changeHandler}
-                                        handleBlur={handleBlur}
-                                        error={errors['sku']}/>
+                            <InputGroup
+                                name={'sku'}
+                                value={values.sku}
+                                label={'SKU'}
+                                type={'text'}
+                                placeholder={'Enter SKU'}
+                                onChange={changeHandler}
+                                onBlur={handleBlur}
+                                error={errors['sku']}/>
 
 
                         </div>
@@ -463,8 +484,8 @@ export const CreateEditSticker = (props) => {
                                            value={values.producer}
                                            items={getProducersName(producers)}
                                            label={'Select producer'}
-                                           changeHandler={changeHandler}
-                                           handleBlur={handleBlur}
+                                           onChange={changeHandler}
+                                           onBlur={handleBlur}
                             />
 
                             <ComboBoxGroup name='regionControl'
@@ -473,8 +494,8 @@ export const CreateEditSticker = (props) => {
                                            error={isTriedSubmit && errors['regionControl']}
                                            items={regionControlTypes}
                                            label={'Origin control'}
-                                           changeHandler={changeHandler}
-                                           handleBlur={handleBlur}
+                                           onChange={changeHandler}
+                                           onBlur={handleBlur}
                             />
                             <ComboBoxGroup name='country'
                                            value={values.country}
@@ -482,8 +503,8 @@ export const CreateEditSticker = (props) => {
                                            error={isTriedSubmit && errors['country']}
                                            items={getCountriesName(countries)}
                                            label={'Select country'}
-                                           changeHandler={changeHandler}
-                                           handleBlur={handleBlur}
+                                           onChange={changeHandler}
+                                           onBlur={handleBlur}
                             />
 
                             <ComboBoxGroup name='region'
@@ -492,8 +513,8 @@ export const CreateEditSticker = (props) => {
                                            error={errors['region']}
                                            items={getRegionsName(filteredRegions)}
                                            label={'Select region'}
-                                           changeHandler={changeHandler}
-                                           handleBlur={handleBlur}
+                                           onChange={changeHandler}
+                                           onBlur={handleBlur}
                             />
 
                             <ComboBoxGroup name='appellation'
@@ -502,8 +523,8 @@ export const CreateEditSticker = (props) => {
                                            error={errors['appellation']}
                                            items={getAppellationsName(filteredAppellations)}
                                            label={'Select appellation'}
-                                           changeHandler={changeHandler}
-                                           handleBlur={handleBlur}
+                                           onChange={changeHandler}
+                                           onBlur={handleBlur}
                             />
 
                         </div>
@@ -516,18 +537,19 @@ export const CreateEditSticker = (props) => {
                                         value={queryString}
                                         label={'Search'}
                                         labelWidth={80}
-                                        changeHandler={e => setQueryString(e.target.value)}
+                                        onChange={e => setQueryString(e.target.value)}
                             />
 
 
                             <div>
                                 <ListBoxGrapes
+                                    multiple={true}
                                     items={filteredGrapes}
                                     label={'Select grapes from the list below'}
                                     error={isTriedSubmit && errors.selectedGrapes}
-                                    handleBlur={handleBlur}
-                                    changeHandler={changeHandler}
-                                    height={200}
+                                    onBlur={handleBlur}
+                                    onChange={changeHandler}
+                                    height={250}
                                     name={'currentGrape'}/>
                             </div>
 

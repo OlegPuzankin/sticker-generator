@@ -1,83 +1,77 @@
 import firebase from '../firebase'
 
 
-export function loadAndSyncCollection (collection, dispatch, type){
+export function loadAndSyncCollection(collection, dispatch, type) {
 
     return firebase.db.collection(collection)
         .orderBy('name')
         .onSnapshot(snapshot => {
-            const result =  snapshot.docs.map(doc => {
-                return {id:doc.id,...doc.data()}
+            const result = snapshot.docs.map(doc => {
+                return {id: doc.id, ...doc.data()}
             });
             dispatch({type, payload: result});
         })
 
 }
 
-export function loadCollection (collection){
-
-
+export function loadCollection(collection) {
     return firebase.db.collection(collection)
         .orderBy('name')
         .get()
         .then(snapshot => {
-            return  snapshot.docs.map(doc => {
+            return snapshot.docs.map(doc => {
                 return {...doc.data(), id: doc.id}
             });
         })
 
 }
 
-export function loadStickers (){
-
-
+export function loadStickers() {
     return firebase.db.collection('stickers')
         .orderBy('created', 'desc')
         .get()
         .then(snapshot => {
-            return  snapshot.docs.map(doc => {
+            return snapshot.docs.map(doc => {
                 return {...doc.data(), id: doc.id}
             });
         })
 
 }
 
-export function loadAndSyncStickers (setStickers){
+export function loadAndSyncStickers(setStickers) {
 
     return firebase.db.collection('stickers')
         .orderBy('originalTitle')
         .onSnapshot(snapshot => {
-            const result=  snapshot.docs.map(doc => {
-                //debugger
+            const result = snapshot.docs.map(doc => {
                 return {...doc.data(), id: doc.id}
             });
             setStickers(result)
         })
 }
 
-
-export function getItemCollectionByName(collection, name) {
-    debugger
-
-    return firebase.db.collection(collection)
-        .where('name', '==', name)
-        .get()
-        .then(querySnapshot => {
-            if (querySnapshot.docs.length > 0) {
-                return querySnapshot.docs[0].ref
-            }
-        })
-}
-
-export function getItemCollectionById(collection,id) {
+export function getItemCollectionById(collection, id) {
     return firebase.db.collection(collection).doc(id)
 
 }
 
 export function addItemInCollection(collection, item) {
-    debugger
 
     return firebase.db.collection(collection).add(item)
+}
+
+//////////////////////////////temp functions////////////////////////
+
+export function setRegion() {
+    const collectionRef = firebase.db.collection('appellations')
+    collectionRef.get().then(snapshot => {
+        snapshot.docs.forEach(doc => {
+            doc.ref.update({region: 'Бургундія', regionId: 'G987HGuspZpcSmJCMUkp'})
+        });
+        //console.log('temp f',snapshot.docs[0].ref.update({wtf:'wtf'}))
+        //console.log('MY F', snapshot.docs[0].data())
+    })
+
 }
 
 

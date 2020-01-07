@@ -14,13 +14,12 @@ function getSelectValues(select) {
 }
 
 
-
 export const ListBox = (props) => {
-    const multipleSelect = React.useRef(null);
 
-    const {name, changeHandler, label, items, error, handleBlur, height} = props;
+    const {label, items, error, height} = props;
 
-    const style = {color: error&&'red', fontWeight: error&& 'bold'};
+    const labelStyle = {color: error && 'red', fontWeight: error && 'bold'};
+    const heightStyle={height:height}
 
 
     // function handleMultipleSelect(e) {
@@ -31,16 +30,10 @@ export const ListBox = (props) => {
     // }
     return (
         <div className="form-group text-center">
-            <label style={style}>{label}</label>
-            <select multiple
-                    name={name}
-                    ref={multipleSelect}
-                    
-                    onBlur={handleBlur}
-                    onChange={changeHandler}
-                    className={`user-form-control height${height}`}>
+            <label style={labelStyle}>{label}</label>
+            <select className={`user-form-control`} style={heightStyle} {...props}>
                 {
-                    items.map((item, index)=>{
+                    items.map((item) => {
                         return <option key={item.id} value={item.id}>{item.name}</option>
                     })
                 }

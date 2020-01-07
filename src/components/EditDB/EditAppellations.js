@@ -1,71 +1,72 @@
 import React from 'react';
 import {ListBox} from "../../UI/ListBox";
-import {FirebaseContext} from "../../firebase";
-import useFormValidation from "../Auth/useFormValidation";
-import validateEditDB from "./validateEditDB";
 import {InputGroup} from "../../UI/InputGroup";
-import {ComboBoxGroup} from "../../UI/ComboBoxGroup";
 import {
     addItemInCollection, getItemCollectionById,
-    getItemCollectionByName,
     loadAndSyncCollection,
-    loadCollection
+    loadCollection, setRegion
 } from "../../firebase/firebaseFunctions";
 import {Loader} from "../../UI/Loader";
-import {getAppellationsName, getCountriesName, getRegionsName} from "../../functions/utils";
+import {ComboBoxGroupFullState} from "../../UI/ComboBoxGroupFullState";
 
 
 const INITIAL_STATE = {
 
     countries: [],
-    selectedCountry: '',
+    selectedCountryId: '',
+
 
     regions: [],
     selectedRegion: '',
+    selectedRegionId: '',
     filteredRegions: [],
 
     appellations: [],
     appellation: '',
     selectedAppellationId: '',
     filteredAppellations: [],
-    refreshTrigger: true,
-
-
 };
 
 function reducer(state, action) {
-    const {payload}=action;
+    const {payload} = action;
     switch (action.type) {
 
-
-
         case 'SET_COUNTRIES':
-
             return {...state, countries: payload};
         case 'SET_REGIONS':
-            return {...state, regions:payload};
+            return {...state, regions: payload};
         case 'SET_APPELLATIONS':
             return {...state, appellations: payload};
 
-        case 'SET_SELECTED_COUNTRY':
-            return {...state, selectedCountry:payload};
-        case 'SET_SELECTED_REGION':
-            return {...state, selectedRegion: payload};
+        case 'SET_SELECTED_COUNTRY_ID':
+            return {...state, selectedCountryId: payload};
+        case 'SET_SELECTED_REGION': {
+            const {id, name} = payload;
+            return {...state, selectedRegion: name, selectedRegionId: id};
+        }
         case 'SET_SELECTED_APPELLATION':
             const {id, name} = payload;
-            return {...state, selectedAppellationId:id, appellation: name};
+            return {...state, selectedAppellationId: id, appellation: name};
 
         case 'SET_FILTERED_APPELLATIONS':
-            return {...state, filteredAppellations:payload};
+            return {...state, filteredAppellations: payload};
 
         case 'SET_FILTERED_REGIONS':
-            return {...state, filteredRegions: payload};
+            return {...state, filteredRegions: payload, appellation: '', filteredAppellations: []};
 
         case 'SET_APPELLATION_VALUE':
             return {...state, appellation: payload};
 
         case 'RESET':
-            return {...state, selectedAppellationId: '', appellation: ''};
+            return {...state,
+                selectedAppellationId: '',
+                appellation: '',
+                selectedCountryId: '',
+                selectedRegionId:'',
+                selectedRegion: '',
+                filteredRegions:[],
+                filteredAppellations:[]
+            };
 
 
         default:
@@ -77,8 +78,6 @@ function reducer(state, action) {
 export const EditAppellations = () => {
 
         const [state, dispatch] = React.useReducer(reducer, INITIAL_STATE);
-
-
 
 
         //////////////////////////////////FUNCTIONS////////////////////////////
@@ -95,34 +94,40 @@ export const EditAppellations = () => {
 
         function handleSelectCountry(e) {
 
-            const selectedCountry = e.target.value;
-            dispatch({type: 'SET_SELECTED_COUNTRY', payload: selectedCountry});
+            const selectedCountryId = e.target.value;
+            const selectedCountry = state.countries.find(c => c.id === selectedCountryId);
+            if (selectedCountry) {
 
-            const filteredRegions = state.regions.filter(r => r.country === selectedCountry);
-            if (filteredRegions.length > 0){
-                dispatch({type: 'SET_FILTERED_REGIONS', payload: filteredRegions});
-                dispatch({type: 'SET_SELECTED_REGION', payload: 'Select region'});
-                dispatch({type: 'SET_FILTERED_APPELLATIONS', payload:[] });
+                dispatch({type: 'SET_SELECTED_COUNTRY_ID', payload: selectedCountryId});
+
+                const filteredRegions = state.regions.filter(r => r.countryId === selectedCountryId);
+                if (filteredRegions.length > 0) {
+                    dispatch({type: 'SET_FILTERED_REGIONS', payload: filteredRegions});
+                } else
+                    dispatch({type: 'SET_FILTERED_REGIONS', payload: []});
+
             }
+            else
+                dispatch({type: 'RESET'})
+
         }
 
         function handleSelectRegion(e) {
 
-            const selectedRegion = e.target.value;
-            dispatch({type: 'SET_SELECTED_REGION', payload: selectedRegion});
-
-
-            const filteredAppellations = state.appellations.filter(a => a.region === selectedRegion);
-
-            if (filteredAppellations.length > 0)
-                dispatch({type: 'SET_FILTERED_APPELLATIONS', payload: filteredAppellations});
-            else
-                dispatch({type: 'SET_FILTERED_APPELLATIONS', payload: []})
-
+            const selectedRegionId = e.target.value;
+            const selectedRegion = state.regions.find(r => r.id === selectedRegionId);
+            if (selectedRegion) {
+                dispatch({type: 'SET_SELECTED_REGION', payload: selectedRegion});
+                const filteredAppellations = state.appellations.filter(a => a.regionId === selectedRegionId);
+                if (filteredAppellations.length > 0)
+                    dispatch({type: 'SET_FILTERED_APPELLATIONS', payload: filteredAppellations});
+                else
+                    dispatch({type: 'SET_FILTERED_APPELLATIONS', payload: []})
+            }
         }
 
         function handleSelectAppellation(e) {
-            const selectedAppellation=state.appellations.find(a=>a.id===e.target.value);
+            const selectedAppellation = state.appellations.find(a => a.id === e.target.value);
             dispatch({type: 'SET_SELECTED_APPELLATION', payload: selectedAppellation});
             // dispatch({type: 'SET_APPELLATION_VALUE', payload: e.target.value})
         }
@@ -132,17 +137,15 @@ export const EditAppellations = () => {
         }
 
 
-
-
-
         //////////////////////////////////ADD APPELLATION/////////////////////////////////
         async function handleAddAppellation() {
             try {
-                await addItemInCollection('appellations', {name: state.appellation, region: state.selectedRegion});
+                await addItemInCollection('appellations',
+                    {name: state.appellation, regionId: state.selectedRegionId, region: state.selectedRegion});
                 dispatch({type: 'RESET'})
 
             } catch (e) {
-                console.log(e.message)
+                console.log('error', e.message)
             }
         }
 
@@ -151,12 +154,12 @@ export const EditAppellations = () => {
 
 
             const appellationRef = await getItemCollectionById('appellations', state.selectedAppellationId);
-            appellationRef.update({name: state.appellation, region: state.selectedRegion})
+            appellationRef.update({name: state.appellation, regionId: state.selectedRegionId})
                 .then(() => {
                     dispatch({type: 'RESET'})
                 })
                 .catch(error => {
-                    console.log(error.message)
+                    console.log('error', error.message)
                 })
 
         }
@@ -177,14 +180,14 @@ export const EditAppellations = () => {
 
 /////////////////////////////////LOAD AND SYNC DATA///////////////////////
         React.useEffect(() => {
-            loadData().catch(e=>console.log(e.message))
-
+            loadData().catch(e => alert(e.message))
+            // setRegion();
         }, []);
 
 
         /////////////////////////////////REFRESH APPELLATIONS LIST AFTER UPDATE AND DELETE////////////////////
         React.useEffect(() => {
-            const filteredAppellations = state.appellations.filter(a => a.region === state.selectedRegion);
+            const filteredAppellations = state.appellations.filter(a => a.regionId === state.selectedRegionId);
 
             if (filteredAppellations.length > 0)
                 dispatch({type: 'SET_FILTERED_APPELLATIONS', payload: filteredAppellations});
@@ -197,7 +200,7 @@ export const EditAppellations = () => {
 ///////////////////////////////////////////////////RENDER//////////////////////////////////////////////////
         console.log('state', state);
 
-        if(state.countries.length===0 && state.regions.length===0 && state.appellations.length===0 ){
+        if (state.countries.length === 0 && state.regions.length === 0 && state.appellations.length === 0) {
             return <Loader/>
         }
 
@@ -209,24 +212,25 @@ export const EditAppellations = () => {
                     <div className='col-6'>
                         <div className='text-center h3 mb-3'>Edit appellations</div>
 
-                        <ComboBoxGroup name='selectedCountry'
-                                       value={state.selectedCountry}
-                                       placeholder={'Select country'}
-                                       items={getCountriesName(state.countries)}
-                                       label={'Select country'}
-                                       changeHandler={handleSelectCountry}/>
+                        <ComboBoxGroupFullState name='selectedCountry'
+                                                value={state.selectedCountryId}
+                                                placeholder={'Select country'}
+                                                items={state.countries}
+                                                label={'Select country'}
+                                                onChange={handleSelectCountry}/>
 
-                        <ComboBoxGroup name='selectedRegion'
-                                       value={state.selectedRegion}
-                                       placeholder={'Select region'}
-                                       items={getRegionsName(state.filteredRegions)}
-                                       label={'Select region'}
-                                       changeHandler={handleSelectRegion}/>
+                        <ComboBoxGroupFullState name='selectedRegion'
+                                                value={state.selectedRegionId}
+                                                placeholder={'Select region'}
+                                                items={state.filteredRegions}
+                                                label={'Select region'}
+                                                onChange={handleSelectRegion}/>
 
                         <ListBox
+                            multiple={true}
                             items={state.filteredAppellations}
                             label={'Appellations'}
-                            changeHandler={handleSelectAppellation}
+                            onChange={handleSelectAppellation}
                             height={200}
                             name={'selectedAppellation'}/>
 
@@ -235,8 +239,8 @@ export const EditAppellations = () => {
                             <div className='col-12 mb-2'>
                                 <InputGroup name={'appellation'}
                                             type={'text'}
-                                            labelWidth={100}
-                                            changeHandler={handleInputChange}
+                                            labelWidth={200}
+                                            onChange={handleInputChange}
                                             value={state.appellation}
                                             label={'Appellation'}/>
                             </div>
@@ -249,13 +253,13 @@ export const EditAppellations = () => {
                             </div>
 
                             <div className='col'>
-                                <button disabled={state.selectedAppellationId.length===0}
+                                <button disabled={state.selectedAppellationId.length === 0}
                                         className='btn btn-info btn-block btn-sm' onClick={handleUpdateAppellation}>Update
                                 </button>
                             </div>
 
                             <div className='col'>
-                                <button disabled={state.selectedAppellationId.length===0}
+                                <button disabled={state.selectedAppellationId.length === 0}
                                         className='btn btn-danger btn-block btn-sm' onClick={handleDeleteAppellation}>Delete
                                 </button>
                             </div>

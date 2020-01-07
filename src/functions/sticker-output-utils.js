@@ -1,16 +1,11 @@
-export function stickerOutputUtils(sticker) {
-    const result = [];
-    const title = getTitle(sticker);
-}
-
 export function getTitle(sticker) {
     const result = [];
-    if (sticker.regionControl !== 'None') {
-        result.push('Вино із захищеною географічною ознакою ')
-    } else {
+    if (sticker.regionControl === 'PJI') {
+        result.push('Вино із захищеною географічною ознакою, ')
+    } else if (sticker.regionControl==='PDO'){
+        result.push('Вино із захищеним найменуванням за походженням, ')
+    } else
         result.push('Вино виноградне, ')
-    }
-
 
     if (sticker.selectedGrapes.length === 1)
         result.push('сортове, ');

@@ -4,7 +4,6 @@ import {InputGroup} from "../../UI/InputGroup";
 import {
     addItemInCollection,
     getItemCollectionById,
-    getItemCollectionByName,
     loadAndSyncCollection
 } from "../../firebase/firebaseFunctions";
 

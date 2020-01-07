@@ -1,11 +1,9 @@
 import React from 'react';
 import {ListBox} from "../../UI/ListBox";
-import {FirebaseContext} from "../../firebase";
 import {InputGroup} from "../../UI/InputGroup";
 import {
     addItemInCollection,
     getItemCollectionById,
-    getItemCollectionByName,
     loadAndSyncCollection
 } from "../../firebase/firebaseFunctions";
 import {Loader} from "../../UI/Loader";

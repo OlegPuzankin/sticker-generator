@@ -14,14 +14,10 @@ function getSelectValues(select) {
 }
 
 
-
 export const ListBoxGrapes = (props) => {
-    const multipleSelect = React.useRef(null);
-
-    const {name, changeHandler, label, items, error, handleBlur, height} = props;
-
-    const style = {color: error&&'red', fontWeight: error&& 'bold'};
-
+    const {label, items, error, height} = props;
+    const labelStyle = {color: error && 'red', fontWeight: error && 'bold'};
+    const heightStyle={height:height};
 
     // function handleMultipleSelect(e) {
     //     //debugger
@@ -31,16 +27,10 @@ export const ListBoxGrapes = (props) => {
     // }
     return (
         <div className="form-group text-center">
-            <label style={style}>{label}</label>
-            <select multiple
-                    name={name}
-                    ref={multipleSelect}
-                    
-                    onBlur={handleBlur}
-                    onChange={changeHandler}
-                    className={`user-form-control height${height}`}>
+            <label style={labelStyle}>{label}</label>
+            <select className={`user-form-control`} style={heightStyle} {...props}>
                 {
-                    items.map((item, index)=>{
+                    items.map((item, index) => {
                         return <option key={item.id} value={item.name}>{item.name}</option>
                     })
                 }
@@ -49,3 +39,5 @@ export const ListBoxGrapes = (props) => {
         </div>
     );
 };
+
+// `user-form-control height${height}`

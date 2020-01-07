@@ -38,8 +38,7 @@ export const StickerCatalog = ({history}) => {
                 )
             });
             setFilteredStickers(filteredStickers)
-        }
-        else
+        } else
             setFilteredStickers([])
 
     }, [query, stickers]);
@@ -47,7 +46,7 @@ export const StickerCatalog = ({history}) => {
 
     function handleDeleteSticker(stickerId) {
         //const stickerRef = getSticker(stickerId);
-        const stickerRef=getItemCollectionById('stickers',stickerId);
+        const stickerRef = getItemCollectionById('stickers', stickerId);
 
         stickerRef.delete().then(() => {
             const updatedStickers = stickers.filter(s => s.id !== stickerId);
@@ -72,7 +71,7 @@ export const StickerCatalog = ({history}) => {
         // const stickerIndex = stickers.findIndex(s => s.id === stickerId);
         // const s = stickers[stickerIndex];
 
-        const s= stickers.find(s=>s.id===stickerId)
+        const s = stickers.find(s => s.id === stickerId)
         debugger
 
 
@@ -84,9 +83,9 @@ export const StickerCatalog = ({history}) => {
 
 
     // console.log('stickers', stickers);
-    console.log('stickersBundle', stickersBundle)
-    console.log('filteredStickers', filteredStickers)
-    console.log('render catalog')
+    // console.log('stickersBundle', stickersBundle)
+    // console.log('filteredStickers', filteredStickers)
+    // console.log('render catalog')
 
 
     if (loading)
@@ -95,36 +94,35 @@ export const StickerCatalog = ({history}) => {
 
     return (
         <>
-            {user&&<div className='position-fixed add-sticker-container'>
-                <button onClick={() => history.push('/create')} className='btn btn-primary btn-circle '>
-                    <i className="fas fa-plus fa-lg"></i>
-                </button>
-            </div>}
-
             <div className='container'>
                 <div className='row mt-2'>
-                    <div className='col-10 p-1'>
-                        <InputGroup name={'search'}
-                                    type={'search'}
-                                    value={query}
-                                    label={'Search by country or title'}
-                                    labelWidth={200}
-                                    changeHandler={e => setQuery(e.target.value)}
+                    <div className='col-8 p-1'>
+                        <InputGroup
+                            name={'search'}
+                            type={'search'}
+                            value={query}
+                            label={'Search by country or title'}
+                            labelWidth={200}
+                            onChange={e => setQuery(e.target.value)}
                         />
 
                     </div>
-                    <div className='col-2 p-1'>
-                        <button disabled={stickersBundle.length === 0}
-                                type="button"
-                                className="btn btn-primary w-100"
-                                onClick={() => {
-                                    history.push('/preview')
-                                }}>
-                            Go to preview <span className="badge badge-light">{stickersBundle.length}</span>
-                        </button>
 
+                    <div className='col-2 p-1'>
+                        <button
+                            disabled={stickersBundle.length === 0}
+                            type="button"
+                            className="btn btn-primary w-100"
+                            onClick={() => {
+                                history.push('/preview')
+                            }}>
+                            GO TO PREVIEW <span className="badge badge-light">{stickersBundle.length}</span>
+                        </button>
                     </div>
 
+                    {user && <div className='col-2 p-1'>
+                        <button type='button' className="btn btn-info w-100" onClick={()=>history.push('/create')}> MAKE NEW</button>
+                    </div>}
 
                 </div>
                 <div className='row mt-2 justify-content-center'>
