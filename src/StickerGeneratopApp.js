@@ -1,11 +1,10 @@
 import React from 'react';
 import {BrowserRouter} from "react-router-dom";
 import {Provider} from "react-redux";
-import {store, persistor} from "./redux/redux-strore";
+import {store} from "./redux/redux-strore";
 import firebase, {FirebaseContext} from './firebase'
 import {App} from "./App";
 import useAuth from "./components/Auth/useAuth";
-import {PersistGate} from 'redux-persist/integration/react'
 
 function StickerGeneratorApp() {
     const user = useAuth();
@@ -15,9 +14,7 @@ function StickerGeneratorApp() {
         <Provider store={store}>
             <BrowserRouter>
                 <FirebaseContext.Provider value={{firebase, user}}>
-                    <PersistGate loading={null} persistor={persistor}>
-                        <App/>
-                    </PersistGate>
+                    <App/>
                 </FirebaseContext.Provider>
             </BrowserRouter>
         </Provider>

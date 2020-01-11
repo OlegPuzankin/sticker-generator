@@ -98,12 +98,14 @@ export const StickerCatalog = ({history}) => {
                 <div className='row mt-2'>
                     <div className='col-8 p-1'>
                         <InputGroup
-                            name={'search'}
-                            type={'search'}
-                            value={query}
+                            inputAttributes = {{
+                                name:'search',
+                                type:'search',
+                                value:query,
+                                onChange:e => setQuery(e.target.value)
+                            }}
                             label={'Search by country or title'}
                             labelWidth={200}
-                            onChange={e => setQuery(e.target.value)}
                         />
 
                     </div>

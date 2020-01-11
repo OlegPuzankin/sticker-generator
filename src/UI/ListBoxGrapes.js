@@ -15,7 +15,7 @@ function getSelectValues(select) {
 
 
 export const ListBoxGrapes = (props) => {
-    const {label, items, error, height} = props;
+    const {label, items, error, height, inputAttributes} = props;
     const labelStyle = {color: error && 'red', fontWeight: error && 'bold'};
     const heightStyle={height:height};
 
@@ -28,9 +28,9 @@ export const ListBoxGrapes = (props) => {
     return (
         <div className="form-group text-center">
             <label style={labelStyle}>{label}</label>
-            <select className={`user-form-control`} style={heightStyle} {...props}>
+            <select className={`user-form-control`} style={heightStyle} {...inputAttributes}>
                 {
-                    items.map((item, index) => {
+                    items.map((item) => {
                         return <option key={item.id} value={item.name}>{item.name}</option>
                     })
                 }

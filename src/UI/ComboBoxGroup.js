@@ -3,7 +3,7 @@ import React from 'react';
 export const ComboBoxGroup = (props) => {
 
 
-    let {label, placeholder, items, error} = props;
+    let {label, placeholder, items, error,inputAttributes} = props;
 
     if (!items)
         items = [];
@@ -18,7 +18,7 @@ export const ComboBoxGroup = (props) => {
                 <div className="input-group-prepend label-width">
                     <label className="input-group-text label-width" style={style}>{label}</label>
                 </div>
-                <select className="custom-select" {...props}>
+                <select className="custom-select" {...inputAttributes}>
 
                     <option>{placeholder}</option>
                     {

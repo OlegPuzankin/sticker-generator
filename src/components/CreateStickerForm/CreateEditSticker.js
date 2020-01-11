@@ -38,12 +38,9 @@ const colors = ['червоне', 'біле', 'рожеве'];
 
 
 export const CreateEditSticker = (props) => {
-
         const {user} = React.useContext(FirebaseContext);
 
-
         const [filteredGrapes, setFilteredGrapes] = React.useState([]);
-
         const [filteredRegions, setFilteredRegions] = React.useState([]);
         const [filteredAppellations, setFilteredAppellations] = React.useState([]);
 
@@ -51,21 +48,16 @@ export const CreateEditSticker = (props) => {
 
         const countries = useSelector(selectCountries);
         const producers = useSelector(selectProducers);
-
         const regions = useSelector(selectRegions);
         const appellations = useSelector(selectAppellations);
         const grapes = useSelector(selectGrapes);
 
 
         const isLoading = useSelector(selectIsLoading);
-
         const alertState = useSelector(state => state.alert);
         const dispatch = useDispatch();
 
-
         const stickerState = useSelector(selectFormState);
-        //const test = useSelector(state=>state.stickers)
-        //
 
         const {changeHandler, submitHandler, setValues, values, errors, isTriedSubmit, handleBlur, setIsTriedSubmit} =
             useFormValidationStickerForm(stickerState,
@@ -159,16 +151,14 @@ export const CreateEditSticker = (props) => {
         }
 
         function resetGrapes(e) {
-
-            e.preventDefault();
+            // e.preventDefault();
             setValues({...values, selectedGrapes: []});
             setFilteredGrapes(grapes)
-
         }
 
         function clearFormHandler(e) {
 
-            e.preventDefault();
+            // e.preventDefault();
             clearForm();
 
             dispatch(showAlert('Form was cleared', 'primary'));
@@ -180,23 +170,15 @@ export const CreateEditSticker = (props) => {
 
         ////////////////////SELECT COUNTRY EFFECT////////////////////////////////////////
         React.useEffect(() => {
-
-            // console.log('select country effect start');
             if (countries.length > 0) {
-                // console.log('select country effect body');
-
-
                 let filteredRegions = regions.filter(r => r.country === values.country);
 
                 if (filteredRegions.length > 0) {
                     setFilteredRegions(filteredRegions)
-                    // setValues({...values, filteredRegions, filteredAppellations: []});
 
                 } else
                     setFilteredRegions([])
-                //setValues({...values, filteredRegions: []});
             }
-            // console.log('select country effect end');
 
         }, [values.country]);
         /////////////////////////SELECT REGION EFFECT////////////////////////////////////////
@@ -207,8 +189,6 @@ export const CreateEditSticker = (props) => {
                 let filteredAppellations = appellations.filter(a => a.region === values.region);
                 if (filteredAppellations.length > 0) {
                     setFilteredAppellations(filteredAppellations)
-                    //console.log('values', values)
-                    //setValues({...values, filteredAppellations: []});
                 } else
                     setFilteredAppellations([])
             }
@@ -229,6 +209,16 @@ export const CreateEditSticker = (props) => {
             setFilteredGrapes(filteredGrapes)
 
         }, [queryString, grapes]);
+
+        function handleSelectGrape(e) {
+            const selectedGrape=e.target.value;
+            const filtered = filteredGrapes.filter(grape => grape.name !== selectedGrape);
+            setValues({...values, selectedGrapes: [...values.selectedGrapes, selectedGrape]});
+            setFilteredGrapes(filtered);
+            setQueryString('');
+        }
+
+
         //////////////////////////select grape effect///////////////////////////
         React.useEffect(() => {
 
@@ -248,7 +238,6 @@ export const CreateEditSticker = (props) => {
         React.useEffect(() => {
 
             if (stickerState.id) {
-                //console.log('LOAD STICKER TO EDIT START');
                 if (regions.length > 0) {
                     const filteredRegions = regions.filter(r => r.country === values.country);
 
@@ -260,11 +249,8 @@ export const CreateEditSticker = (props) => {
 
                 if (appellations.length > 0) {
                     const filteredAppellations = appellations.filter(a => a.region === values.region);
-
                     if (filteredAppellations.length > 0) {
-
                         setFilteredAppellations(filteredAppellations)
-                        //console.log('filtered appellations are set');
                     }
                 }
 
@@ -278,18 +264,11 @@ export const CreateEditSticker = (props) => {
                     });
                     setFilteredGrapes(_filteredGrapes);
                 }
-                //console.log('LOAD STICKER TO EDIT END')
             }
         }, [stickerState.id]);
 
-        //regions, appellations, grapes
-
-
-        //console.log('render');
-        //console.log(stickerState.id)
         console.log('values', values);
         console.log('stickerState', stickerState);
-        // console.log('isTriedSubmit', isTriedSubmit)
 
         if (!user) {
             return <Redirect to={'/'}/>
@@ -330,26 +309,29 @@ export const CreateEditSticker = (props) => {
 
                         <div className='col-10 mb-2'>
 
-                            <InputGroup name={'originalTitle'}
+                            <InputGroup
+                                inputAttributes={{
+                                    name: 'originalTitle',
+                                    type: 'text',
+                                    value: values.originalTitle,
+                                    onChange: changeHandler,
+                                    onBlur: handleBlur,
+                                    placeholder: 'Enter original title'
+                                }}
+                                label={'Original title'}
+                                error={isTriedSubmit && errors['originalTitle']}/>
 
-                                        value={values.originalTitle}
-                                        label={'Original title'}
-                                        type={'text'}
-                                        labelWidth={120}
-                                        placeholder={'Enter title'}
-                                        onChange={changeHandler}
-                                        onBlur={handleBlur}
-                                        error={isTriedSubmit && errors['originalTitle']}/>
-
-                            <InputGroup name={'stickerTitle'}
-                                        value={values.stickerTitle}
-                                        label={'Sticker title'}
-                                        type={'text'}
-                                        labelWidth={120}
-                                        placeholder={'Enter sticker title'}
-                                        onChange={changeHandler}
-                                        onBlur={handleBlur}
-                                        error={isTriedSubmit && errors['stickerTitle']}/>
+                            <InputGroup
+                                inputAttributes={{
+                                    name: 'stickerTitle',
+                                    type: 'text',
+                                    value: values.stickerTitle,
+                                    onChange: changeHandler,
+                                    onBlur: handleBlur,
+                                    placeholder: 'Enter sticker title'
+                                }}
+                                label={'Sticker title'}
+                                error={isTriedSubmit && errors['stickerTitle']}/>
                         </div>
 
 
@@ -358,7 +340,7 @@ export const CreateEditSticker = (props) => {
                             <div className='mb-1'>
                                 <button onSubmit={submitHandler} className='btn btn-primary w-100'>Done</button>
                             </div>
-                            <button onClick={clearFormHandler} className='btn btn-danger w-100'>Clear</button>
+                            <button type='button' onClick={clearFormHandler} className='btn btn-danger w-100'>Clear</button>
                         </div>
 
                     </div>
@@ -376,100 +358,104 @@ export const CreateEditSticker = (props) => {
                                 value={values.color}
                                 label={'Wine`s Color'}
                                 onChange={changeHandler}
-                               />
+                            />
 
                             <InputGroup
-                                name={'volume'}
-                                type={'number'}
-                                onChange={changeHandler}
-                                //handleBlur={handleBlur}
-                                value={values.volume}
-                                error={errors['volume']}
-                                label={'Volume, ml'}/>
+                                inputAttributes={{
+                                    name: 'volume',
+                                    type: 'number',
+                                    value: values.volume,
+                                    onChange: changeHandler,
+                                }}
+                                label={'Volume, ml'}
+                                error={isTriedSubmit && errors['stickerTitle']}/>
 
 
-                            {/*<InputGroup*/}
-                            {/*    name={'alcohol'}*/}
-                            {/*    type={'number'}*/}
-                            {/*    changeHandler={changeHandler}*/}
-                            {/*    value={values.alcohol}*/}
-                            {/*    error={errors['alcohol']}*/}
-                            {/*    label={'Alcohol, %'}/>*/}
-
-                            <InputGroupNumber
-                                name={'alcohol'}
-                                type={'number'}
-                                labelWidth={150}
-                                onChange={changeHandler}
-                                value={values.alcohol}
-                                step={0.5}
+                            <InputGroup
+                                inputAttributes={{
+                                    name: 'alcohol',
+                                    type: 'number',
+                                    value: values.alcohol,
+                                    onChange: changeHandler,
+                                    step: 0.5
+                                }}
                                 error={errors['alcohol']}
                                 label={'Alcohol, %'}/>
 
                             <InputGroup
-                                name={'sugar'}
-                                type={'number'}
-                                onChange={changeHandler}
-                                //handleBlur={handleBlur}
-                                value={values.sugar}
+                                inputAttributes={{
+                                    name: 'sugar',
+                                    type: 'number',
+                                    value: values.sugar,
+                                    onChange: changeHandler,
+                                    step: 0.5
+                                }}
+                                label={'Sugar, ml '}
                                 error={errors['sugar']}
-                                label={'Sugar, ml '}/>
+                            />
 
                             <InputGroup
-                                name={'shelfLifetime'}
-                                type={'number'}
-                                onChange={changeHandler}
-                                //handleBlur={handleBlur}
-                                value={values.shelfLifetime}
+                                inputAttributes={{
+                                    name: 'shelfLifetime',
+                                    type: 'number',
+                                    value: values.shelfLifetime,
+                                    onChange: changeHandler,
+                                }}
                                 error={errors['shelfLifetime']}
                                 label={'Shelf life, years'}/>
 
                             <InputGroup
-                                name={'servingTemperature'}
-                                type={'number'}
-                                onChange={changeHandler}
-                                //handleBlur={handleBlur}
-                                value={values.servingTemperature}
+                                inputAttributes={{
+                                    name: 'servingTemperature',
+                                    type: 'number',
+                                    value: values.servingTemperature,
+                                    onChange: changeHandler,
+                                }}
                                 error={errors['servingTemperature']}
                                 label={'Serving temp, °С'}/>
 
                             <InputGroup
-                                name={'harvestYear'}
-                                type={'number'}
-                                onChange={changeHandler}
-                                //handleBlur={handleBlur}
-                                value={values.harvestYear}
+                                inputAttributes={{
+                                    name: 'harvestYear',
+                                    type: 'number',
+                                    value: values.harvestYear,
+                                    onChange: changeHandler,
+                                }}
                                 error={errors['harvestYear']}
                                 label={'Harvest year'}/>
 
                             <InputGroup
-                                name={'bottlingYear'}
-                                type={'date'}
-                                value={values.bottlingYear}
+                                inputAttributes={{
+                                    name: 'bottlingYear',
+                                    type: 'date',
+                                    value: values.bottlingYear,
+                                    onChange: changeHandler,
+                                }}
                                 error={errors['bottlingYear']}
                                 label={'Bottling year'}
-                                onChange={changeHandler}
-                                //handleBlur={handleBlur}
                             />
 
                             <InputGroup
-                                name={'lotNumber'}
-                                type={'text'}
-                                value={values.lotNumber}
+                                inputAttributes={{
+                                    name: 'lotNumber',
+                                    type: 'text',
+                                    value: values.lotNumber,
+                                    onChange: changeHandler,
+                                }}
                                 error={isTriedSubmit && errors['lotNumber']}
                                 label={'Lot number'}
-                                onChange={changeHandler}
-                                //handleBlur={handleBlur}
                             />
 
                             <InputGroup
-                                name={'sku'}
-                                value={values.sku}
+                                inputAttributes={{
+                                    name: 'sku',
+                                    type: 'text',
+                                    value: values.sku,
+                                    placeholder: 'Enter SKU',
+                                    onChange: changeHandler,
+                                    onBlur: handleBlur,
+                                }}
                                 label={'SKU'}
-                                type={'text'}
-                                placeholder={'Enter SKU'}
-                                onChange={changeHandler}
-                                onBlur={handleBlur}
                                 error={errors['sku']}/>
 
 
@@ -478,79 +464,97 @@ export const CreateEditSticker = (props) => {
                         <div className='col'>
                             <div className='mb-2 text-center'>Region parameters</div>
 
-                            <ComboBoxGroup name='producer'
-                                           placeholder={'Select producer'}
-                                           error={isTriedSubmit && errors['producer']}
-                                           value={values.producer}
-                                           items={getProducersName(producers)}
-                                           label={'Select producer'}
-                                           onChange={changeHandler}
-                                           onBlur={handleBlur}
+                            <ComboBoxGroup
+                                inputAttributes={{
+                                    name: 'producer',
+                                    value: values.producer,
+                                    onChange: changeHandler,
+                                    onBlur: handleBlur,
+                                }}
+                                placeholder='Select producer'
+                                error={isTriedSubmit && errors['producer']}
+                                items={getProducersName(producers)}
+                                label={'Select producer'}
                             />
 
-                            <ComboBoxGroup name='regionControl'
-                                           value={values.regionControl}
-                                           placeholder={'Select control type'}
-                                           error={isTriedSubmit && errors['regionControl']}
-                                           items={regionControlTypes}
-                                           label={'Origin control'}
-                                           onChange={changeHandler}
-                                           onBlur={handleBlur}
+                            <ComboBoxGroup
+                                inputAttributes={{
+                                    name: 'regionControl',
+                                    value: values.regionControl,
+                                    onChange: changeHandler,
+                                    onBlur: handleBlur,
+                                }}
+                                placeholder={'Select control type'}
+                                error={isTriedSubmit && errors['regionControl']}
+                                items={regionControlTypes}
+                                label={'Origin control'}
                             />
-                            <ComboBoxGroup name='country'
-                                           value={values.country}
-                                           placeholder={'Select country'}
-                                           error={isTriedSubmit && errors['country']}
-                                           items={getCountriesName(countries)}
-                                           label={'Select country'}
-                                           onChange={changeHandler}
-                                           onBlur={handleBlur}
+                            <ComboBoxGroup
+                                inputAttributes={{
+                                    name: 'country',
+                                    value: values.country,
+                                    onChange: changeHandler,
+                                    onBlur: handleBlur,
+                                }}
+                                placeholder={'Select country'}
+                                error={isTriedSubmit && errors['country']}
+                                items={getCountriesName(countries)}
+                                label={'Select country'}
                             />
-
-                            <ComboBoxGroup name='region'
-                                           placeholder={'Select region'}
-                                           value={values.region}
-                                           error={errors['region']}
-                                           items={getRegionsName(filteredRegions)}
-                                           label={'Select region'}
-                                           onChange={changeHandler}
-                                           onBlur={handleBlur}
+                            <ComboBoxGroup
+                                inputAttributes={{
+                                    name: 'region',
+                                    value: values.region,
+                                    onChange: changeHandler,
+                                    onBlur: handleBlur,
+                                }}
+                                placeholder={'Select region'}
+                                error={errors['region']}
+                                items={getRegionsName(filteredRegions)}
+                                label={'Select region'}
                             />
-
-                            <ComboBoxGroup name='appellation'
-                                           placeholder={'Select appellation'} F
-                                           value={values.appellation}
-                                           error={errors['appellation']}
-                                           items={getAppellationsName(filteredAppellations)}
-                                           label={'Select appellation'}
-                                           onChange={changeHandler}
-                                           onBlur={handleBlur}
+                            <ComboBoxGroup
+                                inputAttributes={{
+                                    name: 'appellation',
+                                    value: values.appellation,
+                                    onChange: changeHandler,
+                                    onBlur: handleBlur,
+                                }}
+                                placeholder={'Select appellation'}
+                                error={errors['appellation']}
+                                items={getAppellationsName(filteredAppellations)}
+                                label={'Select appellation'}
                             />
-
                         </div>
                         {/*///////////////////3 Column///////////////////////////////*/}
                         <div className='col'>
                             <div className='mb-2 text-center'>Grapes</div>
 
-                            <InputGroup name={'search'}
-                                        type={'search'}
-                                        value={queryString}
-                                        label={'Search'}
-                                        labelWidth={80}
-                                        onChange={e => setQueryString(e.target.value)}
+                            <InputGroup
+                                inputAttributes={{
+                                    name: 'search',
+                                    type: 'search',
+                                    value: queryString,
+                                    placeholder: 'search grape...',
+                                    onChange: e => setQueryString(e.target.value),
+                                }}
+                                label={'Search'}
+                                labelWidth={80}
                             />
-
-
                             <div>
                                 <ListBoxGrapes
-                                    multiple={true}
+                                    inputAttributes={{
+                                        multiple: true,
+                                        name: 'currentGrape',
+                                        onChange: e=>handleSelectGrape(e),
+                                        onBlur: handleBlur,
+                                    }}
+
                                     items={filteredGrapes}
                                     label={'Select grapes from the list below'}
                                     error={isTriedSubmit && errors.selectedGrapes}
-                                    onBlur={handleBlur}
-                                    onChange={changeHandler}
                                     height={250}
-                                    name={'currentGrape'}/>
+                                />
                             </div>
 
                             {
@@ -562,7 +566,8 @@ export const CreateEditSticker = (props) => {
                                             <div className='col p-0 font-weight-bold'>Selected grapes:</div>
                                             <div className='col p-0 text-right'>
 
-                                                <button onClick={resetGrapes} className='btn btn-danger btn-sm'>Reset
+                                                <button type='button' onClick={resetGrapes}
+                                                        className='btn btn-danger btn-sm'>Reset
                                                 </button>
                                             </div>
                                         </div>
@@ -587,6 +592,7 @@ export const CreateEditSticker = (props) => {
                 </form>
 
             </>
-        );
+        )
+            ;
     }
 ;
