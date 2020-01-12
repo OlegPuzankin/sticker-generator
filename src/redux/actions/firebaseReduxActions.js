@@ -1,8 +1,7 @@
 import {
     SET_APPELLATIONS,
-    SET_COUNTIES,
+    SET_COUNTRIES,
     SET_GRAPES,
-    SET_HARVEST_YEARS,
     SET_LOADING,
     SET_PRODUCERS,
     SET_REGIONS
@@ -10,7 +9,7 @@ import {
 
 
 export const setCountriesData = (countries)=>({
-    type: SET_COUNTIES,
+    type: SET_COUNTRIES,
     payload: countries
 
 });
@@ -39,11 +38,7 @@ export const setProducersData= (producers)=>({
 
 });
 
-export const setHarvestYears= (years)=>({
-    type: SET_HARVEST_YEARS,
-    payload: years
 
-});
 export const setLoading= (state)=>({
     type: SET_LOADING,
     payload: state

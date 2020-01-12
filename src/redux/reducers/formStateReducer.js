@@ -1,7 +1,7 @@
 import {SET_STICKER_STATE} from "../types";
 
 
-const initialState = {
+export const initialState = {
     id: null,
     sku: '',
     producer: '',

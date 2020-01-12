@@ -1,8 +1,5 @@
 import React from 'react';
 import {ListBox} from "../../UI/ListBox";
-import {FirebaseContext} from "../../firebase";
-import useFormValidation from "../Auth/useFormValidation";
-import validateEditDB from "./validateEditDB";
 import {InputGroup} from "../../UI/InputGroup";
 import {Loader} from "../../UI/Loader";
 import {
@@ -10,13 +7,18 @@ import {
     getItemCollectionById,
     loadAndSyncCollection
 } from "../../firebase/firebaseFunctions";
+import {Transition} from "react-transition-group";
+import {Alert} from "../../UI/Alert";
+import {hideAlert, showAlert} from "../../redux/actions/alertActions";
+import {useDispatch, useSelector} from "react-redux";
+import {selectCountries, selectRegions} from "../../redux/selectors/firebase-redux-selectors";
+import {SET_COUNTRIES} from "../../redux/types";
 
 
 const INITIAL_STATE = {
 
     country: '',
     selectedCountryId: '',
-    countries: []
 
 };
 
@@ -24,8 +26,7 @@ function reducer(state, action) {
     const {payload} = action;
     switch (action.type) {
 
-        case 'SET_COUNTRIES':
-            return {...state, countries: payload};
+
         case 'SET_SELECTED_COUNTRY':
             const {id, name} = payload;
             return {...state, selectedCountryId: id, country: name};
@@ -37,7 +38,7 @@ function reducer(state, action) {
 
         default:
             return state
-}
+    }
 }
 
 
@@ -45,14 +46,18 @@ export const EditCountries = () => {
 
         const [state, dispatch] = React.useReducer(reducer, INITIAL_STATE);
 
+        const regions = useSelector(selectRegions);
+        const countries = useSelector(selectCountries);
+
+        const alertState = useSelector(state => state.alert);
+        const dispatchRedux = useDispatch();
+
         //////////////////////////////////ADD COUNTRY/////////////////////////////////
         async function handleAddCountry() {
             try {
-                const response = await addItemInCollection('countries', {name: state.country});
-                console.log(response)
+                await addItemInCollection('countries', {name: state.country});
                 dispatch({type: 'RESET'})
             } catch (e) {
-                console.log('error')
                 alert(e.message)
             }
 
@@ -60,6 +65,7 @@ export const EditCountries = () => {
 
         //////////////////////////////////UPDATE COUNTRY/////////////////////////////////
         async function handleUpdateCountry() {
+
             const countryRef = await getItemCollectionById('countries', state.selectedCountryId);
 
             countryRef.update({name: state.country})
@@ -73,26 +79,40 @@ export const EditCountries = () => {
 
 //////////////////////////////////DELETE COUNTRY/////////////////////////////////
         async function handleDeleteCountry() {
-            const countryRef = await getItemCollectionById('countries', state.selectedCountryId);
-            countryRef.delete()
-                .then(() => {
-                    dispatch({type: 'RESET'})
-                })
-                .catch(error => {
-                    console.log(error.message)
-                })
+
+            const hasCountryRegions = !!regions.find(r => r.countryId === state.selectedCountryId);
+            if (hasCountryRegions) {
+                dispatchRedux(showAlert('Country can not be deleted because has regions ', 'danger'));
+                setTimeout(() => {
+                    dispatchRedux(hideAlert());
+                }, 4500);
+            } else {
+                const countryRef = await getItemCollectionById('countries', state.selectedCountryId);
+                countryRef.delete()
+                    .then(() => {
+                        dispatch({type: 'RESET'})
+                    })
+                    .catch(error => {
+                        console.log(error.message)
+                    })
+            }
         }
 
 /////////////////////////////////LOAD AND SYNC DATA///////////////////////
         React.useEffect(() => {
-            loadAndSyncCollection('countries', dispatch, 'SET_COUNTRIES')
+            const unsubscribe =loadAndSyncCollection('countries',
+                (data)=>dispatchRedux({type:SET_COUNTRIES, payload:data}));
+
+            return ()=>{
+                unsubscribe()
+            }
 
         }, []);
 
 ///////////////////////////////////////FUNCTIONS//////////////////////////////////////////////
         function handleSelectCountry(e) {
             const selectedCountryId = e.target.value;
-            const selectedCountry = state.countries.find(c => c.id === selectedCountryId);
+            const selectedCountry = countries.find(c => c.id === selectedCountryId);
             if (selectedCountry)
                 dispatch({type: 'SET_SELECTED_COUNTRY', payload: selectedCountry})
         }
@@ -103,8 +123,9 @@ export const EditCountries = () => {
 
 ///////////////////////////////////////////////////RENDER//////////////////////////////////////////////////
         console.log('state', state);
+        console.log('regions', regions);
 
-        if (state.countries.length === 0) {
+        if (countries.length === 0) {
             return <Loader/>
         }
 
@@ -112,29 +133,53 @@ export const EditCountries = () => {
         return (
 
             <div className='container'>
-                <div className='row justify-content-center mt-5'>
+                <div className=' alert-container mt-1'>
+
+                    <Transition
+                        in={alertState.isShowAlert}
+                        timeout={{
+                            enter: 700,
+                            exit: 400
+                        }}
+                        mountOnEnter
+                        unmountOnExit
+                    >{
+                        state => (<div className={`animation-container ${state}`}>
+                            <Alert alert={alertState} hide={() => dispatch(hideAlert())}/>
+                        </div>)
+                    }
+
+                    </Transition>
+                </div>
+
+                <div className='row justify-content-center mt-1'>
                     <div className='col-6'>
                         <div className='text-center h3 mb-1'>Edit countries</div>
 
                         <ListBox
-                            multiple={true}
-                            items={state.countries}
-                            // label={'Countries'}
-                            onChange={handleSelectCountry}
+                            inputAttributes={{
+                                name: 'selectedCountry',
+                                onChange: handleSelectCountry,
+                                multiple: true,
+                            }}
+                            items={countries}
                             height={250}
-                            name={'selectedCountry'}/>
+                        />
 
                         <div className='row'>
 
                             <div className='col-12 mb-2'>
-                                <InputGroup name={'country'}
-                                            type={'text'}
-                                            labelWidth={100}
-                                            onChange={handleInputChange}
-                                    //handleBlur={handleBlur}
-                                            value={state.country}
-                                    // error={errors['country']}
-                                            label={'Country'}/>
+                                <InputGroup
+                                    inputAttributes={{
+                                        name: 'country',
+                                        type: 'text',
+                                        value: state.country,
+                                        // placeholder: 'search grape...',
+                                        onChange: handleInputChange
+                                    }}
+                                    labelWidth={100}
+                                    label={'Country'}
+                                />
                             </div>
 
 

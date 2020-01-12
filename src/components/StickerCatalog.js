@@ -14,6 +14,7 @@ import {selectStickersBundle, selectStickersCatalog} from "../redux/selectors/st
 import {selectIsLoading} from "../redux/selectors/firebase-redux-selectors";
 import {StickerCard} from "./StickerCard/StickerCard";
 import {FirebaseContext} from "../firebase";
+import {initialState} from "../redux/reducers/formStateReducer";
 
 export const StickerCatalog = ({history}) => {
 
@@ -63,6 +64,11 @@ export const StickerCatalog = ({history}) => {
     function sendStickerToEdit(sticker) {
         dispatch(setStickerState(sticker));
         dispatch(hideAlert());
+        history.push('/create')
+    }
+
+    function handleMakeSticker() {
+        dispatch(setStickerState(initialState));
         history.push('/create')
     }
 
@@ -123,7 +129,7 @@ export const StickerCatalog = ({history}) => {
                     </div>
 
                     {user && <div className='col-2 p-1'>
-                        <button type='button' className="btn btn-info w-100" onClick={()=>history.push('/create')}> MAKE NEW</button>
+                        <button type='button' className="btn btn-info w-100" onClick={handleMakeSticker}> MAKE NEW</button>
                     </div>}
 
                 </div>

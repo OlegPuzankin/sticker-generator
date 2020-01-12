@@ -1,8 +1,7 @@
 import {
     SET_APPELLATIONS,
-    SET_COUNTIES,
+    SET_COUNTRIES,
     SET_GRAPES,
-    SET_HARVEST_YEARS,
     SET_LOADING,
     SET_PRODUCERS,
     SET_REGIONS
@@ -11,6 +10,7 @@ import {
 const initialState = {
     countries: [],
     grapes: [],
+    producers: [],
     regions: [],
     appellations: [],
     harvestYears:[],
@@ -24,7 +24,7 @@ export const firebaseReduxReducer = (state=initialState, action) => {
 
     switch (action.type){
 
-        case SET_COUNTIES:
+        case SET_COUNTRIES:
             return {...state, countries: payload};
 
         case SET_GRAPES:
@@ -38,9 +38,6 @@ export const firebaseReduxReducer = (state=initialState, action) => {
 
         case SET_PRODUCERS:
             return {...state, producers: payload};
-
-        case SET_HARVEST_YEARS:
-            return {...state, harvestYears: payload};
 
         case SET_LOADING:
             return {...state, isLoading: payload}

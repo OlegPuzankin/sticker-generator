@@ -15,6 +15,7 @@ function getSelectValues(select) {
 
 
 export const ListBoxGrapes = (props) => {
+
     const {label, items, error, height, inputAttributes} = props;
     const labelStyle = {color: error && 'red', fontWeight: error && 'bold'};
     const heightStyle={height:height};

@@ -36,14 +36,12 @@ export const stickersReducer = (state = initialState, action) => {
         case ADD_STICKER_TO_STORE:
             return {...state, stickersCatalog: [payload, ...state.stickersCatalog]};
         case UPDATE_STICKER_IN_STORE:
-            debugger
             const updatedStickerIndex=state.stickersCatalog.findIndex(sticker=>sticker.id===payload.id);
             updatedStickers = [
                 ...state.stickersCatalog.slice(0, updatedStickerIndex),
                 payload,
                 ...state.stickersCatalog.slice(updatedStickerIndex+1)
             ];
-            debugger
             return {...state, stickersCatalog:updatedStickers};
 
         default:

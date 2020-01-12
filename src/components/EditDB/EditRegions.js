@@ -8,19 +8,20 @@ import {
 } from "../../firebase/firebaseFunctions";
 import {Loader} from "../../UI/Loader";
 import {ComboBoxGroupFullState} from "../../UI/ComboBoxGroupFullState";
+import {useDispatch, useSelector} from "react-redux";
+import {selectAppellations, selectCountries, selectRegions} from "../../redux/selectors/firebase-redux-selectors";
+import {Transition} from "react-transition-group";
+import {Alert} from "../../UI/Alert";
+import {hideAlert, showAlert} from "../../redux/actions/alertActions";
+import {SET_REGIONS} from "../../redux/types";
 
 
 const INITIAL_STATE = {
-    countries: [],
     selectedCountryId: '',
     selectedCountry: '',
-
     region: '',
-    regions: [],
     filteredRegions: [],
     selectedRegionId: '',
-
-    //refreshTrigger: true,
 };
 
 function reducer(state, action) {
@@ -39,9 +40,11 @@ function reducer(state, action) {
         case 'SET_FILTERED_REGIONS':
             return {...state, filteredRegions: payload, region: ''};
         case 'SET_SELECTED_REGION':
+
             const {id, name} = payload;
             return {...state, selectedRegionId: id, region: name};
         case 'SET_REGION_VALUE':
+
             return {...state, region: payload};
         case 'RESET':
             return {...state, selectedRegionId: '', region: ''};
@@ -56,6 +59,13 @@ export const EditRegions = () => {
 
         const [state, dispatch] = React.useReducer(reducer, INITIAL_STATE);
 
+        const countries = useSelector(selectCountries);
+        const regions = useSelector(selectRegions);
+        const appellations = useSelector(selectAppellations);
+
+        const alertState = useSelector(state => state.alert);
+        const dispatchRedux = useDispatch();
+
 
         //////////////////////////////////FUNCTIONS////////////////////////////
 
@@ -63,25 +73,26 @@ export const EditRegions = () => {
         function handleSelectCountry(e) {
 
             const selectedCountryId = e.target.value;
-            const selectedCountry = state.countries.find(c => c.id === selectedCountryId);
+            const selectedCountry = countries.find(c => c.id === selectedCountryId);
             if (selectedCountry) {
                 dispatch({type: 'SET_SELECTED_COUNTRY', payload: selectedCountry});
-                const filteredRegions = state.regions.filter(r => r.countryId === selectedCountryId);
+                const filteredRegions = regions.filter(r => r.countryId === selectedCountryId);
                 if (filteredRegions.length > 0)
-                    dispatch({type: 'SET_FILTERED_REGIONS', payload: filteredRegions})
+                    dispatch({type: 'SET_FILTERED_REGIONS', payload: filteredRegions});
                 else
                     dispatch({type: 'SET_FILTERED_REGIONS', payload: []})
             }
         }
 
         function handleSelectRegion(e) {
-            const selectedRegion = state.regions.find(r => r.id === e.target.value);
+            const selectedRegion = regions.find(r => r.id === e.target.value);
             if (selectedRegion)
                 dispatch({type: 'SET_SELECTED_REGION', payload: selectedRegion})
             // dispatch({type: 'SET_REGION_VALUE', payload: e.target.value})
         }
 
         function handleInputChange(e) {
+
             dispatch({type: 'SET_REGION_VALUE', payload: e.target.value})
         }
 
@@ -103,41 +114,44 @@ export const EditRegions = () => {
         async function handleUpdateRegion() {
 
             const regionRef = await getItemCollectionById('regions', state.selectedRegionId);
-            regionRef.update({name: state.region, countryId: state.selectedCountryId})
+            regionRef.update({name: state.region, countryId: state.selectedCountryId, country: state.selectedCountry})
                 .then(() => {
                     dispatch({type: 'RESET'})
                 })
                 .catch(error => {
                     console.log(error.message)
                 })
-
         }
 
-//////////////////////////////////DELETE REGION/////////////////////////////////
+        /////////////////////////////DELETE REGION/////////////////////////////////
         async function handleDeleteRegion() {
 
-            const regionRef = await getItemCollectionById('regions', state.selectedRegionId);
-
-            regionRef.delete()
-                .then(() => {
-                    dispatch({type: 'RESET'})
-                })
-                .catch(error => {
-                    console.log(error.message)
-                })
+            const hasRegionAppellations = !!appellations.find(a => a.regionId === state.selectedRegionId);
+            if (hasRegionAppellations) {
+                dispatchRedux(showAlert('Region can not be deleted because has appellations ', 'danger'));
+                setTimeout(() => {
+                    dispatchRedux(hideAlert());
+                }, 4500);
+            } else {
+                const regionRef = await getItemCollectionById('regions', state.selectedRegionId);
+                regionRef.delete()
+                    .then(() => {
+                        dispatch({type: 'RESET'})
+                    })
+                    .catch(error => {
+                        console.log(error.message)
+                    })
+            }
         }
 
 /////////////////////////////////LOAD AND SYNC DATA///////////////////////
         React.useEffect(() => {
-            // console.log('start load')
+            const unsubscribe = loadAndSyncCollection('regions',
+                (data) => dispatchRedux({type: SET_REGIONS, payload: data}));
 
-
-            loadAndSyncCollection('countries', dispatch, 'SET_COUNTRIES');
-            loadAndSyncCollection('regions', dispatch, 'SET_REGIONS')
-
-            // console.log('end load')
-
-
+            return () => {
+                unsubscribe()
+            }
         }, []);
 
 
@@ -145,26 +159,46 @@ export const EditRegions = () => {
         React.useEffect(() => {
 
 
-            const filteredRegions = state.regions.filter(r => r.countryId === state.selectedCountryId);
+            const filteredRegions = regions.filter(r => r.countryId === state.selectedCountryId);
 
             if (filteredRegions.length > 0)
-                dispatch({type: 'SET_FILTERED_REGIONS', payload: filteredRegions})
+                dispatch({type: 'SET_FILTERED_REGIONS', payload: filteredRegions});
+            else
+                dispatch({type: 'SET_FILTERED_REGIONS', payload: []})
 
 
-        }, [state.regions]);
+        }, [regions]);
 
 
 ///////////////////////////////////////////////////RENDER//////////////////////////////////////////////////
         console.log('state', state);
 
-        if (state.countries.length === 0 && state.regions.length === 0) {
+        if (countries.length === 0 && regions.length === 0) {
             return <Loader/>
         }
 
         return (
 
             <div className='container'>
-                <div className='row justify-content-center mt-5'>
+                <div className=' alert-container mt-1'>
+
+                    <Transition
+                        in={alertState.isShowAlert}
+                        timeout={{
+                            enter: 700,
+                            exit: 400
+                        }}
+                        mountOnEnter
+                        unmountOnExit
+                    >{
+                        state => (<div className={`animation-container ${state}`}>
+                            <Alert alert={alertState} hide={() => dispatch(hideAlert())}/>
+                        </div>)
+                    }
+                    </Transition>
+                </div>
+
+                <div className='row justify-content-center mt-1'>
                     <div className='col-6'>
                         <div className='text-center h3 mb-3'>Edit regions</div>
 
@@ -173,27 +207,35 @@ export const EditRegions = () => {
                             name='selectedCountry'
                             value={state.selectedCountryId}
                             placeholder={'Select country'}
-                            items={state.countries}
+                            items={countries}
                             label={'Select country'}
                             onChange={handleSelectCountry}/>
 
                         <ListBox
-                            multiple={true}
+                            inputAttributes={{
+                                name: 'selectedRegion',
+                                onChange: handleSelectRegion,
+                                multiple: true,
+                            }}
                             items={state.filteredRegions}
-                            label={'Regions'}
-                            onChange={handleSelectRegion}
                             height={300}
-                            name={'selectedRegion'}/>
+                            label={'Regions'}
+                        />
 
                         <div className='row'>
 
                             <div className='col-12 mb-2'>
-                                <InputGroup name={'region'}
-                                            type={'text'}
-                                            labelWidth={100}
-                                            onChange={handleInputChange}
-                                            value={state.region}
-                                            label={'Region'}/>
+                                <InputGroup
+                                    inputAttributes={{
+                                        name: 'region',
+                                        type: 'text',
+                                        value: state.region,
+                                        // placeholder: 'search grape...',
+                                        onChange: handleInputChange
+                                    }}
+                                    labelWidth={100}
+                                    label={'Region'}
+                                />
                             </div>
 
 

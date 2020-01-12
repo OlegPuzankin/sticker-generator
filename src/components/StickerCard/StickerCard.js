@@ -39,7 +39,8 @@ export const StickerCard = ({sticker, handleDeleteSticker, toggleStickerToBundle
                         {`${sticker.color}`}&#9679;
                         рік:{sticker.harvestYear}&#9679;
                         алк.:{sticker.alcohol}%&#9679;
-                        {`bottled:${bottlingDate}`}&#9679;
+                        {`цукор: ${sticker.sugar} g/L`}&#9679;
+                        {`bottled: ${bottlingDate}`}&#9679;
                         {sticker.regionControl==='PDO' && 'PDO'}
                         {sticker.regionControl==='PJI' && 'PJI'}
                     </span>

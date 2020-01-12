@@ -6,12 +6,14 @@ import {
     getItemCollectionById,
     loadAndSyncCollection
 } from "../../firebase/firebaseFunctions";
+import {useDispatch, useSelector} from "react-redux";
+import {selectGrapes} from "../../redux/selectors/firebase-redux-selectors";
+import {SET_GRAPES} from "../../redux/types";
 
 
 const INITIAL_STATE = {
 
     grape: '',
-    grapes: [],
     selectedGrapeId: '',
     filteredGrapes: [],
 
@@ -23,8 +25,7 @@ function reducer(state, action) {
     const {payload}=action
     switch (action.type) {
 
-        case 'SET_GRAPES':
-            return {...state, grapes: payload};
+
         case 'SET_SELECTED_GRAPE':
             const {id, name} = payload;
             return {...state, selectedGrapeId: id, grape: name};
@@ -46,6 +47,10 @@ function reducer(state, action) {
 
 export const EditGrapes = () => {
         const [state, dispatch] = React.useReducer(reducer, INITIAL_STATE);
+
+        const grapes=useSelector(selectGrapes);
+        const dispatchRedux = useDispatch();
+
 
 
         //////////////////////////////////ADD GRAPE/////////////////////////////////
@@ -88,20 +93,17 @@ export const EditGrapes = () => {
 
 /////////////////////////////////LOAD AND SYNC DATA///////////////////////
         React.useEffect(() => {
-            loadAndSyncCollection('grapes', dispatch, 'SET_GRAPES')
+            const unsubscribe=loadAndSyncCollection('grapes',
+                (data)=>dispatchRedux({type:SET_GRAPES, payload:data}));
 
+            return ()=>{
+                unsubscribe()}
         }, []);
 
         ///////////////////////////////////////FUNCTIONS///////////////////////////
-        function getGrapesName() {
-            if (state.filteredGrapes.length > 0)
-                return state.filteredGrapes.map(g => g.name);
-            else
-                return state.grapes.map(g => g.name);
-        }
 
         function handleSelectGrape(e) {
-            const selectedGrape = state.grapes.find(g=>g.id===e.target.value)
+            const selectedGrape = grapes.find(g=>g.id===e.target.value)
             dispatch({type: 'SET_SELECTED_GRAPE', payload: selectedGrape})
         }
 
@@ -112,20 +114,16 @@ export const EditGrapes = () => {
         function handleSearchInput(e) {
             const query = e.target.value;
             dispatch({type: 'SET_SEARCH_QUERY', payload: query});
-
-
         }
 
         React.useEffect(() => {
-            debugger
-            const matchedGrapes = state.grapes.filter(grape => {
+            const matchedGrapes = grapes.filter(grape => {
                 return grape.name.toLowerCase().includes(state.queryString.toLowerCase())
 
             });
-            debugger
             dispatch({type: 'SET_FILTERED_GRAPES', payload: matchedGrapes});
 
-        }, [state.queryString, state.grapes])
+        }, [state.queryString, grapes])
 
 ///////////////////////////////////////////////////RENDER//////////////////////////////////////////////////
         console.log('state', state);
@@ -139,44 +137,66 @@ export const EditGrapes = () => {
 
                         <div className='text-center h3 mb-3'>Edit grapes</div>
 
-                        <InputGroup name={'search'}
-                                    type={'text'}
-                                    value={state.queryString}
-                                    label={'Search'}
-                                    labelWidth={80}
-                                    changeHandler={handleSearchInput}
+                        <InputGroup
+                            inputAttributes={{
+                                name: 'search',
+                                type: 'search',
+                                value: state.queryString,
+                                placeholder: 'search grape...',
+                                onChange: handleSearchInput
+                            }}
+                            labelWidth={80}
+                            label={'Search'}
                         />
 
                         <ListBox
+                            inputAttributes={{
+                                name: 'selectedGrape',
+                                onChange: handleSelectGrape,
+                                multiple: true,
+                            }}
                             items={state.filteredGrapes}
-                            changeHandler={handleSelectGrape}
                             height={350}
-                            name={'selectedGrape'}/>
+                        />
 
                         <div className='row'>
 
                             <div className='col-12 mb-2'>
-                                <InputGroup name={'grape'}
-                                            type={'text'}
-                                            labelWidth={100}
-                                            changeHandler={handleInputChange}
-                                            value={state.grape}
-                                            label={'Grape'}/>
+                                <InputGroup
+                                    inputAttributes={{
+                                        name: 'grape',
+                                        type: 'text',
+                                        value: state.grape,
+                                        // placeholder: 'search grape...',
+                                        onChange: handleInputChange
+                                    }}
+                                    labelWidth={100}
+                                    label={'Grape'}
+                                />
                             </div>
 
 
                             <div className='col'>
-                                <button className='btn btn-primary btn-block btn-sm' onClick={handleAddGrape}>Add grape
+                                <button
+                                    className='btn btn-primary btn-block btn-sm'
+                                    onClick={handleAddGrape}>
+                                    Add grape
                                 </button>
                             </div>
 
                             <div className='col'>
-                                <button disabled={state.selectedGrapeId.length===0}className='btn btn-info btn-block btn-sm' onClick={handleUpdateGrape}>Update
+                                <button
+                                    disabled={state.selectedGrapeId.length===0}
+                                    className='btn btn-info btn-block btn-sm'
+                                    onClick={handleUpdateGrape}>Update
                                 </button>
                             </div>
 
                             <div className='col'>
-                                <button disabled={state.selectedGrapeId.length===0} className='btn btn-danger btn-block btn-sm' onClick={handleDeleteGrape}>Delete
+                                <button
+                                    disabled={state.selectedGrapeId.length===0}
+                                    className='btn btn-danger btn-block btn-sm'
+                                    onClick={handleDeleteGrape}>Delete
                                 </button>
                             </div>
                         </div>

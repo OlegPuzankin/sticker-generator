@@ -9,8 +9,6 @@ export const StickerOutput = ({sticker}) => {
     const origin = getOrigin(sticker);
     const bottlingDate = format (new Date (sticker.bottlingYear), 'dd.MM.yyyy');
 
-    debugger
-    console.log('bottlingDate', bottlingDate);
 
     return (
         <div className='card d-flex flex-column p-2 mb-2'>
@@ -27,7 +25,7 @@ export const StickerOutput = ({sticker}) => {
                     Гарантійний термін зберігання {getShelfLifetime(sticker.shelfLifetime)}. Якщо після закінчення гарантійного терміну зберігання,
                     не з’явились помутніння чи видимий осад, вино придатне для подальшого зберігання та реалізації.
                     Зберігати в затемнених приміщеннях за температури від +5˚С до +20˚С. Без додавання спирту, цукру,
-                    без додавання концентратів.
+                    без додавання концентратів. Містить <b>cульфіти.</b>{sticker.sugar>4&&` Вміст цукру: ${sticker.sugar/10} mass.(% мас.)`}
                 </div>
 
                 <div>
@@ -54,10 +52,6 @@ export const StickerOutput = ({sticker}) => {
 
                 <div>
                     Номер партії/Lot number: {sticker.lotNumber}
-                </div>
-
-                <div>
-                    <b>Містить сульфіти. </b>
                 </div>
 
                 <div>

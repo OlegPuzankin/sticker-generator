@@ -47,7 +47,7 @@ function reducer(state, action) {
 }
 
 
-export const EditProducers = () => {
+export const EditProducers2 = () => {
 
 
         const [state, dispatch] = React.useReducer(reducer, INITIAL_STATE);
@@ -135,61 +135,67 @@ export const EditProducers = () => {
 
             <div className='container'>
                 <div className='row justify-content-center mt-5'>
-                    <div className='col-6'>
-                        <div className='text-center h3 mb-1'>Edit producers</div>
+                    <div className='col-10'>
+                        <div className='text-center h3'>Edit producers</div>
 
-                        <ListBox
-                            inputAttributes={{
-                                name: 'selectedProducer',
-                                onChange: handleSelectProducer,
-                                multiple: true,
-                            }}
-                            items={producers}
-                            changeHandler={handleSelectProducer}
-                            height={200}
-                        />
 
-                        <div className='row'>
-
-                            <div className='col-12 mb-2'>
-                                <InputGroup
+                        <div className='d-flex'>
+                            <div className='mr-3'>
+                                <ListBox
                                     inputAttributes={{
-                                        name: 'producer',
-                                        type: 'text',
-                                        value: state.producer,
-                                        onChange: handleInputProducer
+                                        name: 'selectedProducer',
+                                        onChange: handleSelectProducer,
+                                        multiple: true,
                                     }}
-                                    labelWidth={180}
-                                    label={'Producer (short name)'
-                                    }/>
-                            </div>
-
-                            <div className='col-12 mb-2'>
-                                <TextArea
-                                    label={'Producer detail data'}
-                                    changeHandler={handleInputFullData}
-                                    value={state.producerFullData}
+                                    label={'Producers'}
+                                    items={producers}
+                                    changeHandler={handleSelectProducer}
+                                    height={400}
+                                    width={250}
                                 />
 
                             </div>
 
+                            <div className='w-100'>
+                                <div className='mt-4'>
+                                    <InputGroup
+                                        inputAttributes={{
+                                            name: 'producer',
+                                            type: 'text',
+                                            value: state.producer,
+                                            onChange: handleInputProducer
+                                        }}
+                                        labelWidth={180}
+                                        label={'Producer (short name)'
+                                        }/>
+                                </div>
+                                <div className=''>
+                                    <TextArea
+                                        label={'Producer detail data'}
+                                        changeHandler={handleInputFullData}
+                                        value={state.producerFullData}
+                                    />
+                                </div>
+                                <div className='d-flex'>
+                                    <div className=' mr-1'>
+                                        <button className='btn btn-primary btn-block btn-sm' onClick={handleAddProducer}>Add
+                                            producer
+                                        </button>
+                                    </div>
 
-                            <div className='col'>
-                                <button className='btn btn-primary btn-block btn-sm' onClick={handleAddProducer}>Add
-                                    producer
-                                </button>
-                            </div>
+                                    <div className='mr-1'>
+                                        <button disabled={state.selectedProducerId.length === 0}
+                                                className='btn btn-info btn-block btn-sm' onClick={handleUpdateProducer}>Update
+                                        </button>
+                                    </div>
 
-                            <div className='col'>
-                                <button disabled={state.selectedProducerId.length === 0}
-                                        className='btn btn-info btn-block btn-sm' onClick={handleUpdateProducer}>Update
-                                </button>
-                            </div>
+                                    <div >
+                                        <button disabled={state.selectedProducerId.length === 0}
+                                                className='btn btn-danger btn-block btn-sm' onClick={handleDeleteProducer}>Delete
+                                        </button>
+                                    </div>
 
-                            <div className='col'>
-                                <button disabled={state.selectedProducerId.length === 0}
-                                        className='btn btn-danger btn-block btn-sm' onClick={handleDeleteProducer}>Delete
-                                </button>
+                                </div>
                             </div>
 
                         </div>

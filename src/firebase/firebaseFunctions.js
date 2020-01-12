@@ -1,7 +1,8 @@
 import firebase from '../firebase'
 
 
-export function loadAndSyncCollection(collection, dispatch, type) {
+
+export function loadAndSyncCollection(collection, dispatchFunction) {
 
     return firebase.db.collection(collection)
         .orderBy('name')
@@ -9,10 +10,11 @@ export function loadAndSyncCollection(collection, dispatch, type) {
             const result = snapshot.docs.map(doc => {
                 return {id: doc.id, ...doc.data()}
             });
-            dispatch({type, payload: result});
+            dispatchFunction(result);
         })
-
 }
+
+
 
 export function loadCollection(collection) {
     return firebase.db.collection(collection)
@@ -62,16 +64,16 @@ export function addItemInCollection(collection, item) {
 
 //////////////////////////////temp functions////////////////////////
 
-export function setRegion() {
-    const collectionRef = firebase.db.collection('appellations')
-    collectionRef.get().then(snapshot => {
-        snapshot.docs.forEach(doc => {
-            doc.ref.update({region: 'Бургундія', regionId: 'G987HGuspZpcSmJCMUkp'})
-        });
-        //console.log('temp f',snapshot.docs[0].ref.update({wtf:'wtf'}))
-        //console.log('MY F', snapshot.docs[0].data())
-    })
-
-}
+// export function setRegion() {
+//     const collectionRef = firebase.db.collection('appellations')
+//     collectionRef.get().then(snapshot => {
+//         snapshot.docs.forEach(doc => {
+//             doc.ref.update({region: 'Бургундія', regionId: 'G987HGuspZpcSmJCMUkp'})
+//         });
+//         //console.log('temp f',snapshot.docs[0].ref.update({wtf:'wtf'}))
+//         //console.log('MY F', snapshot.docs[0].data())
+//     })
+//
+// }
 
 

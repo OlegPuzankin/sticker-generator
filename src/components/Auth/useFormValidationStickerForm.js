@@ -40,18 +40,14 @@ function useFormValidationStickerForm(initialState, validate, submit, dispatch) 
             ...values,
             [name]: result
         })
-
-
     };
 
     const handleBlur = () => {
-        //debugger
         const validateErrors = validate(values);
         setErrors(validateErrors);
     };
 
     const submitHandler = (e) => {
-        // debugger
         e.preventDefault();
         e.persist();
         const validateErrors = validate(values);

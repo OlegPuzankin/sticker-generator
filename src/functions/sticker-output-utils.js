@@ -19,7 +19,7 @@ export function getTitle(sticker) {
         result.push('напівсухе, ');
     else if (sticker.sugar > 30 && sticker.sugar < 80)
         result.push('напівсолодке, ');
-    else if (sticker.sugar > 30 && sticker.sugar < 80)
+    else if (sticker.sugar >= 80)
         result.push('солодке, ');
 
     result.push(`${sticker.color.toLowerCase()} `);
@@ -38,14 +38,14 @@ export function getOrigin(sticker) {
         else
             result.push('. ')
     }
-    const grapes=sticker.selectedGrapes.map(g=>g.toLowerCase())
-    const grapesResult = grapes.join(', ');
-    debugger
+    // const grapes=sticker.selectedGrapes.map(g=>g.toLowerCase())
+    // const grapesResult = grapes.join(', ');
+    // debugger
 
     if (sticker.selectedGrapes.length === 1)
-        result.push(`Сорт винограду: ${grapesResult}. `);
+        result.push(`Сорт винограду: ${sticker.selectedGrapes.join(', ')}. `);
     else
-        result.push(`Сорти винограду: ${grapesResult}. `);
+        result.push(`Сорти винограду: ${sticker.selectedGrapes.join(', ')}. `);
 
     result.push(`Рекомендована температура сервірування від +${sticker.servingTemperature}°С до +${Number(sticker.servingTemperature)+2}°С.`);
 

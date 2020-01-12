@@ -18,13 +18,14 @@ import {loadCollection, loadStickers} from "./firebase/firebaseFunctions";
 import {
     setAppellationsData,
     setCountriesData,
-    setGrapesData, setHarvestYears, setLoading,
+    setGrapesData, setLoading,
     setProducersData,
     setRegionsData
 } from "./redux/actions/firebaseReduxActions";
 import {setStickersAction} from "./redux/actions/stickersActions";
 import {selectStickersBundle} from "./redux/selectors/stickers-selectors";
 import {Preview} from './components/Preview/Preview';
+import {EditProducers2} from "./components/EditDB/EditProducers2";
 
 export const App = (props) => {
 
@@ -68,7 +69,6 @@ export const App = (props) => {
             const appellations = await loadCollection('appellations');
             const producers = await loadCollection('producers');
             const grapes = await loadCollection('grapes');
-            const harvestYears = await loadCollection('harvest');
 
             //debugger
 
@@ -77,15 +77,14 @@ export const App = (props) => {
             dispatch(setAppellationsData(appellations));
             dispatch(setProducersData(producers));
             dispatch(setGrapesData(grapes));
-            dispatch(setHarvestYears(harvestYears));
 
             dispatch(setLoading(false))
 
         }
 
-        const promise = loadCollections();
+        loadCollections();
 
-        return () => promise;
+
 
     }, []);
 
@@ -104,7 +103,7 @@ export const App = (props) => {
              <Route path={'/edit-regions'} component={EditRegions}/>
              <Route path={'/edit-appellations'} component={EditAppellations}/>
              <Route path={'/edit-grapes'} component={EditGrapes}/>
-             <Route path={'/edit-producers'} component={EditProducers}/>
+             <Route path={'/edit-producers'} component={EditProducers2}/>
              <Route path={'/login'} component={Login}/>
              <Route path={'/forgot'} component={ForgotPassword}/>
              <Route path={'/preview'} component={Preview}/>

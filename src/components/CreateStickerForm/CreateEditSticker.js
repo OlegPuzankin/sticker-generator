@@ -1,6 +1,5 @@
 import React from 'react';
 import validateCreateStickerForm from "./validateCreateStickerForm";
-import {ListBox} from "../../UI/ListBox";
 import {ComboBoxGroup} from "../../UI/ComboBoxGroup";
 import {InputGroup} from "../../UI/InputGroup";
 import {useDispatch, useSelector} from "react-redux";
@@ -12,7 +11,6 @@ import {addItemInCollection, getItemCollectionById} from "../../firebase/firebas
 import {
     getAppellationsName,
     getCountriesName,
-    getGrapesName, getHarvestYearsName,
     getProducersName,
     getRegionsName
 } from "../../functions/utils";
@@ -22,7 +20,7 @@ import {addStickerToStore, updateStickerInStore} from "../../redux/actions/stick
 import {
     selectAppellations,
     selectCountries,
-    selectGrapes, selectHarvestYears, selectIsLoading,
+    selectGrapes, selectIsLoading,
     selectProducers,
     selectRegions
 } from "../../redux/selectors/firebase-redux-selectors";
@@ -30,7 +28,6 @@ import {selectFormState} from "../../redux/selectors/form-state-selectors";
 import {ListBoxGrapes} from "../../UI/ListBoxGrapes";
 import {FirebaseContext} from "../../firebase";
 import {Redirect} from "react-router-dom";
-import {InputGroupNumber} from "../../UI/InputGroupNumber";
 
 
 const regionControlTypes = ['None', 'PDO', 'PJI'];
@@ -40,7 +37,8 @@ const colors = ['червоне', 'біле', 'рожеве'];
 export const CreateEditSticker = (props) => {
         const {user} = React.useContext(FirebaseContext);
 
-        const [filteredGrapes, setFilteredGrapes] = React.useState([]);
+        const grapes = useSelector(selectGrapes);
+        const [filteredGrapes, setFilteredGrapes] = React.useState(grapes);
         const [filteredRegions, setFilteredRegions] = React.useState([]);
         const [filteredAppellations, setFilteredAppellations] = React.useState([]);
 
@@ -50,7 +48,6 @@ export const CreateEditSticker = (props) => {
         const producers = useSelector(selectProducers);
         const regions = useSelector(selectRegions);
         const appellations = useSelector(selectAppellations);
-        const grapes = useSelector(selectGrapes);
 
 
         const isLoading = useSelector(selectIsLoading);
@@ -90,11 +87,11 @@ export const CreateEditSticker = (props) => {
         }
 
 
-        async function handleDone() {
+        function getStickerState() {
             const producer = producers.find(producer => producer.name === values.producer);
             debugger
 
-            const sticker = {
+            return {
                 originalTitle: values.originalTitle,
                 stickerTitle: values.stickerTitle,
                 color: values.color,
@@ -116,6 +113,11 @@ export const CreateEditSticker = (props) => {
                 sku: values.sku,
                 created: new Date(),
             };
+        }
+
+        async function handleDone() {
+            debugger
+            const sticker = getStickerState();
             if (values.id) {
                 await updateSticker(sticker)
             } else {
@@ -131,10 +133,11 @@ export const CreateEditSticker = (props) => {
             dispatch(showAlert('Sticker was created', 'primary'));
             setTimeout(() => {
                 dispatch(hideAlert());
-                clearForm();
+                setValues({...values, id: null})
             }, 4500);
 
         }
+
 
         async function updateSticker(sticker) {
             await getItemCollectionById('stickers', values.id).update(sticker);
@@ -146,6 +149,7 @@ export const CreateEditSticker = (props) => {
             dispatch(showAlert('Sticker was updated', 'primary'));
             setTimeout(() => {
                 dispatch(hideAlert());
+                // setValues({...values, id:null})
             }, 4500);
 
         }
@@ -166,6 +170,12 @@ export const CreateEditSticker = (props) => {
                 //setToggle(false)
                 dispatch(hideAlert());
             }, 2000);
+        }
+
+        function saveAsNew() {
+            values.id=null;
+            console.log('values SaveAs' , values);
+            handleDone()
         }
 
         ////////////////////SELECT COUNTRY EFFECT////////////////////////////////////////
@@ -198,42 +208,55 @@ export const CreateEditSticker = (props) => {
         /////////////////////Search effect///////////////////////////////////
         React.useEffect(() => {
 
+            if (queryString === '')
+                setFilteredGrapes(filterSelectedGrapes(grapes, values.selectedGrapes));
+
             //console.log('search effect');
-            const query = queryString.toLowerCase();
-            const filteredGrapes = grapes.filter(grape => {
-                return (
-                    grape.name.toLowerCase().includes(query)
-                )
-            });
+            if (queryString !== '') {
+                const query = queryString.toLowerCase();
+                const filteredGrapes = grapes.filter(grape => {
+                    return (
+                        grape.name.toLowerCase().includes(query)
+                    )
+                });
+                setFilteredGrapes(filteredGrapes)
+            }
 
-            setFilteredGrapes(filteredGrapes)
+        }, [queryString]);
 
-        }, [queryString, grapes]);
+        // function handleSelectGrape(e) {
+        //     const selectedGrape=e.target.value;
+        //     const selectedGrapes=[...values.selectedGrapes, selectedGrape];
+        //
+        //     const filtered = filterSelectedGrapes(grapes, selectedGrapes)
+        //     // const filtered = filteredGrapes.filter(grape => grape.name !== selectedGrape);
+        //     setValues({...values, selectedGrapes: selectedGrapes});
+        //     setFilteredGrapes(filtered);
+        //     setQueryString('');
+        // }
 
-        function handleSelectGrape(e) {
-            const selectedGrape=e.target.value;
-            const filtered = filteredGrapes.filter(grape => grape.name !== selectedGrape);
-            setValues({...values, selectedGrapes: [...values.selectedGrapes, selectedGrape]});
-            setFilteredGrapes(filtered);
-            setQueryString('');
+        function filterSelectedGrapes(grapes, selectedGrapes) {
+            return grapes.filter(g => !selectedGrapes.includes(g.name));
         }
 
 
         //////////////////////////select grape effect///////////////////////////
         React.useEffect(() => {
 
-            //console.log('select grape effect start');
-            if (values.currentGrape !== '') {
-                //console.log('select grape effect body')
-                const filtered = filteredGrapes.filter(grape => grape.name !== values.currentGrape);
 
-                setValues({...values, selectedGrapes: [...values.selectedGrapes, values.currentGrape]});
+            if (values.currentGrape !== '') {
+
+                const selectedGrapes = [...values.selectedGrapes, values.currentGrape];
+
+                const filtered = filterSelectedGrapes(grapes, selectedGrapes);
+                // const filtered = filteredGrapes.filter(grape => grape.name !== selectedGrape);
+                setValues({...values, selectedGrapes: selectedGrapes});
                 setFilteredGrapes(filtered);
                 setQueryString('');
             }
-            //console.log('select grape effect end');
 
         }, [values.currentGrape]);
+
         /////////////////////////////////LOAD STICKER TO EDIT////////////////////////////////
         React.useEffect(() => {
 
@@ -269,6 +292,8 @@ export const CreateEditSticker = (props) => {
 
         console.log('values', values);
         console.log('stickerState', stickerState);
+        // console.log('filteredGrapes', filteredGrapes);
+        // console.log('values.selectedGrapes',values.selectedGrapes)
 
         if (!user) {
             return <Redirect to={'/'}/>
@@ -296,18 +321,16 @@ export const CreateEditSticker = (props) => {
                         >{
                             state => (<div className={`animation-container ${state}`}>
                                 <Alert alert={alertState} hide={() => dispatch(hideAlert())}/>
-
                             </div>)
                         }
 
                         </Transition>
-
                     </div>
 
                     {/*///////////////////TITLE ///////////////////////////////*/}
                     <div className='row justify-content-start mt-2'>
 
-                        <div className='col-10 mb-2'>
+                        <div className='col-9 mb-2'>
 
                             <InputGroup
                                 inputAttributes={{
@@ -335,12 +358,38 @@ export const CreateEditSticker = (props) => {
                         </div>
 
 
-                        <div className='col-2'>
+                        <div className='col-3'>
                             {/*////////////////////////Buttons///////////////////////////*/}
                             <div className='mb-1'>
-                                <button onSubmit={submitHandler} className='btn btn-primary w-100'>Done</button>
+                                <button
+                                    onSubmit={submitHandler}
+                                    className='btn btn-primary w-100'>
+                                    {values.id ? 'Update' : 'Make new'}
+                                </button>
                             </div>
-                            <button type='button' onClick={clearFormHandler} className='btn btn-danger w-100'>Clear</button>
+
+                            <div className='d-flex justify-content-between'>
+                                <div className='w-100 mr-1'>
+                                    <button
+                                        type='button'
+                                        onClick={clearFormHandler}
+                                        className='btn btn-danger w-100 '>
+                                        Clear form
+                                    </button>
+                                </div>
+                                {
+                                    values.id && (
+                                        <div className='w-100'>
+                                            <button
+                                                type='button'
+                                                disabled={!values.id}
+                                                onClick={saveAsNew}
+                                                className='btn btn-info w-100'>
+                                                Save as new
+                                            </button>
+                                        </div>)
+                                }
+                            </div>
                         </div>
 
                     </div>
@@ -351,13 +400,16 @@ export const CreateEditSticker = (props) => {
                             <div className='mb-2 text-center'>Basic parameters</div>
 
                             <ComboBoxGroup
-                                name='color'
+                                inputAttributes={{
+                                    name: 'color',
+                                    value: values.color,
+                                    onChange: changeHandler,
+                                    onBlur: handleBlur,
+                                }}
+                                items={colors}
+                                label={'Select color'}
                                 placeholder={'Select color'}
                                 error={isTriedSubmit && errors['color']}
-                                items={colors}
-                                value={values.color}
-                                label={'Wine`s Color'}
-                                onChange={changeHandler}
                             />
 
                             <InputGroup
@@ -390,7 +442,7 @@ export const CreateEditSticker = (props) => {
                                     onChange: changeHandler,
                                     step: 0.5
                                 }}
-                                label={'Sugar, ml '}
+                                label={'Sugar, g/per L '}
                                 error={errors['sugar']}
                             />
 
@@ -546,7 +598,7 @@ export const CreateEditSticker = (props) => {
                                     inputAttributes={{
                                         multiple: true,
                                         name: 'currentGrape',
-                                        onChange: e=>handleSelectGrape(e),
+                                        onChange: changeHandler,
                                         onBlur: handleBlur,
                                     }}
 
